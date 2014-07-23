@@ -1,5 +1,5 @@
-# Copyright 2013 II. Physikalisches Institut - Georg-August-Universitaet Goettingen
-# Author: Christian Georg Wehrberger (christian@wehrberger.de)
+# Copyright 2014 II. Physikalisches Institut - Georg-August-Universitaet Goettingen
+# Author: Max Robinson (mrobinson31415@gmail.com)
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
