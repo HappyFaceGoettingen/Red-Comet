@@ -1,0 +1,2 @@
+* Openssl Connector with huge output is extremely slow
+* There are not proper exception handlers for GridSubprocessBaseHandler class and so on

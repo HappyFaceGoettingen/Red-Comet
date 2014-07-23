@@ -1,0 +1,45 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/module_base.html" />
+
+<%def name="content()">
+<script>
+	function toggle(id) {
+		element = document.getElementById(id);
+		if (element.style.display == 'none')
+			element.style.display = '';
+		else 
+			element.style.display = 'none';
+	}
+</script>
+% if not details_ddm:
+	<p>List Empty!</p>
+% else:
+	% if module.dataset['status'] == 1:
+		<p> All is good </p>
+	% endif
+	
+	<table class="TableData">
+		<tr class="TableHeader">
+			<td> Dataset Name </td> 
+			<td> Dataset Size </td>
+			<td> Dataset Owner </td> 
+			<td> Datset Date </td>
+		</tr>
+		
+		% for detail in details_ddm:
+			<tr>
+				<td> ${detail['datasetname']}</td>
+				<td> ${detail['datasetsize']}</td>
+				<td> ${detail['datasetowner']}</td> 
+				<td> ${detail['datasetdate']}</td>
+			</tr>
+		% endfor
+</table>
+
+<br/>
+
+% endif
+
+</%def>
+
+
