@@ -22,12 +22,12 @@ from Ganga.Lib.LCG.LCG import grids
 
 
 # input variables
-input_exec = os.getenv("input_exec")
-input_jnum = int(os.getenv("input_jnum"))
-input_sandbox = os.getenv("input_sandbox")
-backend = os.getenv("backend")
-endpoint = os.getenv("endpoint")
-
+EXECUTABLE = os.getenv("EXECUTABLE")
+NUMBER_OF_SUBJOBS = int(os.getenv("NUMBER_OF_SUBJOBS"))
+INPUT_SANDBOX = os.getenv("INPUT_SANDBOX")
+BACKEND = os.getenv("BACKEND")
+ENDPOINT = os.getenv("ENDPOINT")
+SITE = os.getenv("SITE")
 
 #----------------------------------
 # make argument
@@ -44,30 +44,30 @@ def makeArgs(max):
 
 
 #----------------------------------
-# cream job split and submit
+# split and submit jobs
 #----------------------------------
 def splitJobSubmit(job_num):
 
     s=makeArgs(job_num)
     j=Job(splitter=s)
     j.application = Executable()
-    j.application.exe = File(input_exec)
+    j.application.exe = File(EXECUTABLE)
     j.outputsandbox=["stdout.gz","stderr.gz", "output_sandbox.tgz"]
-    j.name = backend
+    j.name = BACKEND
 
-    if (input_sandbox != ""):
-        j.inputsandbox=[input_sandbox]
+    if (INPUT_SANDBOX != ""):
+        j.inputsandbox=[INPUT_SANDBOX]
 
 
-    if (backend == "LCG"):
+    if (BACKEND == "LCG"):
         j.backend = LCG()
         j.backend.requirements = AtlasLCGRequirements()
-        j.backend.requirements.sites = ["FZK"]
+        j.backend.requirements.sites = [SITE]
         j.backend.requirements.ipconnectivity = True
-    elif (backend == "CREAM"):
+    elif (BACKEND == "CREAM"):
         j.backend = CREAM()
-        j.backend.CE = endpoint
-    elif (backend == "Panda"):
+        j.backend.CE = ENDPOINT
+    elif (BACKEND == "Panda"):
         j.backend = Panda()
         j.outputdata = DQ2OutputDataset()
     else:
@@ -79,5 +79,5 @@ def splitJobSubmit(job_num):
     j.submit()
 
 
-splitJobSubmit(input_jnum)
+splitJobSubmit(NUMBER_OF_SUBJOBS)
 
