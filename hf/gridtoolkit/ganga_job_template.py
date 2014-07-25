@@ -22,12 +22,12 @@ from Ganga.Lib.LCG.LCG import grids
 
 
 # input variables
-EXECUTABLE = os.getenv("EXECUTABLE")
-NUMBER_OF_SUBJOBS = int(os.getenv("NUMBER_OF_SUBJOBS"))
-INPUT_SANDBOX = os.getenv("INPUT_SANDBOX")
-BACKEND = os.getenv("BACKEND")
-ENDPOINT = os.getenv("ENDPOINT")
-SITE = os.getenv("SITE")
+GANGA_JOB_EXECUTABLE = os.getenv("GANGA_JOB_EXECUTABLE")
+GANGA_NUMBER_OF_SUBJOBS = int(os.getenv("GANGA_NUMBER_OF_SUBJOBS"))
+GANGA_INPUT_SANDBOX = os.getenv("GANGA_INPUT_SANDBOX")
+GANGA_GRID_BACKEND = os.getenv("GANGA_GRID_BACKEND")
+GANGA_CE_ENDPOINT = os.getenv("GANGA_CE_ENDPOINT")
+GANGA_LCG_SITE = os.getenv("GANGA_LCG_SITE")
 
 #----------------------------------
 # make argument
@@ -51,23 +51,23 @@ def splitJobSubmit(job_num):
     s=makeArgs(job_num)
     j=Job(splitter=s)
     j.application = Executable()
-    j.application.exe = File(EXECUTABLE)
+    j.application.exe = File(GANGA_JOB_EXECUTABLE)
     j.outputsandbox=["stdout.gz","stderr.gz", "output_sandbox.tgz"]
-    j.name = BACKEND
+    j.name = GANGA_GRID_BACKEND
 
-    if (INPUT_SANDBOX != ""):
-        j.inputsandbox=[INPUT_SANDBOX]
+    if (GANGA_INPUT_SANDBOX != ""):
+        j.inputsandbox=[GANGA_INPUT_SANDBOX]
 
 
-    if (BACKEND == "LCG"):
+    if (GANGA_GRID_BACKEND == "LCG"):
         j.backend = LCG()
         j.backend.requirements = AtlasLCGRequirements()
-        j.backend.requirements.sites = [SITE]
+        j.backend.requirements.sites = [GANGA_LCG_SITE]
         j.backend.requirements.ipconnectivity = True
-    elif (BACKEND == "CREAM"):
+    elif (GANGA_GRID_BACKEND == "CREAM"):
         j.backend = CREAM()
-        j.backend.CE = ENDPOINT
-    elif (BACKEND == "Panda"):
+        j.backend.CE = GANGA_CE_ENDPOINT
+    elif (GANGA_GRID_BACKEND == "PANDA"):
         j.backend = Panda()
         j.outputdata = DQ2OutputDataset()
     else:
@@ -79,5 +79,5 @@ def splitJobSubmit(job_num):
     j.submit()
 
 
-splitJobSubmit(NUMBER_OF_SUBJOBS)
+splitJobSubmit(GANGA_NUMBER_OF_SUBJOBS)
 

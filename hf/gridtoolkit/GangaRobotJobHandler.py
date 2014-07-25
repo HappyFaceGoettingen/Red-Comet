@@ -24,54 +24,80 @@ from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler
 class GangaRobotJobHandler(GridSubprocessBaseHandler):
     logger = logging.getLogger(__name__)
 
-    commandArgs=""
+    __job_template_file = "ganga_job_template.py"
 
-    __jobTemplateFile = ""
-    __executable = ""
-    __inputSandbox = ""
-    __numberOfSubjobs = ""
-    __backend = ""
-    __endpoint = ""
-    __site = ""
+    __ganga_job_executable = "/bin/hostname"
+    __ganga_input_sandbox = ""
+    __ganga_number_of_subjobs = ""
+    __ganga_grid_backend = "CREAM"
+    __ganga_ce_endpoint = "cream-ge-2-kit.gridka.de:8443/cream-sge-sl6"
+    __ganga_lcg_site = "FZK"
+
 
     def __init__(self):
         self.cvmfsEnv.setEnabled("emi")
         self.cvmfsEnv.setEnabled("dq2.client")
         self.cvmfsEnv.setEnabled("ganga")
         
-        """ set parameters """
 
 
+    def setJob(self, job_template_file, job_executable, input_sandbox, number_of_subjobs, grid_backend, ce_endpoint, lcg_site):
+        self.__job_template_file = job_template_file
+        self.__ganga_job_executable = job_executable
+        self.__ganga_input_sandbox = input_sandbox
+        self.__ganga_number_of_subjobs = number_of_subjobs
+        self.__ganga_grid_backend = grid_backend
+        self.__ganga_ce_endpoint = ce_endpoint
+        self.__ganga_lcg_site = lcg_site
 
-        """ logging """ 
-        self.logger.debug(self.commandArgs)
-
-
-    def setJob(self, jobTemplateFile, executable, inputSandbox, numberOfSubjobs, backend, endpoint, site):
-        self.__jobTemplateFile = jobTemplateFile
-        self.__executable = executable
-        self.__inputSandbox = inputSandbox
-        self.__numberOfSubjobs = numberOfSubjobs
-        self.__backend = backend
-        self.__endpoint = endpoint
-        self.__site = site
 
 
     def __generateEnvVariables(self):
         env = ""
-        env += "export EXECUTABLE=" + self.__executable + ";"
-        env += "export INPUT_SANDBOX=" + self.__inputSandbox + ";"
-        env += "export NUMBER_OF_SUBJOBS=" + self.__numberOfSubjobs + ";"
-        env += "export BACKEND=" + self.__backend + ";"
-        env += "export ENDPOINT=" + self.__endpoint + ";"
-        env += "export SITE=" + self.__site + ";"
+        env += "export GANGA_JOB_EXECUTABLE=" + self.__ganga_job_executable + ";"
+        env += "export GANGA_INPUT_SANDBOX=" + self.__ganga_input_sandbox + ";"
+        env += "export GANGA_NUMBER_OF_SUBJOBS=" + self.__ganga_number_of_subjobs + ";"
+        env += "export GANGA_GRID_BACKEND=" + self.__ganga_grid_backend + ";"
+        env += "export GANGA_CE_ENDPOINT=" + self.__ganga_ce_endpoint + ";"
+        env += "export GANGA_LCG_SITE=" + self.__ganga_lcg_site + ";"
         return env
 
 
+    def __checkIfGangaConfigExists(self):
+        return True
+
+    def __generateGangaConfig(self):
+        """ prepare gangarc """
+        if self.__checkIfGangaConfigExists(): return True
+
+        self.commandArgs = "ganga -g"
+        
+        """ logging """ 
+        self.logger.info(self.commandArgs)
+        self.execute()
+        self.showGridProcess()
+
+
     def jobSubmit():
+        """ prepare gangarc """
+        self.__generateGangaConfig()
+        
         """ generate commandArgs """
         self.commandArgs = self.__generateEnvVariables()
-        self.commandArgs += "ganga " + self.__jobTemplateFile
+        self.commandArgs += "ganga " + self.__job_template_file
+        
+        """ logging """ 
+        self.logger.info(self.commandArgs)
+        self.execute()
+        self.showGridProcess()
+
+
+    def daemonize(self):
+        """ prepare gangarc """
+        self.__generateGangaConfig()
+
+        """ ganga daemon mode """
+        self.commandArgs = "ganga --daemon"
         
         """ logging """ 
         self.logger.info(self.commandArgs)
@@ -93,6 +119,8 @@ def main():
     ganga = GangaRobotJobHandler()
     
     ganga.jobSubmit()
+
+    # ganga.daemonize()
     # monitor = ganga.jobMonitor()
 
 
