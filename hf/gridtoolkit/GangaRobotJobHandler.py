@@ -28,7 +28,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
     __ganga_job_executable = "/bin/hostname"
     __ganga_input_sandbox = ""
-    __ganga_number_of_subjobs = ""
+    __ganga_number_of_subjobs = 1
     __ganga_grid_backend = "CREAM"
     __ganga_ce_endpoint = "cream-ge-2-kit.gridka.de:8443/cream-sge-sl6"
     __ganga_lcg_site = "FZK"
