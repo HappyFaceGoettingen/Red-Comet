@@ -66,17 +66,21 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
     def __checkIfGangaConfigExists(self):
         return True
 
+
     def __generateGangaConfig(self):
         """ prepare gangarc """
         if self.__checkIfGangaConfigExists(): return True
 
         self.commandArgs = "ganga -g"
-        
+        self.__runGanga()
+
+
+    def __runGanga(self):
         """ logging """ 
         self.logger.info(self.commandArgs)
         self.execute()
         self.showGridProcess()
-
+        
 
     def jobSubmit():
         """ prepare gangarc """
@@ -85,11 +89,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         """ generate commandArgs """
         self.commandArgs = self.__generateEnvVariables()
         self.commandArgs += "ganga " + self.__job_template_file
-        
-        """ logging """ 
-        self.logger.info(self.commandArgs)
-        self.execute()
-        self.showGridProcess()
+        self.__runGanga()
 
 
     def daemonize(self):
@@ -98,11 +98,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
         """ ganga daemon mode """
         self.commandArgs = "ganga --daemon"
-        
-        """ logging """ 
-        self.logger.info(self.commandArgs)
-        self.execute()
-        self.showGridProcess()
+        self.__runGanga()
 
 
     def jobMonitor():
