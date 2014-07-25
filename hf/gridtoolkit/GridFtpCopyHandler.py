@@ -116,7 +116,6 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
         if stdout:
             for item in stdout:
                 if str(item).find(file): 
-                   print item
                    return 0
                 else:
                    return 1               
