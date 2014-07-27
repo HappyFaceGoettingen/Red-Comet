@@ -1,0 +1,8 @@
+[happyface-atlas-testing]
+name=HappyFace ATLAS Testing
+baseurl=http://physik2.uni-goettingen.de/~gen/happyface/repo/testing/el6/x86_64
+enabled=1
+gpgcheck=0
+# To use priorities you must have yum-priorities installed
+priority=5
+gpgkey=
