@@ -1,4 +1,4 @@
-#!/bin/bash -x
+B1;2501;0c#!/bin/bash -x
 
 
 [ ! -e git.conf ] && echo "[git.conf] does not exist!" && exit -1 
@@ -6,7 +6,7 @@
 
 
 #----------------------------------------
-# Execute grid_enabled_acuire.py
+# Execute grid core functions
 #----------------------------------------
 cd $devel_dir/$project_name
 
