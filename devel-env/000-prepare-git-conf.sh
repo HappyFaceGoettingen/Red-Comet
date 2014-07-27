@@ -1,6 +1,6 @@
 #!/bin/bash
 
-devel_dir=/var/lib/HappyFace3-devel
+devel_dir=$PWD
 project_name=HappyFaceGridEngine
 git_repo="https://github.com/HappyFaceGoettingen/Red-Comet.git"
 git_branch="blue-giant"

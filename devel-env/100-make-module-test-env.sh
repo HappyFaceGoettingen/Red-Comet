@@ -1,6 +1,5 @@
 #!/bin/bash -x
 
-devel_dir=/var/lib/HappyFace3-devel
 [ ! -e git.conf ] && echo "[git.conf] does not exist!" && exit -1 
 . git.conf
 
