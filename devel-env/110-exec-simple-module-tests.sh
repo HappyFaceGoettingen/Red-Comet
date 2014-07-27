@@ -1,4 +1,4 @@
-B1;2501;0c#!/bin/bash -x
+#!/bin/bash -x
 
 
 [ ! -e git.conf ] && echo "[git.conf] does not exist!" && exit -1 
