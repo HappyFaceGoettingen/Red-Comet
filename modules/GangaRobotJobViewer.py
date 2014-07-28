@@ -19,6 +19,8 @@ from lxml import etree
 import re
 from datetime import datetime
 from datetime import timedelta
+from hf.gridtoolkit.GangaRobotJobHandler import GangaRobotJobHandler
+
 
 class GangaRobotJobViewer(hf.module.ModuleBase):
     config_keys = {
@@ -58,8 +60,8 @@ class GangaRobotJobViewer(hf.module.ModuleBase):
      
 
         ## Submit Ganga Jobs
-        print "Ga Ga Gan Ganga Jobbbbbbuuuu....."
-
+        ganga = GangaRobotJobHandler()
+        ganga.jobMonitor()
 
         ## Get Ganga Status
         detail = {}

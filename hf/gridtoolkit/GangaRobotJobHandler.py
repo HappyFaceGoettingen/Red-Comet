@@ -82,7 +82,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         self.showGridProcess()
         
 
-    def jobSubmit():
+    def jobSubmit(self):
         """ prepare gangarc """
         self.__generateGangaConfig()
         
@@ -105,10 +105,10 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         self.__runGanga()
 
 
-    def jobMonitor():
+    def jobMonitor(self):
         """ logging """ 
-        self.logger.debug(self.jobTemplateFile)
-
+        self.logger.debug(self.__job_template_file)
+        print " Ganga Monitoring: jobbuuuuuuu......."
 
 
 def main():
@@ -117,9 +117,9 @@ def main():
     logging.root.setLevel(logging.DEBUG)
     
     ganga = GangaRobotJobHandler()
-    ganga.jobSubmit()
+    #ganga.jobSubmit()
 
-    ganga.daemonize()
+    #ganga.daemonize()
     monitor = ganga.jobMonitor()
 
 
