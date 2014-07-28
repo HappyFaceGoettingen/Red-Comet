@@ -16,8 +16,7 @@
 #   limitations under the License.
 #
 
-import logging
-import subprocess
+import os,logging
 from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler
 
 
@@ -34,11 +33,11 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
     __ganga_lcg_site = "FZK"
 
 
-    def __init__(self):
+    def __init__(self, verbose = False):
         self.cvmfsEnv.setEnabled("emi")
         self.cvmfsEnv.setEnabled("dq2.client")
         self.cvmfsEnv.setEnabled("ganga")
-        
+        if verbose: self.cvmfsEnv.verbose = True
 
 
     def setJob(self, job_template_file, job_executable, input_sandbox, number_of_subjobs, grid_backend, ce_endpoint, lcg_site):
@@ -53,10 +52,10 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
 
     def __generateEnvVariables(self):
-        env = ""
+        env = "export LANG=en_US"
         env += "export GANGA_JOB_EXECUTABLE=" + self.__ganga_job_executable + ";"
         env += "export GANGA_INPUT_SANDBOX=" + self.__ganga_input_sandbox + ";"
-        env += "export GANGA_NUMBER_OF_SUBJOBS=" + self.__ganga_number_of_subjobs + ";"
+        env += "export GANGA_NUMBER_OF_SUBJOBS=" + str(self.__ganga_number_of_subjobs) + ";"
         env += "export GANGA_GRID_BACKEND=" + self.__ganga_grid_backend + ";"
         env += "export GANGA_CE_ENDPOINT=" + self.__ganga_ce_endpoint + ";"
         env += "export GANGA_LCG_SITE=" + self.__ganga_lcg_site + ";"
@@ -64,8 +63,8 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
 
     def __checkIfGangaConfigExists(self):
-        return True
-
+        return os.path.isfile(os.environ['HOME'] + "/.gangarc")
+ 
 
     def __generateGangaConfig(self):
         """ preparing gangarc if .gangarc does not exist """
@@ -79,7 +78,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         """ logging """ 
         self.logger.info(self.commandArgs)
         self.execute()
-        self.showGridProcess()
+        self.showGridProcess(show_stderr=True)
         
 
     def jobSubmit(self):
@@ -117,7 +116,7 @@ def main():
     logging.root.setLevel(logging.DEBUG)
     
     ganga = GangaRobotJobHandler()
-    #ganga.jobSubmit()
+    ganga.jobSubmit()
 
     #ganga.daemonize()
     monitor = ganga.jobMonitor()

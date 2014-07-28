@@ -51,6 +51,7 @@ class GridCertificate:
     def checkIfGridProxyExists(self):
         return os.path.isfile(self.__userProxy)
 
+
     """ Check ownership of cert, key & proxy """
     def checkIfUserCertHasCorrectOwnership(self):
         """ mock method """
@@ -63,6 +64,7 @@ class GridCertificate:
     def checkIfUserProxyHasCorrectOwnership(self):
         """ mock method """
         return True
+
 
     """ Basic Credential Checker for Passphrase, Key & Proxy """
     def checkIfNoPassphraseUserKeyIs(self):
