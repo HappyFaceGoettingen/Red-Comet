@@ -1,5 +1,6 @@
 *.pyo
 *.pyc
+.settings
 hf/gridengine/config
 hf/gridengine/defaultconfig
 hf/gridtoolkit/config
