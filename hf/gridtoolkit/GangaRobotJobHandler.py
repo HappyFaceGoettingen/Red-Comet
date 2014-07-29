@@ -25,7 +25,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
     __job_template_file = "ganga_job_template.py"
 
-    __ganga_job_executable = "/bin/hostname"
+    __ganga_job_executable = "/bin/echo"
     __ganga_input_sandbox = ""
     __ganga_number_of_subjobs = 1
     __ganga_grid_backend = "CREAM"
@@ -87,28 +87,15 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         
         """ generate commandArgs """
         self.commandArgs = self.__generateEnvVariables()
-        self.commandArgs += "ganga " + self.__job_template_file
+        self.commandArgs += "ganga --daemon " + self.__job_template_file
 
         """ submit job """
         self.__runGanga()
 
 
-    def daemonize(self):
-        """ prepare gangarc """
-        self.__generateGangaConfig()
-
-        """ ganga daemon mode """
-        self.commandArgs = "ganga --daemon"
-
-        """ run daemon """
-        self.__runGanga()
-
-
     def jobMonitor(self):
-        """ logging """ 
-        self.logger.debug(self.__job_template_file)
         print " Ganga Monitoring: jobbuuuuuuu......."
-
+        
 
 def main():
     print "GangaRobotJobHandler"
@@ -118,7 +105,6 @@ def main():
     ganga = GangaRobotJobHandler()
     ganga.jobSubmit()
 
-    #ganga.daemonize()
     monitor = ganga.jobMonitor()
 
 
