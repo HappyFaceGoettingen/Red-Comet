@@ -53,29 +53,32 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             }
         
         DataObject = DdmDatasetsController()
-        #DataObject.run('GOEGRID_LOCALGROUPDISK')
-        #datasetnames = DataObject.getFromDatabase('datasetname')
-        #stuff = DataObject.listDatasets("GOEGRID_LOCALGROUPDISK")
+        DataObject.run('GOEGRID_LOCALGROUPDISK')
         ## 
         print "Extracting Data..........."
-
-
+        
+        datasetname = DataObject.getFromDatabase("datasetname")
+        datasetsize = DataObject.getFromDatabase("datasetsize")
+        datasetowner = DataObject.getFromDatabase("datasetowner")
+        datasetdate = DataObject.getFromDatabase("datasetdate")
+        
         ## Get Dataset info and what not. 
         detail = {}
-        #detail['datasetname'] = DataObject.getFromDatabase("datasetname")
-        #detail['datasetsize'] = DataObject.getFromDatabase("datasetsize")
-        #detail['datasetowner'] = DataObject.getFromDatabase("datasetowner")
-        #detail['datasetdate'] = DataObject.getFromDatabase("datasetdate")
         
-        detail['datasetname'] = "hiworld"
-        detail['datasetsize'] = 1
-        detail['datasetowner'] = "Max Robinson"
-        detail['datasetdate'] = "7/7/2014"
-        
-        ## set database data
-        index_row = 0
-        self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[index_row] = detail
+        for x in range(len(datasetname)):
+            detail['datasetname'] = datasetname[x]
+            detail['datasetsize'] = datasetsize[x]
+            detail['datasetowner'] = datasetowner[x]
+            detail['datasetdate'] = datasetdate[x]
+            
+            #detail['datasetname'] = "hiworld"
+            #detail['datasetsize'] = 1
+            #detail['datasetowner'] = "Max Robinson"
+            #detail['datasetdate'] = "7/7/2014"
+            
+            ## set database data
+            self.details_table_db_value_list.append({})
+            self.details_table_db_value_list[x] = detail
 
         return data
 

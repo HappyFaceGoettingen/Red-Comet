@@ -353,14 +353,14 @@ def main():
     
     ''' check that the info is actually in the Data base '''
     data = datasetViewer.getFromDatabase('datasetname')
-    #'''
+    '''
     thing = None
     for x in data: 
         print x
         thing = x
         
     print datasetViewer.checkIfExists(thing)
-    #'''
+    '''
     '''
     db = sqlite3.connect('mydq2db')
     cursor = db.cursor()
