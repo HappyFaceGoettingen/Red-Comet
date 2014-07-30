@@ -89,10 +89,10 @@ class GridPopen(subprocess.Popen):
         """ set Grid environment & CVMFS environment """
         gridSetupLoader=""
         cvmfsSetupLoader=""
-        if GridEnvReader().enabled:
+        if GridEnvReader().isEnvEnabled():
             gridSetupLoader = GridEnvReader().getEnv().generateLoader()
             
-        if CvmfsEnvReader().enabled:
+        if CvmfsEnvReader().isEnvEnabled():
             if cvmfs_env is None: cvmfs_env = CvmfsEnvReader().getEnv()
             cvmfsSetupLoader = cvmfs_env.generateLoader()
             self.logger.debug("CVMFS SETUP LOADER: " + cvmfsSetupLoader)

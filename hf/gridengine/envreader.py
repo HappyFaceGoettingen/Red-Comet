@@ -61,15 +61,15 @@ class BaseEnvReader(object):
     logger = logging.getLogger(__name__)
 
     __envObj = None
-    enabled = False
 
     def enableEnv(self):
-        self.enabled = True
         self.__envObj.enabled = True
 
     def disableEnv(self):
-        self.enabled = False
         self.__envObj.enabled = False
+
+    def isEnvEnabled(self):
+        return self.__envObj.enabled
 
     def getEnv(self):
         return self.__envObj
@@ -98,7 +98,7 @@ class BaseEnvReader(object):
         """ start reading a section and options in happyface.cfg """
         envObj = self.__envObj
         if hf.config.getboolean(envObj.section, 'enabled'): self.enableEnv()
-        if self.enabled:
+        if self.isEnvEnabled():
             print envObj.sectionName + " is enabled!"
             self.logger.info(envObj.sectionName + " is enabled!")
             for option in envObj.keys(): 
@@ -380,7 +380,7 @@ def main():
     print "*** second creation"
     print "vo = " + gridEnvReader.get('vo')
     print "X509_USER_KEY = " + GridEnvReader().get('x509.user.key')
-    print "Grid Env enabled = " + str(GridEnvReader().getEnv().enabled)
+    print "Grid Env enabled = " + str(GridEnvReader().isEnvEnabled())
 
     cvmfsEnv = CvmfsEnvReader().getEnv()
     cvmfsEnv.enabled = True
