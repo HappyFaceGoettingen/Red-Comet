@@ -54,7 +54,8 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             self.logger.info("Proxy renewal function [proxy.renew.enabled] is not activated")
             return
             
-        """ write try - catch """
+        """ Checking certificate and proxy """
+        """ Note: write try - catch here """
         if not self.checkCert():
             self.logger.error("CERT Error: Proxy certificate cannot be generated!")
             return
@@ -63,7 +64,17 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             self.logger.info("Proxy certificate is still valid!")
             return
 
-        """ build command line """        
+        """ execute grid command """
+        subject = self.gridCertificate.getSubjectDN()
+        self.logger.info("Generating Proxy Certificate for ["+subject+"] ...")
+
+        """ run proxy certificate generator """        
+        self.commandArgs = self.__proxyGenerator()
+        self.execute()
+        self.showGridProcess()
+
+
+    def __proxyGenerator(self):
         if self.__voms_enabled:
             proxyGenerator = self.__voms_proxy_generator \
             + " --voms " + self.__vo \
@@ -76,14 +87,7 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             + " -cert $X509_USER_CERT -key $X509_USER_KEY" \
             + " -valid " + str(self.__proxy_valid_hours) + ":00" \
             + " -pwstdin" 
-           
-        """ execute grid command """
-        subject = self.gridCertificate.getSubjectDN()
-        self.logger.info("Generating Proxy Certificate for ["+subject+"] ...")
-
-        self.commandArgs = proxyGenerator
-        self.execute()
-        self.showGridProcess()
+        return proxyGenerator
 
 
     def delegateProxy(self):
