@@ -63,9 +63,10 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
         datasetdate = DataObject.getFromDatabase("datasetdate")
         
         ## Get Dataset info and what not. 
-        detail = {}
+
         
         for x in range(len(datasetname)):
+            detail = {}
             detail['datasetname'] = datasetname[x]
             detail['datasetsize'] = datasetsize[x]
             detail['datasetowner'] = datasetowner[x]
@@ -79,6 +80,9 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             ## set database data
             self.details_table_db_value_list.append({})
             self.details_table_db_value_list[x] = detail
+        
+        for x in self.details_table_db_value_list:
+            print x
 
         return data
 
