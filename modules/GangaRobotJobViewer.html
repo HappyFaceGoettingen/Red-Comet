@@ -21,10 +21,12 @@
     <table class="TableData">
         <tr class="TableHeader">
         <td>Job ID</td>
+        <td>Subjob ID</td>
         <td>Job Status</td>
         <td>Information</td>
-        <td>Last Check</td>
-        <td>Error Info</td>
+        <td>Date time</td>
+        <td>Stdout</td>
+        <td>Stderr</td>
         
         </tr>
         % for detail_job in details_job:
@@ -37,11 +39,13 @@
             % else:
                 <tr bgcolor=#EEEEEE>
             % endif
-                <td><a href="javascript: void(0);" onclick="toggle('${detail_job['job_id']}');">${detail_job['job_id']}</a></td>
+                <td><a href="javascript: void(0);" onclick="toggle('${detail_job['ganga_job_id']}');">${detail_job['ganga_job_id']}</a></td>
+                <td>${detail_job['ganga_subjob_id']}</td>
                 <td>${detail_job['job_status']}</td>
                 <td>${detail_job['information']}</td>
-                <td>${detail_job['last_check'].strftime("%Y-%m-%d %H:%M:%S")}</td>
-                <td>${detail_job['error_info']}</td>
+                <td>${detail_job['datetime'].strftime("%Y-%m-%d %H:%M:%S")}</td>
+                <td>${detail_job['stdout']}</td>
+                <td>${detail_job['stderr']}</td>
             </tr>
         % endfor
 </table>

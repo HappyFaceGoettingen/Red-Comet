@@ -87,9 +87,12 @@ class GangaRobotJobViewer(hf.module.ModuleBase):
         ganga.setJob(self.job_template_file, self.ganga_job_executable, self.ganga_input_sandbox, 
                      self.ganga_number_of_subjobs, self.ganga_grid_backend, self.ganga_ce_endpoint, 
                      self.ganga_lcg_site)
-        ganga.jobMonitor()
+
+        ganga.jobSubmit()
 
         ## Get Ganga Status
+        ganga.jobMonitor()
+
         detail = {}
         detail['ganga_job_id'] = "1"
         detail['ganga_subjob_id'] = "1"

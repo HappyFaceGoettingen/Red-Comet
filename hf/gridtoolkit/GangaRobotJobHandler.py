@@ -52,7 +52,7 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
 
     def __generateEnvVariables(self):
-        env = "export LANG=en_US"
+        env = "export LANG=en_US;"
         env += "export GANGA_JOB_EXECUTABLE=" + self.__ganga_job_executable + ";"
         env += "export GANGA_INPUT_SANDBOX=" + self.__ganga_input_sandbox + ";"
         env += "export GANGA_NUMBER_OF_SUBJOBS=" + str(self.__ganga_number_of_subjobs) + ";"
@@ -76,7 +76,6 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
     def __runGanga(self):
         """ logging """ 
-        self.logger.info(self.commandArgs)
         self.execute()
         self.showGridProcess(show_stderr=True)
         
@@ -96,6 +95,10 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
     def jobMonitor(self):
         print " Ganga Monitoring: jobbuuuuuuu......."
         
+        
+    def jobRemove(self, job_number):
+        print "Removing " + job_number + " ..."
+
 
 def main():
     print "GangaRobotJobHandler"
