@@ -16,7 +16,7 @@
 #   limitations under the License.
 #
 
-import os, subprocess,logging, time
+import sys, os, subprocess,logging, time
 from hf.gridengine.envreader import GridEnv, GridEnvReader, CvmfsEnv, CvmfsEnvReader
 
 
@@ -119,6 +119,7 @@ class GridSubprocessBaseHandler:
     """ Attributes for environments """
     gridEnv = GridEnvReader().getEnv()
     cvmfsEnv = CvmfsEnvReader().getEnv()
+
 
     """ Attributes for process """
     gridProcess = None
