@@ -31,9 +31,11 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
     #Class variables
     __command = None
     __spaceToken = None
+    __TIMEFORMAT = "%Y-%m-%d %H:%M:%S.%f"
+    __LOGFILEPATH = "/var/lib/HappyFace3-devel/HappyFaceGridEngine/hf/gridtoolkit/DdmLastRun.log"
     
     #Constructor
-    def __init__(self, spaceToken=None):
+    def __init__(self, spaceToken=None, logFilePath=None):
         """
         ___init__(self, spaceToken=None): Initializes the class by setting up the 
             needed environment and setting default values. 
@@ -50,7 +52,11 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
             self.__spaceToken = "GOEGRID_LOCALGROUPDISK"
         else: 
             self.__spaceToken = spaceToken
-
+        
+        #set log file path
+        if logFilePath != None:
+            self.__LOGFILEPATH = logFilePath
+        
         #set command   
         self.__command = "dq2-ls -s "
     
@@ -166,15 +172,19 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
             token = self.__spaceToken
         else:
             token = spaceToken
-        
-        # Querying token
-        listOfDatasets = []
-        listOfDatasets = self.limited(token)
-        ##listOfDatasets = self.listDatasets(token)
-        
-        database = DdmDatabaseHandler('mydq2db')
-        database.updateDatabase(listOfDatasets)
-        database.close()
+            
+        if(self.needToRun()):
+            #write the new runtime to log file
+            self.writeRunTime()
+            
+            # Querying token
+            listOfDatasets = []
+            listOfDatasets = self.limited(token)
+            ##listOfDatasets = self.listDatasets(token)
+            
+            database = DdmDatabaseHandler('mydq2db')
+            database.updateDatabase(listOfDatasets)
+            database.close()
     
     
     ############### HELPER FUNCTIONS OR TEST FUNCTIONS ################################
@@ -200,6 +210,84 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         
         return shortlistOfDatasets
 
+    
+    ######### For Checking last run time ########
+     
+    def checkLastRun(self):
+        """
+        checkLastRun(self): reads a logfile which contains the last known run time 
+        of the run method and returns that time. 
+            args: None
+            Return: a Date Time object with the last run time or the string "never"
+        """
+        lastrun = None
+        #check for log file with last run time
+        try: 
+            LogFile = open(self.__LOGFILEPATH,"r")
+            lastrun = LogFile.read()
+        except Exception as e:
+            print e
+            lastrun = "never"
+            return lastrun
+        
+        lastrunDatetimeObject = datetime.datetime.strptime(lastrun, self.__TIMEFORMAT)
+        
+        LogFile.close()
+        return lastrunDatetimeObject
+    
+    def writeRunTime(self):
+        """
+        writeRunTime(self): writes the current datetime out to a logfile
+            args: None
+            return: void
+        """
+        runtime = datetime.datetime.now()
+        
+        runtimeString = str(runtime)
+        
+        try:
+            logFile = open(self.__LOGFILEPATH,"w")
+            logFile.write(runtimeString)
+        except Exception as e:
+            print e
+            return
+            
+        logFile.close()
+        return
+    
+    def needToRun(self):
+        """
+        needToRun(self): checks if the last run time of the run method was called was a certain
+        interval of time ago. If it was run in less than that interval, return False
+        if more than that interval, return True because the main run method needs to
+        be executed. 
+            args: None
+            return: Boolean
+        """
+        
+        #get last run time
+        time = self.checkLastRun()
+        #check if module has never been run
+        if(time == "never"):
+            return True
+        
+        #if it has been run check delta time
+        currentTime = datetime.datetime.now()
+        dif = currentTime - time
+        
+        delta = datetime.timedelta(hours=1)
+        
+        print "last run time: ", time
+        print "current time : ", currentTime
+        
+        if(dif > delta):
+            print "needs to be run"
+            return True
+        else:
+            print "doesn't need to be run"
+            return False
+            
+    
 
 class DdmDatabaseHandler(DdmDatasetsController):
     #Class Variables
@@ -381,10 +469,10 @@ def main():
     
     # Make DatasetViewer
     datasetViewer = DdmDatasetsController()
-    
+     
     #call run
     datasetViewer.run("GOEGRID_LOCALGROUPDISK")
-    
+     
     ''' check that the info is actually in the Data base '''
     data = datasetViewer.getFromDatabase('datasetname')
     #'''
@@ -392,7 +480,7 @@ def main():
     for x in data: 
         print x
         thing = x
-        
+         
     print datasetViewer.checkIfExists(thing)
     #'''
 
@@ -403,6 +491,11 @@ def main():
     #for x in data:
     #    print x
     #database.close()
+    
+    #datasetViewer.writeRunTime()
+    #print datasetViewer.needToRun()
+    
+    
     
 
 if __name__ == '__main__':
