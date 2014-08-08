@@ -22,6 +22,7 @@ from lxml import etree
 import re
 from datetime import datetime
 from datetime import timedelta
+import random 
 
 class DdmDatasetsViewer(hf.module.ModuleBase):
     config_keys = {
@@ -52,7 +53,7 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             'status': 1
             }
         
-        DataObject = DdmDatasetsController()
+        DataObject = DdmDatasetsController(logFilePath=self.config['log_file_path'])
         DataObject.run('GOEGRID_LOCALGROUPDISK')
         ## 
         print "Extracting Data..........."
@@ -79,8 +80,8 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             self.details_table_db_value_list.append({})
             self.details_table_db_value_list[x] = detail
         
-        for x in self.details_table_db_value_list:
-            print x
+        #for x in self.details_table_db_value_list:
+        #    print x
 
         return data
 

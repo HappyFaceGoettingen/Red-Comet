@@ -228,6 +228,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         except Exception as e:
             print e
             lastrun = "never"
+            print "last run: ", lastrun
             return lastrun
         
         lastrunDatetimeObject = datetime.datetime.strptime(lastrun, self.__TIMEFORMAT)
@@ -482,7 +483,7 @@ def main():
         thing = x
          
     print datasetViewer.checkIfExists(thing)
-    #'''
+    '''
 
     
     ##################### Testing Database Class ###################################
