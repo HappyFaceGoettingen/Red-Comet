@@ -32,7 +32,9 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
     __command = None
     __spaceToken = None
     __TIMEFORMAT = "%Y-%m-%d %H:%M:%S.%f"
-    __LOGFILEPATH = "/var/lib/HappyFace3-devel/HappyFaceGridEngine/hf/gridtoolkit/DdmLastRun.log"
+    __LOGFILEPATH = "/var/lib/HappyFace3/log/DdmLastRun.log"
+    __TIMEDELTA = .01
+    __NUMBEROFDATASETS = 50
     
     #Constructor
     def __init__(self, spaceToken=None, logFilePath=None):
@@ -204,7 +206,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         shortlistOfDatasets = []
                 
         
-        for x in range(0,10):
+        for x in range(0,self.__NUMBEROFDATASETS):
             # make sure no duplicates 
             shortlistOfDatasets.append(datasets[x])
         
@@ -265,7 +267,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
             args: None
             return: Boolean
         """
-        
+        timeDelta = self.__TIMEDELTA
         #get last run time
         time = self.checkLastRun()
         #check if module has never been run
@@ -276,7 +278,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         currentTime = datetime.datetime.now()
         dif = currentTime - time
         
-        delta = datetime.timedelta(hours=1)
+        delta = datetime.timedelta(hours=timeDelta)
         
         print "last run time: ", time
         print "current time : ", currentTime

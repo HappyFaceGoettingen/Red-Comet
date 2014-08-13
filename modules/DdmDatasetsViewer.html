@@ -56,7 +56,7 @@
 
 <script type="text/javascript">
 	//GLOBALS
-	var PERCENTAGE = .1;
+	var PERCENTAGE = .25;
 
 
 	google.load("visualization", "1", {packages:["corechart"]});
@@ -73,23 +73,16 @@
 			tempList.push([owner, size]);
 		% endfor
 		
-		//alert(tempList[0]);		
-
-		//for(var i = 0; i < tempList.length; i++){
-		//	var z = Math.random() * tempList.length;
-		//	var y = parseInt(z);
-		//	resultList.push(tempList[y]);
-		//}
+		//alert(tempList[0]);
 		
 		resultList = getRandomSample(tempList, resultList);
-		
 		
 		//alert(resultList);
 
 		var data = google.visualization.arrayToDataTable(resultList);
 		
 		var options = {
-			title: 'My Daily Activities'
+			title: 'Disk Usage by Owner'
     	};
 
 	    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
