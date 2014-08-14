@@ -54,7 +54,8 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             self.logger.info("Proxy renewal function [proxy.renew.enabled] is not activated")
             return
             
-        """ write try - catch """
+        """ Checking certificate and proxy """
+        """ Note: write try - catch here """
         if not self.checkCert():
             self.logger.error("CERT Error: Proxy certificate cannot be generated!")
             return
@@ -63,7 +64,17 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             self.logger.info("Proxy certificate is still valid!")
             return
 
-        """ build command line """        
+        """ execute grid command """
+        subject = self.gridCertificate.getSubjectDN()
+        self.logger.info("Generating Proxy Certificate for ["+subject+"] ...")
+
+        """ run proxy certificate generator """        
+        self.commandArgs = self.__proxyGenerator()
+        self.execute()
+        self.showGridProcess()
+
+
+    def __proxyGenerator(self):
         if self.__voms_enabled:
             proxyGenerator = self.__voms_proxy_generator \
             + " --voms " + self.__vo \
@@ -76,14 +87,7 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
             + " -cert $X509_USER_CERT -key $X509_USER_KEY" \
             + " -valid " + str(self.__proxy_valid_hours) + ":00" \
             + " -pwstdin" 
-           
-        """ execute grid command """
-        subject = self.gridCertificate.getSubjectDN()
-        self.logger.info("Generating Proxy Certificate for ["+subject+"] ...")
-
-        self.commandArgs = proxyGenerator
-        self.execute()
-        self.showGridProcess()
+        return proxyGenerator
 
 
     def delegateProxy(self):
@@ -97,10 +101,16 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
         if not self.gridCertificate.checkIfUserKeyExists():
             self.logger.error("No UserKey! [" + self.gridCertificate.getUserKey() + "]")
             raise GridNoUserKeyException(self.gridCertificate.getUserKey())
-        if not self.gridCertificate.checkIfValidUserKey():
+        if not self.gridCertificate.checkIfUserCertHasCorrectOwnership():
+            self.logger.error("Ownership error! [" + self.gridCertificate.getUserCert() + "]")
+            raise GridUserCertOwnershipException(self.gridCertificate.getUserCert())
+        if not self.gridCertificate.checkIfUserKeyHasCorrectOwnership():
+            self.logger.error("Ownership error! [" + self.gridCertificate.getUserKey() + "]")
+            raise GridUserCertOwnershipException(self.gridCertificate.getUserKey())
+        if not self.gridCertificate.checkIfValidUserKeyExists():
             self.logger.error("No Valid Userkey! [" + self.gridCertificate.getUserKey() + "]")
             raise GridNotValidUserKeyException(self.gridCertificate.getUserKey())
-        if not self.gridCertificate.checkIfNoPassphraseUserKey():
+        if not self.gridCertificate.checkIfNoPassphraseUserKeyIs():
             self.logger.error("Passphrase for this UserKey is not proper or not empty! [" + self.gridCertificate.getUserKey() + "]")
             raise GridUserKeyPassphraseException(self.gridCertificate.getUserKey())
 
@@ -111,10 +121,13 @@ class ProxyCertificateHandler(GridSubprocessBaseHandler):
         if not self.gridCertificate.checkIfGridProxyExists():
             self.logger.info("No X509 Proxy!")
             return False
+        if not self.gridCertificate.checkIfUserProxyHasCorrectOwnership():
+            self.logger.error("Ownership error! [" + self.gridCertificate.getUserProxy() + "]")
+            raise GridUserCertOwnershipException(self.gridCertificate.getUserProxy())
         if not self.gridCertificate.checkIfGridProxyIsStillValid():
             self.logger.info("Proxy is not valid!")
             return False
-        if not self.gridCertificate.checkIfGridProxyAcTimeleft(self.__proxy_lifetime_threshold_hours): 
+        if not self.gridCertificate.checkIfGridProxyHasAcTimeleft(self.__proxy_lifetime_threshold_hours): 
             self.logger.info("No VOMS timeleft!")
             return False
 
@@ -150,6 +163,13 @@ class GridUserKeyPassphraseException(Exception):
     def __str__(self):
         return "Passphrase in UserKey '%s' is not valid or not empty!" % (self.userKey)
 
+
+# Exception classes used by this module.
+class GridUserCertOwnershipException(Exception):
+    def __init__(self, userCert):
+        self.userCert = userCert
+    def __str__(self):
+        return "Ownership in Grid Certificate '%s' is not valid!" % (self.userCert)
 
 
 

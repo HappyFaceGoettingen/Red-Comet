@@ -51,14 +51,29 @@ class GridCertificate:
     def checkIfGridProxyExists(self):
         return os.path.isfile(self.__userProxy)
 
+
+    """ Check ownership of cert, key & proxy """
+    def checkIfUserCertHasCorrectOwnership(self):
+        """ mock method """
+        return True
+
+    def checkIfUserKeyHasCorrectOwnership(self):
+        """ mock method """
+        return True
+
+    def checkIfUserProxyHasCorrectOwnership(self):
+        """ mock method """
+        return True
+
+
     """ Basic Credential Checker for Passphrase, Key & Proxy """
-    def checkIfNoPassphraseUserKey(self):
+    def checkIfNoPassphraseUserKeyIs(self):
         check_passphrase="openssl rsa -passin pass: -in " + self.__userKey + " -noout"
         retcode = call(check_passphrase, shell=True)
         if retcode == 0: return True
         return False
 
-    def checkIfValidUserKey(self):
+    def checkIfValidUserKeyExists(self):
         is_valid_key = "openssl verify -CApath $X509_CERT_DIR -purpose sslclient $X509_USER_CERT"
         retcode = grid_call(is_valid_key, shell=True, stdout=subprocess.PIPE)
         if retcode == 0: return True
@@ -71,7 +86,7 @@ class GridCertificate:
         if retcode == 0: return True
         return False
 
-    def checkIfGridProxyAcTimeleft(self, proxy_lifetime_threshold_hours=0):
+    def checkIfGridProxyHasAcTimeleft(self, proxy_lifetime_threshold_hours=0):
         if not self.__voms_enabled: return True
 
         check_actimeleft ="voms-proxy-info -actimeleft"
@@ -99,10 +114,10 @@ def main():
     cert = GridCertificate()
     print cert.getUserCert()
     print "["+cert.getSubjectDN()+"]"
-    print "No passphraase = " + str(cert.checkIfNoPassphraseUserKey())
-    print "Is a valid Key?: " + str(cert.checkIfValidUserKey())
+    print "No passphraase = " + str(cert.checkIfNoPassphraseUserKeyIs())
+    print "Is a valid Key?: " + str(cert.checkIfValidUserKeyExists())
     print "Is a valid Proxy?: " + str(cert.checkIfGridProxyIsStillValid())
-    print "Is AC timeleft?: " + str(cert.checkIfGridProxyAcTimeleft(1))
+    print "Is AC timeleft?: " + str(cert.checkIfGridProxyHasAcTimeleft(1))
 
 if __name__ == '__main__':
     main()

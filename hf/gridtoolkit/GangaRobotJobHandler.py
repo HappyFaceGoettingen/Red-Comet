@@ -16,17 +16,22 @@
 #   limitations under the License.
 #
 
-import logging
-import subprocess
+import os,logging,sys
 from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler
+from hf.gridengine.gridcertificate import GridCertificate
+from hf.gridengine.envreader import GridEnvReader
 
 
 class GangaRobotJobHandler(GridSubprocessBaseHandler):
     logger = logging.getLogger(__name__)
 
+    """ Attributes for a grid certificate"""
+    gridCertificate = GridCertificate()
+
+    """ default job attributes """
     __job_template_file = "ganga_job_template.py"
 
-    __ganga_job_executable = "/bin/hostname"
+    __ganga_job_executable = "/bin/echo"
     __ganga_input_sandbox = ""
     __ganga_number_of_subjobs = 1
     __ganga_grid_backend = "CREAM"
@@ -34,11 +39,15 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
     __ganga_lcg_site = "FZK"
 
 
-    def __init__(self):
+    def __init__(self, verbose = False):
         self.cvmfsEnv.setEnabled("emi")
         self.cvmfsEnv.setEnabled("dq2.client")
         self.cvmfsEnv.setEnabled("ganga")
-        
+        if verbose: self.cvmfsEnv.verbose = True
+
+
+    def setGangaPythonPath(self, path):
+        self._gangaPythonPath = path
 
 
     def setJob(self, job_template_file, job_executable, input_sandbox, number_of_subjobs, grid_backend, ce_endpoint, lcg_site):
@@ -51,12 +60,11 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
         self.__ganga_lcg_site = lcg_site
 
 
-
     def __generateEnvVariables(self):
-        env = ""
+        env = "export LANG=en_US;"
         env += "export GANGA_JOB_EXECUTABLE=" + self.__ganga_job_executable + ";"
         env += "export GANGA_INPUT_SANDBOX=" + self.__ganga_input_sandbox + ";"
-        env += "export GANGA_NUMBER_OF_SUBJOBS=" + self.__ganga_number_of_subjobs + ";"
+        env += "export GANGA_NUMBER_OF_SUBJOBS=" + str(self.__ganga_number_of_subjobs) + ";"
         env += "export GANGA_GRID_BACKEND=" + self.__ganga_grid_backend + ";"
         env += "export GANGA_CE_ENDPOINT=" + self.__ganga_ce_endpoint + ";"
         env += "export GANGA_LCG_SITE=" + self.__ganga_lcg_site + ";"
@@ -64,8 +72,8 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
 
     def __checkIfGangaConfigExists(self):
-        return True
-
+        return os.path.isfile(os.environ['HOME'] + "/.gangarc")
+ 
 
     def __generateGangaConfig(self):
         """ preparing gangarc if .gangarc does not exist """
@@ -76,38 +84,32 @@ class GangaRobotJobHandler(GridSubprocessBaseHandler):
 
 
     def __runGanga(self):
-        """ logging """ 
-        self.logger.info(self.commandArgs)
+        """ exec and show stdout & stderr """ 
         self.execute()
-        self.showGridProcess()
+        self.showGridProcess(show_stderr=True)
         
 
-    def jobSubmit():
+    def jobSubmit(self):
         """ prepare gangarc """
         self.__generateGangaConfig()
         
         """ generate commandArgs """
         self.commandArgs = self.__generateEnvVariables()
-        self.commandArgs += "ganga " + self.__job_template_file
+        self.commandArgs += "ganga --daemon " + self.__job_template_file
 
         """ submit job """
         self.__runGanga()
 
 
-    def daemonize(self):
-        """ prepare gangarc """
-        self.__generateGangaConfig()
-
-        """ ganga daemon mode """
-        self.commandArgs = "ganga --daemon"
-
-        """ run daemon """
-        self.__runGanga()
+    def jobMonitor(self):
+        print " Ganga Monitoring: "
 
 
-    def jobMonitor():
-        """ logging """ 
-        self.logger.debug(self.jobTemplateFile)
+
+        
+    def jobRemove(self, job_number):
+        print "Removing " + job_number + " ..."
+
 
 
 
@@ -117,10 +119,9 @@ def main():
     logging.root.setLevel(logging.DEBUG)
     
     ganga = GangaRobotJobHandler()
-    ganga.jobSubmit()
+    #ganga.jobSubmit()
 
-    ganga.daemonize()
-    monitor = ganga.jobMonitor()
+    gangajobs = ganga.jobMonitor()
 
 
 if __name__ == '__main__':

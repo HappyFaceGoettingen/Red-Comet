@@ -61,15 +61,15 @@ class BaseEnvReader(object):
     logger = logging.getLogger(__name__)
 
     __envObj = None
-    enabled = False
 
     def enableEnv(self):
-        self.enabled = True
         self.__envObj.enabled = True
 
     def disableEnv(self):
-        self.enabled = False
         self.__envObj.enabled = False
+
+    def isEnvEnabled(self):
+        return self.__envObj.enabled
 
     def getEnv(self):
         return self.__envObj
@@ -98,7 +98,7 @@ class BaseEnvReader(object):
         """ start reading a section and options in happyface.cfg """
         envObj = self.__envObj
         if hf.config.getboolean(envObj.section, 'enabled'): self.enableEnv()
-        if self.enabled:
+        if self.isEnvEnabled():
             print envObj.sectionName + " is enabled!"
             self.logger.info(envObj.sectionName + " is enabled!")
             for option in envObj.keys(): 
@@ -262,6 +262,8 @@ class CvmfsEnv(BaseEnv):
     ## configuration name in happyface.cfg
     section = "cvmfs"
     sectionName = "CVMFS"
+
+    verbose = False
     
     """ configuration """
     conf = {'rucio.account':None,
@@ -302,16 +304,16 @@ class CvmfsEnv(BaseEnv):
 
 
     """ Loader Commands """
-    __cvmfsPackageOrder = ['emi', 'dq2.client', 'agis', 'panda.client', 'gcc']
+    __cvmfsPackageOrder = ['emi', 'dq2.client', 'ganga', 'agis', 'panda.client', 'gcc']
 
     
-    __cvmfsEnvPackageLoaderCommon = 'export LCG_LOCATION=;export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase;source $ATLAS_LOCAL_ROOT_BASE/user/atlasLocalSetup.sh "" &> /dev/null;'
-    __cvmfsEnvPackageLoaders = {'agis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAGISSetup.sh --agisVersion ${agisVersionVal} &> /dev/null;', 
-                    'atlantis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAtlantisSetup.sh --atlantisVersion ${atlantisVersionVal} &> /dev/null;', 
-                    'dq2.client':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalDQ2ClientSetup.sh --skipConfirm --dq2ClientVersion ${dq2ClientVersionVal} &> /dev/null;', 
-                    'emi':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalEmiSetup.sh --emiVersion ${emiVersionVal} &> /dev/null;', 
+    __cvmfsEnvPackageLoaderCommon = 'export LCG_LOCATION=;export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase;source $ATLAS_LOCAL_ROOT_BASE/user/atlasLocalSetup.sh ""'
+    __cvmfsEnvPackageLoaders = {'agis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAGISSetup.sh --agisVersion ${agisVersionVal}', 
+                    'atlantis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAtlantisSetup.sh --atlantisVersion ${atlantisVersionVal}', 
+                    'dq2.client':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalDQ2ClientSetup.sh --skipConfirm --dq2ClientVersion ${dq2ClientVersionVal}', 
+                    'emi':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalEmiSetup.sh --emiVersion ${emiVersionVal}', 
                     'fax':'',
-                    'ganga':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalGangaSetup.sh --gangaVersion ${gangaVersionVal} &> /dev/null;',
+                    'ganga':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalGangaSetup.sh --gangaVersion ${gangaVersionVal}',
                     'gcc':'',
                     'pacman':'',
                     'panda.client':'',
@@ -335,10 +337,15 @@ class CvmfsEnv(BaseEnv):
         if not self.enabled: return ""
             
         setuploader = self.__generateRucioAccountEnv() + self.__cvmfsEnvPackageLoaderCommon
+        if not self.verbose: setuploader += " &> /dev/null"
+        setuploader += ";" 
+        
         for package in self.__cvmfsPackageOrder:
             if self.conf[package]:
                 self.logger.debug("CVMFS package = " + package)
                 setuploader += self.__cvmfsEnvPackageLoaders[package]
+                if not self.verbose: setuploader += " &> /dev/null"
+                setuploader += ";" 
         return setuploader
 
     def setEnabled(self, package):
@@ -373,7 +380,7 @@ def main():
     print "*** second creation"
     print "vo = " + gridEnvReader.get('vo')
     print "X509_USER_KEY = " + GridEnvReader().get('x509.user.key')
-    print "Grid Env enabled = " + str(GridEnvReader().getEnv().enabled)
+    print "Grid Env enabled = " + str(GridEnvReader().isEnvEnabled())
 
     cvmfsEnv = CvmfsEnvReader().getEnv()
     cvmfsEnv.enabled = True

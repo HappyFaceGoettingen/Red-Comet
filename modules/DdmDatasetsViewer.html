@@ -1,7 +1,14 @@
 ## -*- coding: utf-8 -*-
+
 <%inherit file="/module_base.html" />
 
 <%def name="content()">
+
+<head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+</head>
+
 <script>
 	function toggle(id) {
 		element = document.getElementById(id);
@@ -11,6 +18,9 @@
 			element.style.display = 'none';
 	}
 </script>
+
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+
 % if not details_ddm:
 	<p>List Empty!</p>
 % else:
@@ -18,14 +28,17 @@
 		<p> All is good </p>
 	% endif
 	
-	<table class="TableData">
+	<table id="dataTable" class="TableData">
+		<thread>
 		<tr class="TableHeader">
-			<td> Dataset Name </td> 
-			<td> Dataset Size </td>
-			<td> Dataset Owner </td> 
-			<td> Datset Date </td>
+			<th> Dataset Name </th> 
+			<th> Dataset Size </th>
+			<th> Dataset Owner </th> 
+			<th> Datset Date </th>
 		</tr>
+		</thread>
 		
+		<tbody>
 		% for detail in details_ddm:
 			<tr>
 				<td> ${detail['datasetname']}</td>
@@ -34,11 +47,90 @@
 				<td> ${detail['datasetdate']}</td>
 			</tr>
 		% endfor
+		</tbody>
 </table>
-
+	
 <br/>
 
 % endif
+
+<script type="text/javascript">
+	//GLOBALS
+	var PERCENTAGE = .25;
+
+
+	google.load("visualization", "1", {packages:["corechart"]});
+	google.setOnLoadCallback(drawChart);
+	function drawChart() {
+		var resultList =[]
+		resultList.push(["Owner","Size"]); //header
+		
+		var tempList = [];
+		% for detail in details_ddm:
+			var owner = "${detail['datasetowner']}";
+			var size = "${detail['datasetsize']}";
+			size = parseInt(size);
+			tempList.push([owner, size]);
+		% endfor
+		
+		//alert(tempList[0]);
+		
+		resultList = getRandomSample(tempList, resultList);
+		
+		//alert(resultList);
+
+		var data = google.visualization.arrayToDataTable(resultList);
+		
+		var options = {
+			title: 'Disk Usage by Owner'
+    	};
+
+	    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+	    chart.draw(data, options);
+	}
+	
+	
+	function getRandomSample(list, resultList){
+		randomNumbers = []
+		for(var i=0; i < list.length * PERCENTAGE; i++){
+			var z = Math.random() * list.length;
+			var y = parseInt(z)
+			
+			//while the random number chosen is in the list of chosen 
+			//random numbers, repick a number untill you find a number 
+			//that has not been choosen yet.
+			
+			while(randomNumbers.indexOf(y) != -1){
+				z = Math.random() * list.length;
+				y = parsInt(z);
+			}
+			randomNumbers.push(y);
+			
+			var index = -1
+			
+			//for all names in result list check if new sample has same name or not
+			for(var i=0; i < resultList.length; i++){
+				//check if person's name is already in result list
+				if(list[y][0] == resultList[i][0]){
+					index = i;
+					break;
+				}
+			}
+			
+			// if not in result list push name and size
+			if( index == -1){
+				resultList.push(list[y])
+			}
+			// if already there add size to existing name
+			else{
+				resultList[i][1] += list[y][1];
+				break;
+			}
+		}
+		return resultList;
+	}
+	
+</script>
 
 </%def>
 
