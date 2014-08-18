@@ -10,6 +10,6 @@
 
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/var/lib/HappyFace3</path>
-<path>/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/Ganga/current/install/6.0.34/python</path>
+<path>/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/Ganga/current/install/6.0.35-hotfix1/python</path>
 </pydev_pathproperty>
 </pydev_project>
