@@ -3,7 +3,7 @@
 devel_dir=$PWD
 project_name=HappyFaceGridEngine
 git_repo="https://github.com/HappyFaceGoettingen/Red-Comet.git"
-git_branch="blue-giant"
+git_branch="black-tri-stars"
 
 
 echo -n "GitHub User Name = "
