@@ -1,0 +1,10 @@
+*.pyo
+*.pyc
+.settings
+hf/gridengine/config
+hf/gridengine/defaultconfig
+hf/gridtoolkit/config
+hf/gridtoolkit/defaultconfig
+hf/gridtoolkit/mydq2db
+hf/gridtoolkit/DdmLastRun.log
+.settings

@@ -1,0 +1,5 @@
+#CVMFS_USER=cvmfs
+CVMFS_REPOSITORIES=atlas.cern.ch
+CVMFS_CACHE_BASE=/var/lib/cvmfs
+CVMFS_QUOTA_LIMIT=3000
+CVMFS_HTTP_PROXY="http://cvmfs-stratum-one.cern.ch:8000;http://cernvmfs.gridpp.rl.ac.uk:8000;http://cvmfs.racf.bnl.gov:8000"

@@ -53,7 +53,8 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             'status': 1
             }
         
-        DataObject = DdmDatasetsController(logFilePath=self.config['log_file_path'])
+        DataObject = DdmDatasetsController(logFilePath=self.config['log_file_path'],timeDelta=self.config['time_delta'],
+                                           testNumberOfDatasets=self.config['test_number_of_datasets'],runMode=self.config['run_mode'])
         DataObject.run('GOEGRID_LOCALGROUPDISK')
         ## 
         print "Extracting Data..........."

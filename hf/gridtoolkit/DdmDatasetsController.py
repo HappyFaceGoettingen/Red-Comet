@@ -34,18 +34,18 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
     __TIMEFORMAT = "%Y-%m-%d %H:%M:%S.%f"
     __LOGFILEPATH = "/var/lib/HappyFace3/log/DdmLastRun.log"
     __TIMEDELTA = .01
-    __NUMBEROFDATASETS = 50
+    __TESTNUMBEROFDATASETS = 50
+    __RUNMODE = "test"
     
     #Constructor
-    def __init__(self, spaceToken=None, logFilePath=None):
+    def __init__(self, spaceToken=None, logFilePath=None, timeDelta=None, testNumberOfDatasets=None, runMode=None):
         """
         ___init__(self, spaceToken=None): Initializes the class by setting up the 
             needed environment and setting default values. 
             args:
                 spaceToken: The name of the space token that the class will use
             return: void (constructor)
-        """
-        
+        """        
         print "init"
         self.cvmfsEnv.setEnabled('dq2.client')
         
@@ -58,6 +58,19 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         #set log file path
         if logFilePath != None:
             self.__LOGFILEPATH = logFilePath
+        
+        #set time Delta
+        if timeDelta != None: 
+            self.__TIMEDELTA = float(timeDelta)
+        
+        #set test Number of Datasets    
+        if testNumberOfDatasets != None:
+            self.__TESTNUMBEROFDATASETS = int(testNumberOfDatasets)
+            
+        #set run Mode, must be either test or production
+        if runMode == "test" or runMode == "production":
+            self.__RUNMODE = runMode
+        
         
         #set command   
         self.__command = "dq2-ls -s "
@@ -181,8 +194,13 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
             
             # Querying token
             listOfDatasets = []
-            listOfDatasets = self.limited(token)
-            ##listOfDatasets = self.listDatasets(token)
+            
+            #check the run Mode and use the correct method
+            #test mode = limited, production = listDatasets
+            if self.__RUNMODE == "production":
+                listOfDatasets = self.listDatasets(token)
+            else:
+                listOfDatasets = self.limited(token)
             
             database = DdmDatabaseHandler('mydq2db')
             database.updateDatabase(listOfDatasets)
@@ -206,7 +224,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
         shortlistOfDatasets = []
                 
         
-        for x in range(0,self.__NUMBEROFDATASETS):
+        for x in range(0,self.__TESTNUMBEROFDATASETS):
             # make sure no duplicates 
             shortlistOfDatasets.append(datasets[x])
         
@@ -463,8 +481,7 @@ class DdmDatabaseHandler(DdmDatasetsController):
         
         self.__cursor.close()
         self.__db.close()
-     
-     
+
 def main():
     print "Starting [AtlasDdmDatasetsViewer]"
     logging.basicConfig(level=logging.INFO)
