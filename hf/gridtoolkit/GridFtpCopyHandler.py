@@ -165,14 +165,40 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
         self.commandArgs = 'uberftp ' + self.__dstHost + ' "mkdir ' +  self.__dstPath + ' " '         
         self.logger.debug("Create file in destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
+        self.execute()
+        try: 
+            (stdout,stderr) = self.gridProcess.communicate()
+            return stdout, stderr 
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
         
     def rmDir (self, dstPath):
         self.__dstPath = dstPath
         self.commandArgs = 'uberftp ' + self.__dstHost + ' "rmdir ' +  self.__dstPath + ' " '
         self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
+        self.execute()
+        try: 
+            (stdout,stderr) = self.gridProcess.communicate()
+            print "Deleted \n" 
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
+            
+            
+    def rmDirAndSubfolders (self, dstPath):
+        self.__dstPath = dstPath
+        self.commandArgs = 'uberftp ' + self.__dstHost + ' "rm -r ' +  self.__dstPath + ' " '
+        self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
+        self.logger.debug("Executed command = " +  str(self.commandArgs))
+        self.execute()
+        try: 
+            (stdout,stderr) = self.gridProcess.communicate()
+            print "Deleted \n" 
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
         
     def rmFile (self, fileName, dstPath):
         self.__fileName = fileName
