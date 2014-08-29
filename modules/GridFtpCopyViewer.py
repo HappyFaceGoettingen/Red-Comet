@@ -222,19 +222,19 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         self.wuppertal_details_table_db_value_list.append({})
         self.wuppertal_details_table_db_value_list[0] = detail2
         
-        ##Remove generated file from GOEGRID SCRATCHDISK##
+        ##Remove created folder from GOEGRID SCRATCHDISK##
         Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
         Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
         
-        ##Remove generated file from GOEGRID LOCALGROUPDISK##
+        ##Remove created folder from GOEGRID LOCALGROUPDISK##
         Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")     
         
-        ##Remove generated file from WUPPERTAL SCRATCHDISK##
+        ##Remove created folder from WUPPERTAL SCRATCHDISK##
         wuppertalDstHost = self.config['wupperal_host']
         Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
         Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/") 
         
-        ##Remove generated file from WUPPERTAL LOCALGROUPDISK##
+        ##Remove created folder from WUPPERTAL LOCALGROUPDISK##
         Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
               
         return data
