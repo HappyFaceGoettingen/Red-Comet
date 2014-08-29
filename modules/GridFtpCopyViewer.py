@@ -71,6 +71,22 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         
         Object = GridFtpCopyHandler()
         Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
+         
+        ##Crate folder in GOEGRID-SCRATCHDISK##
+        stdout_mkdir_goe_scratchdisk, stderr_mkdir_goe_scratchdisk = Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
+        if stdout_mkdir_goe_scratchdisk:
+           Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
+        
+        if stderr_mkdir_goe_scratchdisk:
+           print stderr_mkdir_goe_scratchdisk
+           
+        ##Crate folder in GOEGRID-LOCALGROUPDISK##
+        stdout_mkdir_goe_localgroupdisk, stderr_mkdir_goe_localgroupdisk = Object.mkDir("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")
+        if stdout_mkdir_goe_localgroupdisk:
+           Object.mkDir("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
+        
+        if stderr_mkdir_goe_localgroupdisk:
+           print stderr_mkdir_goe_localgroupdisk           
         
         ##Create file in GOEGRID-SCRATCHDISK##
         scratchdiskStdout, scratchdiskStderr, scratchdiskSrcPath, scratchdiskGeneratedFile = Object.createFileInSrcPath("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
@@ -78,12 +94,12 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         #print "std_error" + scratchdiskStderr + "\n"
         if scratchdiskStdout: 
            #GOEGRID-SCRATCHDISK->GOEGRID-SCRATCHDISK
-           scratchdiskToScratchdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test")
+           scratchdiskToScratchdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
            print scratchdiskToScratchdisk
            
            
            #GOEGRID-SCRATCHDISK->GOEGRID-LOCALGROUPDISK
-           scratchdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test")
+           scratchdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
            print scratchdiskToLocalgroupdisk
            
            
@@ -98,11 +114,16 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
            #GOEGRID-SCRATCHDISK->WUPPERTAL-SCRATCHDISK
            wuppertalDstHost = self.config['wupperal_host']
            Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
+                      
+           ##Crate folder in WUPPERTAL-SCRATCHDISK and LOCALGROUPDISK##
+           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
+           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/") 
+           
            goegridScratchdiskToWuppertalScratchdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
            print goegridScratchdiskToWuppertalScratchdisk
            
            #GOEGRID-SCRATCHDISK->WUPPERTAL-LOCALGROUPDISK
-           goegridScratchdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi")
+           goegridScratchdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
            print goegridScratchdiskToWuppertalLocalgroupdisk
            
            #GOEGRID-SCRATCHDISK->WUPPERTAL-PRODDISK
@@ -125,11 +146,11 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         if localgroupdiskStdout: 
             
            #GOEGRID-LOCALGROUPDDISK->GOEGRID-SCRATCHDISK
-           localgroupdiskToScratchdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test")
+           localgroupdiskToScratchdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
            print localgroupdiskToScratchdisk
            
            #GOEGRID-LOCALGROUPDDISK->GOEGRID-LOCALGROUPDISK
-           localgroupdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test")
+           localgroupdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
            print localgroupdiskToLocalgroupdisk
                       
            #GOEGRID-LOCALGROUPDDISK->GOEGRID-PRODDISK
@@ -143,11 +164,16 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
            #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-SCRATCHDISK
            wuppertalDstHost = self.config['wupperal_host']
            Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
+           
+           ##Crate folder in WUPPERTAL-SCRATCHDISK and LOCALGROUPDISK##
+           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
+           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/") 
+
            goegridLocalgroupdiskToWuppertalScratchdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
            print goegridLocalgroupdiskToWuppertalScratchdisk           
    
            #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-LOCALGROUPDISK
-           goegridLocalgroupdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi")
+           goegridLocalgroupdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
            print goegridLocalgroupdiskToWuppertalLocalgroupdisk
            
            #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-PRODDISK
@@ -198,32 +224,18 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         
         ##Remove generated file from GOEGRID SCRATCHDISK##
         Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
-        Object.rmFile(scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
-        Object.rmFile(scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
-        Object.rmFile(scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
-        #Object.rmFile(scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasproddisk/")
-        #Object.rmFile(scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasdatadisk/")
+        Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
         
         ##Remove generated file from GOEGRID LOCALGROUPDISK##
-        Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")
-        Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
-        Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
-        #Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasproddisk/")
-        #Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasdatadisk/")      
+        Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")     
         
         ##Remove generated file from WUPPERTAL SCRATCHDISK##
         wuppertalDstHost = self.config['wupperal_host']
         Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
-        Object.rmFile(scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-        Object.rmFile(scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
-        #Object.rmFile(scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasproddisk/")
-        #Object.rmFile(scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasdatadisk/")
-
+        Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/") 
+        
         ##Remove generated file from WUPPERTAL LOCALGROUPDISK##
-        Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-        Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
-        #Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasproddisk/")
-        #Object.rmFile(localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasdatadisk/")
+        Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
               
         return data
     
