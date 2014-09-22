@@ -36,27 +36,112 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
 
     subtable_columns = {
         'goegrid_goegrid_transfers': ([
-        Column('goegridScratchdiskToScratchdisk', TEXT),
-        Column('goegridScratchdiskToLocalgroupdisk', TEXT),
-        Column('goegridScratchdiskToProddisk', TEXT),
-        Column('goegridScratchdiskToDatadisk', TEXT),
-        Column('goegridLocalgroupdiskToScratchdisk', TEXT),
-        Column('goegridLocalgroupdiskToLocalgroupdisk', TEXT),
-        Column('goegridLocalgroupdiskToProddisk', TEXT),
-        Column('goegridLocalgroupdiskToDatadisk', TEXT),
+        Column('scratchdiskToScratchdisk', TEXT),
+        Column('scratchdiskToLocalgroupdisk', TEXT),
+        Column('scratchdiskToProddisk', TEXT),
+        Column('scratchdiskToDatadisk', TEXT),
+        Column('localgroupdiskToScratchdisk', TEXT),
+        Column('localgroupdiskToLocalgroupdisk', TEXT),
+        Column('localgroupdiskToProddisk', TEXT),
+        Column('localgroupdiskToDatadisk', TEXT),
     ], []),
         'goegrid_wuppertal_transfers':([
-        Column('goegridScratchdiskToWuppertalScratchdisk', TEXT),
-        Column('goegridScratchdiskToWuppertalLocalgroupdisk', TEXT),
-        Column('goegridScratchdiskToWuppertalProddisk', TEXT),
-        Column('goegridScratchdiskToWuppertalDatadisk', TEXT),
-        Column('goegridLocalgroupdiskToWuppertalScratchdisk', TEXT),
-        Column('goegridLocalgroupdiskToWuppertalLocalgroupdisk', TEXT),
-        Column('goegridLocalgroupdiskToWuppertalProddisk', TEXT),
-        Column('goegridLocalgroupdiskToWuppertalDatadisk', TEXT),
-    ], [])}
+        Column('scratchdiskToScratchdisk', TEXT),
+        Column('scratchdiskToLocalgroupdisk', TEXT),
+        Column('scratchdiskToProddisk', TEXT),
+        Column('scratchdiskToDatadisk', TEXT),
+        Column('localgroupdiskToScratchdisk', TEXT),
+        Column('localgroupdiskToLocalgroupdisk', TEXT),
+        Column('localgroupdiskToProddisk', TEXT),
+        Column('localgroupdiskToDatadisk', TEXT),
+    ], []),
+        'wuppertal_goegrid_transfers':([
+        Column('scratchdiskToScratchdisk', TEXT),
+        Column('scratchdiskToLocalgroupdisk', TEXT),
+        Column('scratchdiskToProddisk', TEXT),
+        Column('scratchdiskToDatadisk', TEXT),
+        Column('localgroupdiskToScratchdisk', TEXT),
+        Column('localgroupdiskToLocalgroupdisk', TEXT),
+        Column('localgroupdiskToProddisk', TEXT),
+        Column('localgroupdiskToDatadisk', TEXT),
+    ], [])                   
+    }
 
-              
+  
+  
+    def transfers(self, Obj, srcFilePathOnScr, srcFilePathOnLG, dstScratchDiskPath, dstLocalGroupDiskPath, dstProdDiskPath, dstDataDiskPath):
+        
+        ##Create file in GOEGRID-SCRATCHDISK##
+        scratchdiskStdout, scratchdiskStderr, scratchdiskSrcPath, scratchdiskGeneratedFile = Obj.createFileInSrcPath(srcFilePathOnScr)
+
+        if scratchdiskStdout: 
+           #SCRATCHDISK->SCRATCHDISK
+           scratchdiskToScratchdisk = Obj.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, dstScratchDiskPath)
+           print scratchdiskToScratchdisk
+           
+           
+           #SCRATCHDISK->LOCALGROUPDISK
+           scratchdiskToLocalgroupdisk = Obj.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, dstLocalGroupDiskPath)
+           print scratchdiskToLocalgroupdisk
+           
+           
+           #SCRATCHDISK->PRODDISK
+           scratchdiskToProddisk = Obj.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, dstProdDiskPath)
+           print scratchdiskToProddisk
+           
+           #SCRATCHDISK->DATADISK
+           scratchdiskToDatadisk = Obj.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, dstDataDiskPath)
+           print scratchdiskToDatadisk
+                    
+                    
+        if scratchdiskStderr:
+           print scratchdiskStderr  
+           
+        
+        ##Create file in GOEGRID-LOCALGROUPDDISK##
+        localgroupdiskStdout, localgroupdiskStderr, localgroupdiskSrcPath, localgroupdiskGeneratedFile = Obj.createFileInSrcPath(srcFilePathOnLG)
+        if localgroupdiskStdout: 
+            
+           #LOCALGROUPDDISK->SCRATCHDISK
+           localgroupdiskToScratchdisk = Obj.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile,  dstScratchDiskPath)
+           print localgroupdiskToScratchdisk
+           
+           #LOCALGROUPDDISK->LOCALGROUPDISK
+           localgroupdiskToLocalgroupdisk = Obj.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, dstLocalGroupDiskPath)
+           print localgroupdiskToLocalgroupdisk
+                      
+           #LOCALGROUPDDISK->PRODDISK
+           localgroupdiskToProddisk = Obj.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, dstProdDiskPath)
+           print localgroupdiskToProddisk
+           
+           #LOCALGROUPDDISK->DATADISK
+           localgroupdiskToDatadisk = Obj.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, dstDataDiskPath)
+           print localgroupdiskToDatadisk
+          
+        if localgroupdiskStderr:
+           print localgroupdiskStderr    
+           
+           
+        detail = {}
+          
+        detail['scratchdiskToScratchdisk'] = scratchdiskToScratchdisk
+        detail['scratchdiskToLocalgroupdisk'] = scratchdiskToLocalgroupdisk 
+        detail['scratchdiskToProddisk'] = scratchdiskToProddisk
+        detail['scratchdiskToDatadisk'] = scratchdiskToDatadisk
+        
+        detail['localgroupdiskToScratchdisk'] = localgroupdiskToScratchdisk 
+        detail['localgroupdiskToLocalgroupdisk'] = localgroupdiskToLocalgroupdisk
+        detail['localgroupdiskToProddisk'] = localgroupdiskToProddisk
+        detail['localgroupdiskToDatadisk'] = localgroupdiskToDatadisk
+                        
+        return detail        
+    
+    def removeFilesFromSpaceToken (self, Obj, scratchdisk, localgroupdisk):
+   
+        ##Remove created folder from GOEGRID/WUPPERTAL SCRATCHDISK/LOCALGROUPDISK##
+        Obj.rmDirAndSubfolders(scratchdisk)
+        Obj.rmDirAndSubfolders(localgroupdisk)    
+  
   
     def extractData(self):
         data = {
@@ -64,197 +149,130 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
             'status': 1
         }
         
-        detail = {}
-        #GOEGRID host
+        #GOEGRID->GOEGRID transfers 
+        Object = GridFtpCopyHandler()
         goegridSrcHost = self.config['goegrid_host']
         goegridDstHost = self.config['goegrid_host']
         
-        Object = GridFtpCopyHandler()
         Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
-         
-        ##Crate folder in GOEGRID-SCRATCHDISK##
-        stdout_mkdir_goe_scratchdisk, stderr_mkdir_goe_scratchdisk = Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
-        if stdout_mkdir_goe_scratchdisk:
-           Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
         
-        if stderr_mkdir_goe_scratchdisk:
-           print stderr_mkdir_goe_scratchdisk
-           
-        ##Crate folder in GOEGRID-LOCALGROUPDISK##
-        stdout_mkdir_goe_localgroupdisk, stderr_mkdir_goe_localgroupdisk = Object.mkDir("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")
-        if stdout_mkdir_goe_localgroupdisk:
-           Object.mkDir("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
+        ##Crate a folder with a subfolder in GOEGRID-SCRATCHDISK##
+        goegridScrtDiskPath = self.config['goegrid_scratchdisk_path']
+        stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object.mkDir(goegridScrtDiskPath)
+        if stdout_mkdir_scratchdisk:
+           Object.mkDir(goegridScrtDiskPath+ "test/")
         
-        if stderr_mkdir_goe_localgroupdisk:
-           print stderr_mkdir_goe_localgroupdisk           
+        if stderr_mkdir_scratchdisk:
+           print stderr_mkdir_scratchdisk
+           
+        ##Crate a folder with a subfolder in GOEGRID-LOCALGROUPDISK##
+        goegridLGrDiskPath = self.config['goegrid_localgroupdisk_path']
+        stdout_mkdir_localgroupdisk, stderr_mkdir_localgroupdisk = Object.mkDir(goegridLGrDiskPath)
+        if stdout_mkdir_localgroupdisk:
+           Object.mkDir(goegridLGrDiskPath + "test/")
         
-        ##Create file in GOEGRID-SCRATCHDISK##
-        scratchdiskStdout, scratchdiskStderr, scratchdiskSrcPath, scratchdiskGeneratedFile = Object.createFileInSrcPath("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
-        #print "output" + scratchdiskStdout + "\n"
-        #print "std_error" + scratchdiskStderr + "\n"
-        if scratchdiskStdout: 
-           #GOEGRID-SCRATCHDISK->GOEGRID-SCRATCHDISK
-           scratchdiskToScratchdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
-           print scratchdiskToScratchdisk
+        if stderr_mkdir_localgroupdisk:
+           print stderr_mkdir_localgroupdisk 
            
-           
-           #GOEGRID-SCRATCHDISK->GOEGRID-LOCALGROUPDISK
-           scratchdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
-           print scratchdiskToLocalgroupdisk
-           
-           
-           #GOEGRID-SCRATCHDISK->GOEGRID-PRODDISK
-           scratchdiskToProddisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasproddisk/")
-           print scratchdiskToProddisk
-           
-           #GOEGRID-SCRATCHDISK->GOEGRID-DATADISK
-           scratchdiskToDatadisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasdatadisk/")
-           print scratchdiskToDatadisk
-           
-           #GOEGRID-SCRATCHDISK->WUPPERTAL-SCRATCHDISK
-           wuppertalDstHost = self.config['wupperal_host']
-           Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
-                      
-           ##Crate folder in WUPPERTAL-SCRATCHDISK and LOCALGROUPDISK##
-           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/") 
-           
-           goegridScratchdiskToWuppertalScratchdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-           print goegridScratchdiskToWuppertalScratchdisk
-           
-           #GOEGRID-SCRATCHDISK->WUPPERTAL-LOCALGROUPDISK
-           goegridScratchdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
-           print goegridScratchdiskToWuppertalLocalgroupdisk
-           
-           #GOEGRID-SCRATCHDISK->WUPPERTAL-PRODDISK
-           goegridScratchdiskToWuppertalProddisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasproddisk/")
-           print goegridScratchdiskToWuppertalProddisk
-           
-           #GOEGRID-SCRATCHDISK->WUPPERTAL-DATADISK
-           goegridScratchdiskToWuppertalDatadisk = Object.copyFileAndCheckExistance(scratchdiskSrcPath, scratchdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasdatadisk/")
-           print goegridScratchdiskToWuppertalDatadisk
-           
-        if scratchdiskStderr:
-           print scratchdiskStderr    
-       
+        goegridProdDiskPath = self.config['goegrid_proddisk_path'] 
+        goegridDataDiskPath = self.config['goegrid_datadisk_path'] 
         
-        Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
-        ##Create file in GOEGRID-LOCALGROUPDDISK##
-        localgroupdiskStdout, localgroupdiskStderr, localgroupdiskSrcPath, localgroupdiskGeneratedFile = Object.createFileInSrcPath("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")
-        #print "output" + localgroupdiskStdout + "\n"
-        #print "std_error" + localgroupdiskStderr + "\n"
-        if localgroupdiskStdout: 
-            
-           #GOEGRID-LOCALGROUPDDISK->GOEGRID-SCRATCHDISK
-           localgroupdiskToScratchdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/")
-           print localgroupdiskToScratchdisk
-           
-           #GOEGRID-LOCALGROUPDDISK->GOEGRID-LOCALGROUPDISK
-           localgroupdiskToLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/test/")
-           print localgroupdiskToLocalgroupdisk
-                      
-           #GOEGRID-LOCALGROUPDDISK->GOEGRID-PRODDISK
-           localgroupdiskToProddisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasproddisk/")
-           print localgroupdiskToProddisk
-           
-           #GOEGRID-LOCALGROUPDDISK->GOEGRID-DATADISK
-           localgroupdiskToDatadisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/gwdg.de/data/atlas/atlasdatadisk/")
-           print localgroupdiskToDatadisk
-           
-           #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-SCRATCHDISK
-           wuppertalDstHost = self.config['wupperal_host']
-           Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
-           
-           ##Crate folder in WUPPERTAL-SCRATCHDISK and LOCALGROUPDISK##
-           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-           Object.mkDir("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/") 
-
-           goegridLocalgroupdiskToWuppertalScratchdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/")
-           print goegridLocalgroupdiskToWuppertalScratchdisk           
-   
-           #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-LOCALGROUPDISK
-           goegridLocalgroupdiskToWuppertalLocalgroupdisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
-           print goegridLocalgroupdiskToWuppertalLocalgroupdisk
-           
-           #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-PRODDISK
-           goegridLocalgroupdiskToWuppertalProddisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasproddisk/")
-           print goegridLocalgroupdiskToWuppertalProddisk
-           
-           
-           #GOEGRID-LOCALGROUPDDISK->WUPPERTAL-DATADISK
-           goegridLocalgroupdiskToWuppertalProddisk = Object.copyFileAndCheckExistance(localgroupdiskSrcPath, localgroupdiskGeneratedFile, "/pnfs/physik.uni-wuppertal.de/data/atlas/atlasdatadisk/")
-           print goegridLocalgroupdiskToWuppertalProddisk
-           
-          
-        if localgroupdiskStderr:
-           print localgroupdiskStderr 
-
-        
-        
-        detail = {}
-     
-        detail['goegridScratchdiskToScratchdisk'] = scratchdiskToScratchdisk
-        detail['goegridScratchdiskToLocalgroupdisk'] = scratchdiskToLocalgroupdisk 
-        detail['goegridScratchdiskToProddisk'] = scratchdiskToProddisk
-        detail['goegridScratchdiskToDatadisk'] = scratchdiskToDatadisk
-        
-        detail['goegridLocalgroupdiskToScratchdisk'] = localgroupdiskToScratchdisk 
-        detail['goegridLocalgroupdiskToLocalgroupdisk'] = localgroupdiskToLocalgroupdisk
-        detail['goegridLocalgroupdiskToProddisk'] = localgroupdiskToProddisk
-        detail['goegridLocalgroupdiskToDatadisk'] = localgroupdiskToDatadisk
+        goegridToGoegridTransfers = self.transfers(
+                                                   Object, 
+                                                   goegridScrtDiskPath, 
+                                                   goegridLGrDiskPath,
+                                                   goegridScrtDiskPath+ "test/",
+                                                   goegridLGrDiskPath + "test/", 
+                                                   goegridProdDiskPath,
+                                                   goegridDataDiskPath)
         
         self.goegrid_details_table_db_value_list.append({})
-        self.goegrid_details_table_db_value_list[0] = detail
         
-        
-        detail2 = {}
-     
-        detail2['goegridScratchdiskToWuppertalScratchdisk'] = goegridScratchdiskToWuppertalScratchdisk
-        detail2['goegridScratchdiskToWuppertalLocalgroupdisk'] = goegridScratchdiskToWuppertalLocalgroupdisk
-        detail2['goegridScratchdiskToWuppertalProddisk'] = goegridScratchdiskToWuppertalProddisk
-        detail2['goegridScratchdiskToWuppertalDatadisk'] = goegridScratchdiskToWuppertalDatadisk
-        
-        detail2['goegridLocalgroupdiskToWuppertalScratchdisk'] = goegridLocalgroupdiskToWuppertalScratchdisk 
-        detail2['goegridLocalgroupdiskToWuppertalLocalgroupdisk'] = goegridLocalgroupdiskToWuppertalLocalgroupdisk
-        detail2['goegridLocalgroupdiskToWuppertalProddisk'] = goegridLocalgroupdiskToWuppertalProddisk
-        detail2['goegridLocalgroupdiskToWuppertalDatadisk'] = goegridLocalgroupdiskToWuppertalProddisk
-        
-        self.wuppertal_details_table_db_value_list.append({})
-        self.wuppertal_details_table_db_value_list[0] = detail2
-        
-        ##Remove created folder from GOEGRID SCRATCHDISK##
-        Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
-        Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
-        
-        ##Remove created folder from GOEGRID LOCALGROUPDISK##
-        Object.rmDirAndSubfolders("/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/")     
-        
-        ##Remove created folder from WUPPERTAL SCRATCHDISK##
-        wuppertalDstHost = self.config['wupperal_host']
-        Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
-        Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlasscratchdisk/user.haykuhi/") 
-        
-        ##Remove created folder from WUPPERTAL LOCALGROUPDISK##
-        Object.rmDirAndSubfolders("/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/user/test_haykuhi/")
+        self.goegrid_details_table_db_value_list[0] = goegridToGoegridTransfers
+
               
+        
+        #GOEGRID->WUPPERTAL transfers
+        goegridSrcHost = self.config['goegrid_host']
+        wuppertalDstHost = self.config['wupperal_host']
+       
+        Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
+        
+        wuppertalScrtDiskPath = self.config['wuppertal_scratchdisk_path']
+        wuppertalLGrDiskPath = self.config['wuppertal_localgroupdisk_path']
+        wuppertalProdDiskPath = self.config['wuppertal_proddisk_path']
+        wuppertalDataDiskPath = self.config['wuppertal_datadisk_path']
+        
+        Object.mkDir(wuppertalScrtDiskPath)
+        Object.mkDir(wuppertalLGrDiskPath) 
+        
+        goegridToWuppertalTransfers = self.transfers(
+                                                     Object,
+                                                     goegridScrtDiskPath, 
+                                                     goegridLGrDiskPath,
+                                                     wuppertalScrtDiskPath,
+                                                     wuppertalLGrDiskPath,
+                                                     wuppertalProdDiskPath,
+                                                     wuppertalDataDiskPath )            
+                               
+        self.goegrid_wuppertal_details_table_db_value_list.append({})
+        self.goegrid_wuppertal_details_table_db_value_list[0] = goegridToWuppertalTransfers  
+        
+        
+        #WUPPERTAL->GOEGRID transfers
+        wuppertalSrcHost = self.config['wupperal_host']
+        goegridDstHost = self.config['goegrid_host']
+       
+        Object.setHostsAndPorts(wuppertalSrcHost, "", goegridDstHost, "")
+        
+        wuppertalToGoegridTransfers = self.transfers(
+                                                     Object,
+                                                     wuppertalScrtDiskPath, 
+                                                     wuppertalLGrDiskPath,
+                                                     goegridScrtDiskPath + "test/",
+                                                     goegridLGrDiskPath + "test/", 
+                                                     goegridProdDiskPath,
+                                                     goegridDataDiskPath )            
+                               
+        self.wuppertal_goegrid_details_table_db_value_list.append({})
+        self.wuppertal_goegrid_details_table_db_value_list[0] = wuppertalToGoegridTransfers
+        
+        Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")
+        self.removeFilesFromSpaceToken(
+                                       Object,
+                                       wuppertalScrtDiskPath,
+                                       wuppertalLGrDiskPath)
+        
+        Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
+        
+        self.removeFilesFromSpaceToken(
+                                       Object, 
+                                       goegridScrtDiskPath,
+                                       goegridLGrDiskPath)
+                     
         return data
     
     def prepareAcquisition(self):
         
          self.goegrid_details_table_db_value_list = []
-         self.wuppertal_details_table_db_value_list = []
+         self.goegrid_wuppertal_details_table_db_value_list = []
+         self.wuppertal_goegrid_details_table_db_value_list = []
              
     def fillSubtables(self, parent_id):
         self.subtables['goegrid_goegrid_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.goegrid_details_table_db_value_list])
-        self.subtables['goegrid_wuppertal_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.wuppertal_details_table_db_value_list])
+        self.subtables['goegrid_wuppertal_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.goegrid_wuppertal_details_table_db_value_list])
+        self.subtables['wuppertal_goegrid_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.wuppertal_goegrid_details_table_db_value_list])
                 
     def getTemplateData(self):
         data = hf.module.ModuleBase.getTemplateData(self)
         details = self.subtables['goegrid_goegrid_transfers'].select().where(self.subtables['goegrid_goegrid_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
-        data['goegridToGoegridTransfers'] = map(dict, details)
+        data['goegrid_goegrid'] = map(dict, details)
         
         details2 = self.subtables['goegrid_wuppertal_transfers'].select().where(self.subtables['goegrid_wuppertal_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
-        data['goegridToWuppertalTransfers'] = map(dict, details2)        
+        data['goegrid_wuppertal'] = map(dict, details2)
+
+        details3 = self.subtables['wuppertal_goegrid_transfers'].select().where(self.subtables['wuppertal_goegrid_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
+        data['wuppertal_goegrid'] = map(dict, details3)        
         
         return data
     
