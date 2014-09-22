@@ -18,73 +18,73 @@
 		</thread>
 		
 		<tbody>
-		   % for detail in goegridToGoegridTransfers:
+		   % for detail in goegrid_goegrid:
 		    <tr>
 				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
-				 %if detail['goegridScratchdiskToScratchdisk'] == 'OK':
+				 %if detail['scratchdiskToScratchdisk'] == 'OK':
 				    <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToScratchdisk'] == 'Failed':
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
 				    <td bgcolor = "#FF6464"></td>
 				 %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToScratchdisk']}</td>
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
 				 % endif
 				 
-			     %if detail['goegridScratchdiskToLocalgroupdisk'] == 'OK':
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK':
 			        <td bgcolor = "#4FD516"></td>
-			     %elif detail['goegridScratchdiskToLocalgroupdisk'] == 'Failed':
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td>
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToLocalgroupdisk']}</td>
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
 			     % endif
 			     
-			     %if detail['goegridScratchdiskToProddisk'] == 'OK':
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToProddisk'] == 'Failed':
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToProddisk']}</td>
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
 				 % endif
 				 
-				 %if detail['goegridScratchdiskToDatadisk'] == 'OK':
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToDatadisk'] == 'Failed':
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToDatadisk']}</td>
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
 				 % endif
 			</tr>
 			<tr>
 			    <td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
-			     %if detail['goegridLocalgroupdiskToScratchdisk'] == 'OK':
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK':
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToScratchdisk'] == 'Failed':
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToScratchdisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
 				 % endif
 				 
-			     %if detail['goegridLocalgroupdiskToLocalgroupdisk'] == 'OK':
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK':
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToLocalgroupdisk'] == 'Failed':
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToLocalgroupdisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
 				 % endif
 				 
-				 %if detail['goegridLocalgroupdiskToProddisk'] == 'OK':
+				 %if detail['localgroupdiskToProddisk'] == 'OK'  or 'Permission denied' in detail['localgroupdiskToProddisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToProddisk'] == 'Failed':
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToProddisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
 				 % endif
 				 
-				  %if detail['goegridLocalgroupdiskToDatadisk'] == 'OK':
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToDatadisk'] == 'Failed':
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToDatadisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
 				 % endif
     
 			</tr>
@@ -108,77 +108,165 @@
 		</thread>
 		
 		<tbody>
-		   % for detail in goegridToWuppertalTransfers:
+		   % for detail in goegrid_wuppertal:
 		    <tr>
 				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
-				 %if detail['goegridScratchdiskToWuppertalScratchdisk'] == 'OK':
+				 %if detail['scratchdiskToScratchdisk'] == 'OK':
 				    <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToWuppertalScratchdisk'] == 'Failed':
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
 				    <td bgcolor = "#FF6464"></td>
 				 %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToWuppertalScratchdisk']}</td>
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
 				 % endif
 				 
-				 %if detail['goegridScratchdiskToWuppertalLocalgroupdisk'] == 'OK':
-				    <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToWuppertalLocalgroupdisk'] == 'Failed':
-				    <td bgcolor = "#FF6464"></td>
-				 %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToWuppertalLocalgroupdisk']}</td>
-				 % endif
-				
-				 %if detail['goegridScratchdiskToWuppertalProddisk'] == 'OK':
-				    <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToWuppertalProddisk'] == 'Failed':
-				    <td bgcolor = "#FF6464"></td>
-				 %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToWuppertalProddisk']}</td>
-				 % endif
-				
-				 %if detail['goegridScratchdiskToWuppertalDatadisk'] == 'OK':
-				    <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridScratchdiskToWuppertalDatadisk'] == 'Failed':
-				    <td bgcolor = "#FF6464"></td>
-				 %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridScratchdiskToWuppertalDatadisk']}</td>
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK':
+			        <td bgcolor = "#4FD516"></td>
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td>
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
+			     % endif
+			     
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
 				 % endif
 				 
-			    
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
+				 % endif
 			</tr>
 			<tr>
-			     <td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
-                 %if detail['goegridLocalgroupdiskToWuppertalScratchdisk'] == 'OK':
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK':
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToWuppertalScratchdisk'] == 'Failed':
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToWuppertalScratchdisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
 				 % endif
 				 
-			     %if detail['goegridLocalgroupdiskToWuppertalLocalgroupdisk'] == 'OK':
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK':
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToWuppertalLocalgroupdisk'] == 'Failed':
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToWuppertalLocalgroupdisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
 				 % endif
-			     
-			     %if detail['goegridLocalgroupdiskToWuppertalProddisk'] == 'OK':
+				 
+				 %if detail['localgroupdiskToProddisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToProddisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToWuppertalProddisk'] == 'Failed':
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToWuppertalProddisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
 				 % endif
+				 
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
+				 % endif
+    
+			</tr>
+		   % endfor
+		</tbody>
+</table>
 
-			     %if detail['goegridLocalgroupdiskToWuppertalProddisk'] == 'OK':
+<br/></br/>
+
+<h3>WUPPERTAL->GOEGRID transfers</h3>
+<table id="dataTable" class="TableData">
+		<thread>
+		<tr class="TableHeader">
+		    <th> &nbsp; </th>		
+			<th> GOEGRID_SCRATCHDISK </th>
+			<th> GOEGRID_LOCALGROUPDISK </th> 
+			<th> GOEGRID_PRODDISK </th>
+			<th> GOEGRID_DATADISK </th>  			
+		</tr>
+				
+		</thread>
+		
+		<tbody>
+		   % for detail in wuppertal_goegrid:
+		    <tr>
+				<td bgcolor="#D1D0D0" style="font-weight:bold">WUPPERTAL_SCRATCHDISK</td>
+				 %if detail['scratchdiskToScratchdisk'] == 'OK':
+				    <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
+				    <td bgcolor = "#FF6464"></td>
+				 %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
+				 % endif
+				 
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK':
+			        <td bgcolor = "#4FD516"></td>
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td>
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
+			     % endif
+			     
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk']:
 				      <td bgcolor = "#4FD516"></td>
-				 %elif detail['goegridLocalgroupdiskToWuppertalProddisk'] == 'Failed':
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
 			        <td bgcolor = "#FF6464"></td> 
 			     %else:
-			        <td bgcolor = "#FDFEB0">${detail['goegridLocalgroupdiskToWuppertalProddisk']}</td> 
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
 				 % endif
-			 			         
+				 
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
+				 % endif
+			</tr>
+			<tr>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">WUPPERTAL_LOCALGROUPDISK</td>
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK':
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
+				 % endif
+				 
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK':
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
+				 % endif
+				 
+				 %if detail['localgroupdiskToProddisk'] == 'OK'  or 'Permission denied' in detail['localgroupdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
+				 % endif
+				 
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
+				 % endif
+    
 			</tr>
 		   % endfor
 		</tbody>
