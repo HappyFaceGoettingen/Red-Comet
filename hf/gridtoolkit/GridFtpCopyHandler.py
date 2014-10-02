@@ -50,6 +50,7 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
     __dstPort = None
     __dstUrl = None
     __dstPath = None
+    __fileName = None
     
     commandArgs=None
     
@@ -74,85 +75,156 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
         
     def executeAndShowResult(self):
         self.execute()
-        std_out,std_err = self.showGridProcess(show_stdout = True, show_stderr = True)    
-        return std_out, std_err
+        self.showGridProcess(show_stdout = True, show_stderr = True)            
                
-    def FtpConnect (self):
+    def connect (self):
         self.commandArgs = "uberftp " + self.__dstHost
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.executeAndShowResult()
         
-    def FtpShowFiles (self, dstPath):
+    def showFiles (self, dstPath):
         self.__dstPath = dstPath                
         self.commandArgs = "uberftp -ls  gsiftp://" + self.__dstHost + self.__dstPath
         self.logger.debug("Show files in destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        std_out, std_err = self.executeAndShowResult()        
-        return std_out, std_err 
-       
+        self.execute()
+        try: 
+            (data,error) = self.gridProcess.communicate()
+            return data, error
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
+
         
-    def FtpCopy(self, srcPath, dstPath, protocol):
+    def createFileInSrcPath (self, srcHost , srcPath):
+        fileName, localPath = self.randomFileGenerator("random.txt")
+        stdout, stderr = self.copyFormLocalToRemote(srcHost, localPath, srcPath)
+        copyStatus = 0               
+        if stderr:
+           copyStatus = 1
+        
+        return copyStatus, stderr, srcPath, fileName 
+    
+    def copyFormLocalToRemote(self, srcHost, localPath, srcPath):
+        self.commandArgs = 'uberftp ' + srcHost + '  "put ' + localPath + "  " + srcPath + ' "'
+        self.logger.debug("Executed command = " +  str(self.commandArgs))
+        self.execute()
+        try: 
+           (data,error) = self.gridProcess.communicate()
+           return data, error
+        except Exception as e: 
+           print "An exception has occurred: "
+           print e
+    
+    
+    def copyFile(self, srcPath, dstPath, protocol):
         self.__srcPath = srcPath
         self.__dstPath = dstPath
-        check_if_file_exists = self.CheckFile(srcPath, dstPath) 
-        #print   check_if_file_exists
-        if check_if_file_exists == 1:
-           self.commandArgs = 'uberftp ' + protocol + "://" + self.__srcHost + self.__srcPath +"  " + protocol + "://" + self.__dstHost + self.__dstPath
-           self.logger.debug("File to copy from source path = " + str(self.__srcPath))
-           self.logger.debug("Destination path = " +  str(self.__dstPath))
-           self.logger.debug("Executed command = " +  str(self.commandArgs))
-           self.executeAndShowResult()
+              
+        self.commandArgs = 'uberftp ' + protocol + "://" + self.__srcHost + self.__srcPath +"  " + protocol + "://" + self.__dstHost + self.__dstPath
+        self.logger.debug("File to copy from source path = " + str(self.__srcPath))
+        self.logger.debug("Destination path = " +  str(self.__dstPath))
+        self.logger.debug("Executed command = " +  str(self.commandArgs))
+        self.execute()
+        try: 
+           (data,error) = self.gridProcess.communicate()
+           return data, error
+        except Exception as e: 
+           print "An exception has occurred: "
+           print e
+           
+   
+    def copyFileAndCheckExistance(self, srcPath, fileName, dstPath):
+        self.__srcPath = srcPath
+        self.__dstPath = dstPath
+        data, error = self.copyFile(srcPath+fileName, self.__dstPath, "gsiftp" )
+        if not error:
+           check_if_file_exists = self.checkFile(fileName, self.__dstPath)
+           if check_if_file_exists == 0:
+               return "OK"                    
+           else:
+               return "Failed"                      
         else:
-           self.logger.debug("File already exists") 
+           return error
+
+  
+    def randomFileGenerator(self, filename):
+       from hashlib import md5
+       from time import localtime
+       fileName = "%s_%s" % (md5(str(localtime())).hexdigest(), filename)
+       file = open(fileName, 'w+')
+       file.write(str(localtime()))
+       return fileName, os.path.abspath(fileName) 
         
-        
-    def CheckFile (self, srcPath, dstPath):
-        self.__srcPath = srcPath
-        self.__dstPath = dstPath
-             
-        stdout, stderr = self.FtpShowFiles(self.__dstPath)       
-        file = os.path.basename(self.__srcPath)
-        print file  
+       
+    def checkFile (self, fileName, dstPath):
+        self.__dstPath = dstPath 
+        stdout, stderr = self.showFiles(self.__dstPath)
+        print stdout, stderr
         if stdout:
             for item in stdout:
-                if str(item).find(file): 
-                   return 0
+                if str(item).find(fileName): 
+                   return 0 # if file exists
                 else:
-                   return 1               
+                   return 1 # file doesnt exists              
         else:
-            print "Folder is empty"
-            return 1
+            return 1        
         
-        
-    def FtpMkDir (self, dstPath):
+    def mkDir (self, dstPath):
         self.__dstPath = dstPath
         self.commandArgs = 'uberftp ' + self.__dstHost + ' "mkdir ' +  self.__dstPath + ' " '         
         self.logger.debug("Create file in destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
+        self.execute()
+        try: 
+            (stdout,stderr) = self.gridProcess.communicate()
+            return stdout, stderr 
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
         
-    def FtpRmDir (self, dstPath):
+    def rmDir (self, host, dstPath):
         self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + self.__dstHost + ' "rmdir ' +  self.__dstPath + ' " '
+        self.commandArgs = 'uberftp ' + host + ' "rmdir ' +  self.__dstPath + ' " '
         self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
+        self.execute()
+        try: 
+            (data,error) = self.gridProcess.communicate()
+            if data:
+                print "Deleted \n"
+            if error:
+                print error 
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
+            
         
-    def FtpRm (self, dstPath):
+    def rmFile (self, host, fileName, dstPath):
+        self.__fileName = fileName
         self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + self.__dstHost + ' "rm ' +  self.__dstPath + ' " '
-        self.logger.debug("Remove file from destination path = " +  str(self.__dstPath))
+        self.commandArgs = 'uberftp ' + host + ' "rm  ' +  self.__dstPath + self.__fileName + ' " '
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
+        self.execute()
+        try: 
+            (data,error) = self.gridProcess.communicate()
+            if data:
+                print "Deleted \n"
+            if error:
+                print error
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
 
-    def FtpShowFileContent (self, dstPath):
+
+    def showFileContent (self, dstPath):
         self.__dstPath = dstPath
         self.commandArgs = 'uberftp ' + self.__dstHost + ' "cat ' +  self.__dstPath + ' " '
         self.logger.debug("Show file content = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.executeAndShowResult()
         
-    def FtpSizeOfFile (self, dstPath):
+    def sizeOfFile (self, dstPath):
         self.__dstPath = dstPath
         self.commandArgs = 'uberftp ' + self.__dstHost + ' "size ' +  self.__dstPath + ' " '
         self.logger.debug("Show the size of the file in destination path = " +  str(self.__dstPath))
@@ -161,33 +233,30 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
         
         
 def main():
-    print "GridFtpCopyHandler"
+    print "GridcopyFileHandler"
     logging.basicConfig(level=logging.DEBUG)
     logging.root.setLevel(logging.DEBUG)
    
-    Object = GridFtpCopyHandler()
+    Object = GridcopyFileHandler()
     Object.setHostsAndPorts("se-goegrid.gwdg.de", "", "se-goegrid.gwdg.de", "")
  
- #   Object.FtpConnect()
+ #   Object.connect()
       
-    Object.FtpCopy("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt ", "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test", "gsiftp")
-    
-#    Object.FtpCopy("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test/bbb.txt", "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/", "gsiftp")
-
-     
-#    Object.FtpMkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
+#    Object.copyFile("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt ", "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test", "gsiftp")
+       
+#    Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
    
-#    Object.FtpRmDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
+#    Object.rmDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
 
 #    Object.FtpRm("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt")
 
-#    Object.FtpShowFileContent("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt") 
+#    Object.showFileContent("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt") 
 
-#    Object.FtpSizeOfFile("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt")
+#    Object.sizeOfFile("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt")
 
-#    Object.FtpShowFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
+#    Object.showFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
 
-    Object.FtpShowFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi")
+ #   Object.showFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi")
 
 if __name__ == '__main__':
     main()
