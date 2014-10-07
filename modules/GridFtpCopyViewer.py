@@ -120,7 +120,10 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
             detail['localgroupdiskToProddisk'] = stderr_lg
             detail['localgroupdiskToDatadisk'] = stderr_lg
             print "Error msg: " + str(stderr_lg)
-            
+        
+        os.remove(os.path.abspath(fileName_scr))       
+        os.remove(os.path.abspath(fileName_lg))     
+        
         return detail
         
          
