@@ -35,7 +35,8 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
     ], []
 
     subtable_columns = {
-        'goegrid_goegrid_transfers': ([
+        'site_transfers': ([
+        Column('siteName', TEXT),                    
         Column('scratchdiskToScratchdisk', TEXT),
         Column('scratchdiskToLocalgroupdisk', TEXT),
         Column('scratchdiskToProddisk', TEXT),
@@ -44,27 +45,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         Column('localgroupdiskToLocalgroupdisk', TEXT),
         Column('localgroupdiskToProddisk', TEXT),
         Column('localgroupdiskToDatadisk', TEXT),
-    ], []),
-        'goegrid_wuppertal_transfers':([
-        Column('scratchdiskToScratchdisk', TEXT),
-        Column('scratchdiskToLocalgroupdisk', TEXT),
-        Column('scratchdiskToProddisk', TEXT),
-        Column('scratchdiskToDatadisk', TEXT),
-        Column('localgroupdiskToScratchdisk', TEXT),
-        Column('localgroupdiskToLocalgroupdisk', TEXT),
-        Column('localgroupdiskToProddisk', TEXT),
-        Column('localgroupdiskToDatadisk', TEXT),
-    ], []),
-        'wuppertal_goegrid_transfers':([
-        Column('scratchdiskToScratchdisk', TEXT),
-        Column('scratchdiskToLocalgroupdisk', TEXT),
-        Column('scratchdiskToProddisk', TEXT),
-        Column('scratchdiskToDatadisk', TEXT),
-        Column('localgroupdiskToScratchdisk', TEXT),
-        Column('localgroupdiskToLocalgroupdisk', TEXT),
-        Column('localgroupdiskToProddisk', TEXT),
-        Column('localgroupdiskToDatadisk', TEXT),
-    ], [])                   
+    ], [])                
     }
 
   
@@ -73,12 +54,14 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         return transfer_status                
                                                 
     
-    def spaceTokenStatus(self, Object, srcHost, dstHost, scr_scrDiskPath, src_lgDiskPath, dst_scrDiskPath, dst_lgDiskPath, dst_prodDiskPath, dst_dataDiskPath):
+    def spaceTokenStatus(self, siteName, Object, srcHost, dstHost, scr_scrDiskPath, src_lgDiskPath, dst_scrDiskPath, dst_lgDiskPath, dst_prodDiskPath, dst_dataDiskPath):
         
         copyStatus_scr, stderr_scr, srcPath_scr, fileName_scr = Object.createFileInSrcPath (srcHost, scr_scrDiskPath)
         copyStatus_lg, stderr_lg, srcPath_lg, fileName_lg = Object.createFileInSrcPath (srcHost, src_lgDiskPath) 
                
         detail = {}
+        
+        detail['siteName'] = siteName 
          
         if copyStatus_scr == 0:               
             detail['scratchdiskToScratchdisk'] = self.transfers(Object, srcPath_scr, fileName_scr, dst_scrDiskPath )
@@ -91,7 +74,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
             ##Removes files from source and destination part##
             Object.rmFile(srcHost , fileName_scr, srcPath_scr)
             Object.rmFile(dstHost, fileName_scr, dst_scrDiskPath) 
-            Object.rmFile(dstHost, fileName_scr, dst_lgDiskPath)                        
+            Object.rmFile(dstHost, fileName_scr, dst_lgDiskPath)       
             
         else:
             detail['scratchdiskToScratchdisk'] = stderr_scr
@@ -122,139 +105,146 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
             print "Error msg: " + str(stderr_lg)
         
         os.remove(os.path.abspath(fileName_scr))       
-        os.remove(os.path.abspath(fileName_lg))     
+        os.remove(os.path.abspath(fileName_lg)) 
         
         return detail
         
          
     def extractData(self):
+        
         data = {
             'dataset': "Hi",
             'status': 1
-        }
+        }        
         
+        Object = GridFtpCopyHandler()  
+         
+        #GOEGRID->GOEGRID transfers      
+        srcHostSite1 = self.config['goegrid_host']
+        dstHostSite1 = self.config['goegrid_host']
         
-        Object = GridFtpCopyHandler()      
-        
-        #GOEGRID->GOEGRID transfers 
-        goegridSrcHost = self.config['goegrid_host']
-        goegridDstHost = self.config['goegrid_host']
-        
-        Object.setHostsAndPorts(goegridSrcHost, "", goegridDstHost, "")
+        Object.setHostsAndPorts(srcHostSite1, "", dstHostSite1, "")
         
         ##Crate a folder with a subfolder in GOEGRID-SCRATCHDISK##
-        goegridScrtDiskPath = self.config['goegrid_scratchdisk_path']
-        stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object.mkDir(goegridScrtDiskPath)
+        scrtDiskPathSite1 = self.config['goegrid_scratchdisk_path']
+        stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object.mkDir(scrtDiskPathSite1)
         if stdout_mkdir_scratchdisk:
-           Object.mkDir(goegridScrtDiskPath+ "test/")
+           Object.mkDir(scrtDiskPathSite1+ "test/")
         
         if stderr_mkdir_scratchdisk:
            print stderr_mkdir_scratchdisk
            
         ##Crate a folder with a subfolder in GOEGRID-LOCALGROUPDISK##
-        goegridLGrDiskPath = self.config['goegrid_localgroupdisk_path']
-        stdout_mkdir_localgroupdisk, stderr_mkdir_localgroupdisk = Object.mkDir(goegridLGrDiskPath)
+        lGrDiskPathSite1 = self.config['goegrid_localgroupdisk_path']
+        stdout_mkdir_localgroupdisk, stderr_mkdir_localgroupdisk = Object.mkDir(lGrDiskPathSite1)
         if stdout_mkdir_localgroupdisk:
-           Object.mkDir(goegridLGrDiskPath + "test/")
+           Object.mkDir(lGrDiskPathSite1 + "test/")
         
         if stderr_mkdir_localgroupdisk:
            print stderr_mkdir_localgroupdisk 
            
-        goegridProdDiskPath = self.config['goegrid_proddisk_path'] 
-        goegridDataDiskPath = self.config['goegrid_datadisk_path'] 
+        prodDiskPathSite1 = self.config['goegrid_proddisk_path'] 
+        dataDiskPathSite1 = self.config['goegrid_datadisk_path'] 
         
         
-        detail_goe_goe = self.spaceTokenStatus(Object,
-                                               goegridSrcHost, 
-                                               goegridDstHost, 
-                                               goegridScrtDiskPath, 
-                                               goegridLGrDiskPath, 
-                                               goegridScrtDiskPath + "test/", 
-                                               goegridLGrDiskPath + "test/", 
-                                               goegridProdDiskPath, 
-                                               goegridDataDiskPath)
-               
+        detail1 = self.spaceTokenStatus("GoeGrid-GoeGrid",
+                                               Object,
+                                               srcHostSite1, 
+                                               dstHostSite1, 
+                                               scrtDiskPathSite1, 
+                                               lGrDiskPathSite1, 
+                                               scrtDiskPathSite1 + "test/", 
+                                               lGrDiskPathSite1 + "test/", 
+                                               prodDiskPathSite1, 
+                                               dataDiskPathSite1)               
                 
-        self.goegrid_details_table_db_value_list.append({})
-        self.goegrid_details_table_db_value_list[0] = detail_goe_goe
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[0] = detail1
         
         
         #GOEGRID->WUPPERTAL transfers                       
-        wuppertalScrtDiskPath = self.config['wuppertal_scratchdisk_path']
-        wuppertalLGrDiskPath = self.config['wuppertal_localgroupdisk_path']
-        wuppertalProdDiskPath = self.config['wuppertal_proddisk_path']
-        wuppertalDataDiskPath = self.config['wuppertal_datadisk_path']
+        scrtDiskPathSite2 = self.config['wuppertal_scratchdisk_path']
+        lGrDiskPathSite2 = self.config['wuppertal_localgroupdisk_path']
+        prodDiskPathSite2 = self.config['wuppertal_proddisk_path']
+        dataDiskPathSite2 = self.config['wuppertal_datadisk_path']
         
-        goegridSrcHost = self.config['goegrid_host']
-        wuppertalDstHost = self.config['wupperal_host']
+        srcHostSite1 = self.config['goegrid_host']
+        dstHostSite2 = self.config['wupperal_host']
         
-        Object.setHostsAndPorts(goegridSrcHost, "", wuppertalDstHost, "")               
-        Object.mkDir(wuppertalScrtDiskPath)
-        Object.mkDir(wuppertalLGrDiskPath)  
+        Object.setHostsAndPorts(srcHostSite1, "", dstHostSite2, "")               
+        Object.mkDir(scrtDiskPathSite2)
+        Object.mkDir(lGrDiskPathSite2)  
         
-        detail_goe_wupp = self.spaceTokenStatus(Object,
-                                               goegridSrcHost, 
-                                               wuppertalDstHost, 
-                                               goegridScrtDiskPath, 
-                                               goegridLGrDiskPath, 
-                                               wuppertalScrtDiskPath, 
-                                               wuppertalLGrDiskPath, 
-                                               wuppertalProdDiskPath, 
-                                               wuppertalDataDiskPath)
-               
+        detail2 = self.spaceTokenStatus("GoeGrid-Wuppertal",
+                                               Object,
+                                               srcHostSite1, 
+                                               dstHostSite2, 
+                                               scrtDiskPathSite1, 
+                                               lGrDiskPathSite1, 
+                                               scrtDiskPathSite2, 
+                                               lGrDiskPathSite2, 
+                                               prodDiskPathSite2, 
+                                               dataDiskPathSite2)               
                 
-        self.goegrid_wuppertal_details_table_db_value_list.append({})
-        self.goegrid_wuppertal_details_table_db_value_list[0] = detail_goe_wupp  
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[1] = detail2  
+        
         
         #WUPPERTAL->GOEGRID transfers
-        wuppertalSrcHost = self.config['wupperal_host']
-        goegridDstHost = self.config['goegrid_host']         
+        srcHostSite2 = self.config['wupperal_host']
+        dstHostSite1 = self.config['goegrid_host']         
        
-        detail_wupp_goe = self.spaceTokenStatus(Object,
-                                               wuppertalSrcHost, 
-                                               goegridDstHost, 
-                                               wuppertalScrtDiskPath, 
-                                               wuppertalLGrDiskPath,
-                                               goegridScrtDiskPath + "test/", 
-                                               goegridLGrDiskPath + "test/", 
-                                               goegridProdDiskPath, 
-                                               goegridDataDiskPath)
+        detail3 = self.spaceTokenStatus('Wuppertal-GoeGrid',
+                                                Object,
+                                                srcHostSite2, 
+                                                dstHostSite1, 
+                                                scrtDiskPathSite2, 
+                                                lGrDiskPathSite2,
+                                                scrtDiskPathSite1 + "test/", 
+                                                lGrDiskPathSite1 + "test/", 
+                                                prodDiskPathSite1, 
+                                                dataDiskPathSite1)
         
-        self.wuppertal_goegrid_details_table_db_value_list.append({})
-        self.wuppertal_goegrid_details_table_db_value_list[0] = detail_wupp_goe 
- 
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[2] = detail3 
+        
         ##Removes created folders and subfolders##
-        Object.rmDir(goegridSrcHost, goegridScrtDiskPath + "test/")
-        Object.rmDir(goegridSrcHost, goegridLGrDiskPath + "test/")
-        Object.rmDir(goegridSrcHost, goegridScrtDiskPath)
-        Object.rmDir(goegridSrcHost, goegridLGrDiskPath)
+        Object.rmDir(srcHostSite1, scrtDiskPathSite1 + "test/")
+        Object.rmDir(srcHostSite1, lGrDiskPathSite1 + "test/")
+        Object.rmDir(srcHostSite1, scrtDiskPathSite1)
+        Object.rmDir(srcHostSite1, lGrDiskPathSite1)
         
-        Object.rmDir(wuppertalDstHost, wuppertalScrtDiskPath)
-        Object.rmDir(wuppertalDstHost, wuppertalLGrDiskPath)
-                          
+        Object.rmDir(dstHostSite2, scrtDiskPathSite2)
+        Object.rmDir(dstHostSite2, lGrDiskPathSite2)
+        
+                                 
         return data
     
     def prepareAcquisition(self):
         
-         self.goegrid_details_table_db_value_list = []
-         self.goegrid_wuppertal_details_table_db_value_list = []
-         self.wuppertal_goegrid_details_table_db_value_list = []
+        self.details_table_db_value_list = []
              
     def fillSubtables(self, parent_id):
-        self.subtables['goegrid_goegrid_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.goegrid_details_table_db_value_list])
-        self.subtables['goegrid_wuppertal_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.goegrid_wuppertal_details_table_db_value_list])
-        self.subtables['wuppertal_goegrid_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.wuppertal_goegrid_details_table_db_value_list])
-                
+        
+        self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
+              
     def getTemplateData(self):
         data = hf.module.ModuleBase.getTemplateData(self)
-        details = self.subtables['goegrid_goegrid_transfers'].select().where(self.subtables['goegrid_goegrid_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
-        data['goegrid_goegrid'] = map(dict, details)
-        
-        details2 = self.subtables['goegrid_wuppertal_transfers'].select().where(self.subtables['goegrid_wuppertal_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
+            
+        max_id_number1 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == 'GoeGrid-GoeGrid').execute().scalar()        
+        #self.dataset['aaa'] = max_id_number1                
+        details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1).execute().fetchall()
+        data['goegrid_goegrid'] = map(dict, details1)
+      
+        max_id_number2 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == 'GoeGrid-Wuppertal').execute().scalar()        
+        #self.dataset['bbb'] = max_id_number2               
+        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2).execute().fetchall()
         data['goegrid_wuppertal'] = map(dict, details2)
-
-        details3 = self.subtables['wuppertal_goegrid_transfers'].select().where(self.subtables['wuppertal_goegrid_transfers'].c.parent_id==self.dataset['id']).execute().fetchall()
-        data['wuppertal_goegrid'] = map(dict, details3)        
         
+        max_id_number3 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == 'Wuppertal-GoeGrid').execute().scalar()        
+        #self.dataset['ccc'] = max_id_number3               
+        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3).execute().fetchall()
+        data['wuppertal_goegrid'] = map(dict, details3)
+
         return data
     
