@@ -3,24 +3,24 @@
 
 <%def name="content()">
 
-<h3>GOEGRID->GOEGRID transfers</h3>
+<h3>${dataset['site1Name']} transfers</h3>
 
 <table id="dataTable" class="TableData">
 		<thread>
 		<tr class="TableHeader">	
 		    <th> &nbsp;</th>		
-			<th> GOEGRID_SCRATCHDISK </th>
-			<th> GOEGRID_LOCALGROUPDISK </th> 
-			<th> GOEGRID_PRODDISK </th>
-			<th> GOEGRID_DATADISK </th>  			
+			<th> ${dataset['site1_space_token_scratchdisk']} </th>
+			<th> ${dataset['site1_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site1_space_token_proddisk']}</th>
+			<th> ${dataset['site1_space_token_datadisk']} </th>  			
 		</tr>
 				
 		</thread>
 		
 		<tbody>
-		   % for detail in goegrid_goegrid:
+		   % for detail in site1Tosite1:
 		    <tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
+				<td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</td>
 				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
 				    <td bgcolor = "#4FD516"></td>
 				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
@@ -54,7 +54,7 @@
 				 % endif
 			</tr>
 			<tr>
-			    <td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_localgroupdisk']}</td>
 			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
 				      <td bgcolor = "#4FD516"></td>
 				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
@@ -93,23 +93,23 @@
 </table>
 
 <br/></br/>
-<h3>GOEGRID->WUPPERTAL transfers</h3>
+<h3>${dataset['site3Name1']} transfers</h3>
 <table id="dataTable" class="TableData">
 		<thread>
 		<tr class="TableHeader">
 		    <th> &nbsp;</th>		
-			<th> WUPPERTAL_SCRATCHDISK </th>
-			<th> WUPPERTAL_LOCALGROUPDISK </th> 
-			<th> WUPPERTAL_PRODDISK </th>
-			<th> WUPPERTAL_DATADISK </th>  			
+			<th> ${dataset['site3_space_token_scratchdisk']} </th>
+			<th> ${dataset['site3_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site3_space_token_proddisk']}</th>
+			<th> ${dataset['site3_space_token_datadisk']} </th>  		
 		</tr>
 				
 		</thread>
 		
 		<tbody>
-		   % for detail in goegrid_wuppertal:
+		   % for detail in site1Tosite2:
 		    <tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
+				<td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</td>
 				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
 				    <td bgcolor = "#4FD516"></td>
 				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
@@ -143,7 +143,7 @@
 				 % endif
 			</tr>
 			<tr>
-			    <td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_localgroupdisk']}</td>
 			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
 				      <td bgcolor = "#4FD516"></td>
 				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
@@ -184,23 +184,23 @@
 
 <br/></br/>
 
-<h3>WUPPERTAL->GOEGRID transfers</h3>
+<h3>${dataset['site3Name2']} transfers</h3>
 <table id="dataTable" class="TableData">
 		<thread>
 		<tr class="TableHeader">
 		    <th> &nbsp;</th>		
-			<th> GOEGRID_SCRATCHDISK </th>
-			<th> GOEGRID_LOCALGROUPDISK </th> 
-			<th> GOEGRID_PRODDISK </th>
-			<th> GOEGRID_DATADISK </th>  			
+			<th> ${dataset['site1_space_token_scratchdisk']} </th>
+			<th> ${dataset['site1_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site1_space_token_proddisk']}</th>
+			<th> ${dataset['site1_space_token_datadisk']} </th>  			
 		</tr>
 				
 		</thread>
 		
 		<tbody>
-		   % for detail in wuppertal_goegrid:
+		   % for detail in site2Tosite1:
 		    <tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">WUPPERTAL_SCRATCHDISK</td>
+				<td bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site3_space_token_scratchdisk']}</td>
 				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
 				    <td bgcolor = "#4FD516"></td>
 				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
@@ -234,7 +234,7 @@
 				 % endif
 			</tr>
 			<tr>
-			    <td bgcolor="#D1D0D0" style="font-weight:bold">WUPPERTAL_LOCALGROUPDISK</td>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site3_space_token_localgroupdisk']}</td>
 			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
 				      <td bgcolor = "#4FD516"></td>
 				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
