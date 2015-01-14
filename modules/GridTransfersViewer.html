@@ -1,0 +1,275 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/module_base.html" />
+
+<%def name="content()">
+
+<h3>${dataset['site1Name']} transfers</h3>
+
+<table id="dataTable" class="TableData">
+		<thread>
+		<tr class="TableHeader">	
+		    <th> &nbsp;</th>		
+			<th> ${dataset['site1_space_token_scratchdisk']} </th>
+			<th> ${dataset['site1_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site1_space_token_proddisk']}</th>
+			<th> ${dataset['site1_space_token_datadisk']} </th>  			
+		</tr>
+				
+		</thread>
+		
+		<tbody>
+		   % for detail in site1Tosite1:
+		    <tr>
+				<td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</td>
+				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
+				    <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
+				    <td bgcolor = "#FF6464"></td>
+				 %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
+				 % endif
+				 
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToLocalgroupdisk']:
+			        <td bgcolor = "#4FD516"></td>
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td>
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
+			     % endif
+			     
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk'] or 'SpaceException' in detail['scratchdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
+				 % endif
+				 
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk'] or 'SpaceException' in detail['scratchdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
+				 % endif
+			</tr>
+			<tr>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_localgroupdisk']}</td>
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
+				 % endif
+				 
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToLocalgroupdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
+				 % endif
+				 
+				 %if detail['localgroupdiskToProddisk'] == 'OK'  or 'Permission denied' in detail['localgroupdiskToProddisk'] or 'SpaceException' in detail['localgroupdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
+				 % endif
+				 
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk'] or 'SpaceException' in detail['localgroupdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
+				 % endif
+    
+			</tr>
+		   % endfor
+		</tbody>
+</table>
+
+<br/></br/>
+<h3>${dataset['site3Name1']} transfers</h3>
+<table id="dataTable" class="TableData">
+		<thread>
+		<tr class="TableHeader">
+		    <th> &nbsp;</th>		
+			<th> ${dataset['site3_space_token_scratchdisk']} </th>
+			<th> ${dataset['site3_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site3_space_token_proddisk']}</th>
+			<th> ${dataset['site3_space_token_datadisk']} </th>  		
+		</tr>
+				
+		</thread>
+		
+		<tbody>
+		   % for detail in site1Tosite2:
+		    <tr>
+				<td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</td>
+				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
+				    <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
+				    <td bgcolor = "#FF6464"></td>
+				 %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
+				 % endif
+				 
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToLocalgroupdisk']:
+			        <td bgcolor = "#4FD516"></td>
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td>
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
+			     % endif
+			     
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk'] or 'SpaceException' in detail['scratchdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
+				 % endif
+				 
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk'] or 'SpaceException' in detail['scratchdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
+				 % endif
+			</tr>
+			<tr>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_localgroupdisk']}</td>
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
+				 % endif
+				 
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToLocalgroupdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
+				 % endif
+				 
+				 %if detail['localgroupdiskToProddisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToProddisk'] or 'SpaceException' in detail['localgroupdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
+				 % endif
+				 
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk'] or 'SpaceException' in detail['localgroupdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
+				 % endif
+    
+			</tr>
+		   % endfor
+		</tbody>
+</table>
+
+
+<br/></br/>
+
+<h3>${dataset['site3Name2']} transfers</h3>
+<table id="dataTable" class="TableData">
+		<thread>
+		<tr class="TableHeader">
+		    <th> &nbsp;</th>		
+			<th> ${dataset['site1_space_token_scratchdisk']} </th>
+			<th> ${dataset['site1_space_token_localgroupdisk']}</th> 
+			<th> ${dataset['site1_space_token_proddisk']}</th>
+			<th> ${dataset['site1_space_token_datadisk']} </th>  			
+		</tr>
+				
+		</thread>
+		
+		<tbody>
+		   % for detail in site2Tosite1:
+		    <tr>
+				<td bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site3_space_token_scratchdisk']}</td>
+				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
+				    <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToScratchdisk'] == 'Failed':
+				    <td bgcolor = "#FF6464"></td>
+				 %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToScratchdisk']}</td>
+				 % endif
+				 
+			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToLocalgroupdisk']:
+			        <td bgcolor = "#4FD516"></td>
+			     %elif detail['scratchdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td>
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToLocalgroupdisk']}</td>
+			     % endif
+			     
+			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToProddisk'] or 'SpaceException' in detail['scratchdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToProddisk']}</td>
+				 % endif
+				 
+				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['scratchdiskToDatadisk'] or 'SpaceException' in detail['scratchdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['scratchdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['scratchdiskToDatadisk']}</td>
+				 % endif
+			</tr>
+			<tr>
+			    <td bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site3_space_token_localgroupdisk']}</td>
+			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToScratchdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToScratchdisk']}</td> 
+				 % endif
+				 
+			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToLocalgroupdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToLocalgroupdisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToLocalgroupdisk']}</td> 
+				 % endif
+				 
+				 %if detail['localgroupdiskToProddisk'] == 'OK'  or 'Permission denied' in detail['localgroupdiskToProddisk'] or 'SpaceException' in detail['localgroupdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToProddisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToProddisk']}</td> 
+				 % endif
+				 
+				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' in detail['localgroupdiskToDatadisk'] or 'SpaceException' in detail['localgroupdiskToDatadisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif detail['localgroupdiskToDatadisk'] == 'Failed':
+			        <td bgcolor = "#FF6464"></td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">${detail['localgroupdiskToDatadisk']}</td> 
+				 % endif
+    
+			</tr>
+		   % endfor
+		</tbody>
+</table>
+	
+</%def>
