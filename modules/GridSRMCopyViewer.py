@@ -1,4 +1,3 @@
-
 ## -*- coding: utf-8 -*-
 #
 # Copyright 2014 II. Physikalisches Institut - Georg-August-Universität Göttingen
@@ -123,13 +122,21 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         }        
         
         Object = GridSRMCopyHandler()  
-        """ 
+                
         #GOEGRID->GOEGRID transfers      
         srcHostSite1 = self.config['site1_host']
         dstHostSite1 = self.config['site1_host']
         
-        Object.setHostsAndPorts(srcHostSite1, "", dstHostSite1, "")
+        Object.setHostsAndPorts(srcHostSite1, "8443", dstHostSite1, "8443", "srm")
+        Object.ping()
+       # Object.showFiles("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/")
+       # Object.mkDir("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/aaaaaa")
+       # Object.rmDir("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/aaaaaa")
+       # Object.copyFromLocalToRemote("/home/haykuhi/Desktop/a.txt", "/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/dd.txt")
+       # Object.copyFile("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/dd.txt", "/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/aaa/kkk.txt")
+       # Object.rmFile("dd.txt","/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/" )
         
+        """
         ##Crate a folder with a subfolder in GOEGRID-SCRATCHDISK##
         scrtDiskPathSite1 = self.config['site1_scratchdisk_path']
         stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object.mkDir(scrtDiskPathSite1)
