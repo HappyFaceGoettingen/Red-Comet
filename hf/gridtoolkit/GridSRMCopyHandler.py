@@ -36,6 +36,7 @@ import os, hf
 import logging, subprocess
 from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler, GridPopen
 import re
+from re import compile as compile_regex
 
 class GridSRMCopyHandler(GridSubprocessBaseHandler):
    
@@ -52,39 +53,43 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
     __dstPath = None
     __fileName = None
     
+    __protocol = None
     commandArgs=None
     
+    _MULTIPLE_PATHS = compile_regex(r"/{2,}")
    
     def __init__(self):
         self.cvmfsEnv.setEnabled("emi")
         self.gridEnv.set('x509.user.key', None)
     
     
-    def setHostsAndPorts(self, srcHost=None, srcPort=None, dstHost=None, dstPort=None ):
+    def setHostsAndPorts(self, srcHost=None, srcPort=None, dstHost=None, dstPort=None, protocol=None):
         
         if srcHost is not None: self.__srcHost = srcHost
         if srcPort is not None: self.__srcPort = srcPort
         if dstHost is not None: self.__dstHost = dstHost
         if dstPort is not None: self.__dstPort = dstPort
+        if protocol is not None: self.__protocol = protocol
           
         """ logging """ 
         self.logger.debug("Source host = " + str(self.__srcHost))
         self.logger.debug("Source port = " +  str(self.__srcPort))              
         self.logger.debug("Destination host = " + str(self.__dstHost))
         self.logger.debug("Destination port = " +  str(self.__dstPort))
+        self.logger.debug("Use protocol = " +  str(self.__protocol))
         
     def executeAndShowResult(self):
         self.execute()
         self.showGridProcess(show_stdout = True, show_stderr = True)            
                
-    def connect (self):
-        self.commandArgs = "uberftp " + self.__dstHost
+    def ping (self):
+        self.commandArgs = "srmping " + self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.executeAndShowResult()
         
     def showFiles (self, dstPath):
         self.__dstPath = dstPath                
-        self.commandArgs = "uberftp -ls  gsiftp://" + self.__dstHost + self.__dstPath
+        self.commandArgs = "srmls " + self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort + self.__dstPath
         self.logger.debug("Show files in destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
@@ -104,31 +109,33 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
            copyStatus = 1
         
         return copyStatus, stderr, srcPath, fileName 
-    
-    
-    def copyFormLocalToRemote(self, srcHost, localPath, srcPath):
-        self.commandArgs = 'uberftp ' + srcHost + '  "put ' + localPath + "  " + srcPath + ' "'
+
+    def copyFromLocalToRemote(self, localPath, srcPath):     
+        self.commandArgs = 'srmcp file:///' + localPath + '  ' + self.__protocol + "://" + self.__srcHost + ":" + self.__dstPort + srcPath 
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
            (data,error) = self.gridProcess.communicate()
+           print data
+           print error
            return data, error
         except Exception as e: 
            print "An exception has occurred: "
            print e
+        
     
-    
-    def copyFile(self, srcPath, dstPath, protocol):
+    def copyFile(self, srcPath, dstPath):
         self.__srcPath = srcPath
-        self.__dstPath = dstPath
-              
-        self.commandArgs = 'uberftp ' + protocol + "://" + self.__srcHost + self.__srcPath +"  " + protocol + "://" + self.__dstHost + self.__dstPath
+        self.__dstPath = dstPath              
+        self.commandArgs = 'srmcp ' + self.__protocol + "://" + self.__srcHost + ":" + self.__srcPort + self.__srcPath + "  " +  self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort + self.__dstPath 
         self.logger.debug("File to copy from source path = " + str(self.__srcPath))
         self.logger.debug("Destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
            (data,error) = self.gridProcess.communicate()
+           print data
+           print error
            return data, error
         except Exception as e: 
            print "An exception has occurred: "
@@ -138,7 +145,7 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
     def copyFileAndCheckExistance(self, srcPath, fileName, dstPath):
         self.__srcPath = srcPath
         self.__dstPath = dstPath
-        data, error = self.copyFile(srcPath+fileName, self.__dstPath, "gsiftp" )
+        data, error = self.copyFile(srcPath+fileName, dstPath+ "srm_" +fileName)
         if not error:
            check_if_file_exists = self.checkFile(fileName, self.__dstPath)
            if check_if_file_exists == 0:
@@ -173,7 +180,7 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
         
     def mkDir (self, dstPath):
         self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + self.__dstHost + ' "mkdir ' +  self.__dstPath + ' " '         
+        self.commandArgs = 'srmmkdir ' + self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort + dstPath       
         self.logger.debug("Create file in destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
@@ -184,9 +191,9 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
             print "An exception has occurred: "
             print e
         
-    def rmDir (self, host, dstPath):
+    def rmDir (self, dstPath):
         self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + host + ' "rmdir ' +  self.__dstPath + ' " '
+        self.commandArgs = 'srmrmdir ' + self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort + dstPath
         self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
@@ -201,10 +208,10 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
             print e
             
         
-    def rmFile (self, host, fileName, dstPath):
+    def rmFile (self, fileName, dstPath):
         self.__fileName = fileName
         self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + host + ' "rm  ' +  self.__dstPath + self.__fileName + ' " '
+        self.commandArgs = 'srmrm ' + self.__protocol + "://" + self.__dstHost + ":" + self.__dstPort + dstPath + self.__fileName
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
@@ -217,20 +224,6 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
             print "An exception has occurred: "
             print e
 
-
-    def showFileContent (self, dstPath):
-        self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + self.__dstHost + ' "cat ' +  self.__dstPath + ' " '
-        self.logger.debug("Show file content = " +  str(self.__dstPath))
-        self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult()
-        
-    def sizeOfFile (self, dstPath):
-        self.__dstPath = dstPath
-        self.commandArgs = 'uberftp ' + self.__dstHost + ' "size ' +  self.__dstPath + ' " '
-        self.logger.debug("Show the size of the file in destination path = " +  str(self.__dstPath))
-        self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.executeAndShowResult() 
         
         
 def main():
@@ -239,25 +232,8 @@ def main():
     logging.root.setLevel(logging.DEBUG)
    
     Object = GridSRMCopyHandler()
-    Object.setHostsAndPorts("se-goegrid.gwdg.de", "", "se-goegrid.gwdg.de", "")
+    Object.setHostsAndPorts("se-goegrid.gwdg.de", "", "se-goegrid.gwdg.de", "8443", "srm")
     Object.randomFileGenerator("random.txt")
- #   Object.connect()
-      
-#    Object.copyFile("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt ", "/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/test", "gsiftp")
-       
-#    Object.mkDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
-   
-#    Object.rmDir("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/eclipse_garfinqyul")
-
-#    Object.FtpRm("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt")
-
-#    Object.showFileContent("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt") 
-
-#    Object.sizeOfFile("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/bbb.txt")
-
-#    Object.showFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
-
- #   Object.showFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi")
-
+  
 if __name__ == '__main__':
     main()
