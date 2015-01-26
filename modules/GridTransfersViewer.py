@@ -177,7 +177,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
         Object_uberftp = GridFtpCopyHandler()
         Object_srm = GridSRMCopyHandler()   
-        
+        """
         #GOEGRID->GOEGRID transfers      
         srcHostSite1 = self.config['site1_host']
         dstHostSite1 = self.config['site1_host']
@@ -278,6 +278,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list[3] = detail2_srm  
         
         """
+        """
         #WUPPERTAL->GOEGRID transfers
         srcHostSite3 = self.config['site3_host']
         dstHostSite1 = self.config['site1_host']     
@@ -367,6 +368,29 @@ class GridTransfersViewer(hf.module.ModuleBase):
         data['site1Tosite2_srm'] = map(dict, details4)
         
        
+        """
+        max_id_number2_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType == "UberFTP")).execute().scalar()        
+        self.dataset['ccc'] = max_id_number2_uberftp                
+        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_uberftp).execute().fetchall()
+        data['site1Tosite3_uberftp'] = map(dict, details3)
+        
+        max_id_number3_srm = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType == "SRM")).execute().scalar()        
+        self.dataset['ddd'] = max_id_number3_srm                
+        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_srm).execute().fetchall()
+        data['site1Tosite3_srm'] = map(dict, details4)
+        """
+       
+        """
+        max_id_number2 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name1'])).execute().scalar()        
+        #self.dataset['bbb'] = max_id_number2               
+        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2).execute().fetchall()
+        data['site1Tosite2'] = map(dict, details2)
+        
+        max_id_number3 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name2'])).execute().scalar()        
+        #self.dataset['ccc'] = max_id_number3               
+        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3).execute().fetchall()
+        data['site2Tosite1'] = map(dict, details3)
+        """
         
         return data
     
