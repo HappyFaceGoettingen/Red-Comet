@@ -5,7 +5,7 @@
 
 <head>
 
-	<link rel="stylesheet" href="./dojo-1.10.4/dijit/themes/claro/claro.css">
+	<link rel="stylesheet" href="dojo-1.10.4/dijit/themes/claro/claro.css">
 	<style type="text/css">
 .bar1 { background-color: #ffa0a0; width: 17px; height: 74px; position: absolute; top: 100px; left: 10px; }
 .bar2 { background-color: #ffd4a0; width: 17px; height: 45px; position: absolute; top: 129px; left: 40px; }
@@ -13,27 +13,10 @@
 .bar4 { background-color: #ffa0a0; width: 17px; height: 74px; position: absolute; top: 100px; left: 100px; }
 	</style>
 	<script>dojoConfig = {async: true}</script>
-	<script src='./dojo-1.10.4/dojo/dojo.js'></script>
+	<script src='dojo-1.10.4/dojo/dojo.js'></script>
+	<script src='aaa.js'></script>
+
 	
-	<script>
-require(["dijit/Tooltip", "dojo/domReady!"], function(Tooltip){
-    // create a new Tooltip and connect it to bar1 and bar4
-    new Tooltip({
-        connectId: ["bar1", "bar4"],
-        label: "<b>Ti vmoyey doshe vsegda odna, </br> Smanaya prekrasnaya moya. </br> Tolko bit uveren doljen bit, </br> chto ti sozdana lish dlya menya."
-    });
-    // create a new Tooltip and connect it to bar2
-    new Tooltip({
-        connectId: ["bar2"],
-        label: "value <b>45</b>"
-    });
-    // create a new Tooltip and connect it to bar3
-    new Tooltip({
-        connectId: ["bar3"],
-        label: "value <b>30</b>"
-    });
-});
-	</script>
 </head>
 
 <h3>${dataset['site1Name']} transfers with UberFTP </h3>
