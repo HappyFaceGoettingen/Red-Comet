@@ -22,6 +22,7 @@ from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler, GridPopen
 from sqlalchemy import *
 from hf.gridtoolkit.GridFtpCopyHandler import GridFtpCopyHandler
 from hf.gridtoolkit.GridSRMCopyHandler import GridSRMCopyHandler
+from hf.gridtoolkit.GridLCGCopyHandler import GridLCGCopyHandler
 
 class GridTransfersViewer(hf.module.ModuleBase):
     
@@ -39,7 +40,6 @@ class GridTransfersViewer(hf.module.ModuleBase):
         'site_transfers': ([
         Column('siteName', TEXT),   
         Column('transferType', TEXT),                  
-        Column('scratchdiskToScratchdisk', TEXT),
         Column('scratchdiskToScratchdisk', TEXT),
         Column('scratchdiskToLocalgroupdisk', TEXT),
         Column('scratchdiskToProddisk', TEXT),
@@ -90,6 +90,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
                         
             print "MSG: " + str(copyStatus_scr)
             
+            """
             ##Removes files from source and destination part##
             Object_uberftp.rmFile(srcHost , fileName_scr, srcPath_scr)
             Object_uberftp.rmFile(dstHost, fileName_scr, dst_scrDiskPath) 
@@ -101,7 +102,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
             Object_srm.rmFile("srm_" + fileName_scr, dst_lgDiskPath)     
             Object_srm.rmFile("srm_" + fileName_scr, dst_prodDiskPath) 
             Object_srm.rmFile("srm_" + fileName_scr, dst_dataDiskPath) 
-            
+            """
         
             
         else:
@@ -136,6 +137,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
             print "MSG: " + str(copyStatus_lg)
             
             ##Removes files from source and destination part##
+            """
             Object_uberftp.rmFile(srcHost , fileName_lg, srcPath_lg)
             Object_uberftp.rmFile(dstHost, fileName_lg, dst_scrDiskPath) 
             Object_uberftp.rmFile(dstHost, fileName_lg, dst_lgDiskPath)
@@ -145,7 +147,8 @@ class GridTransfersViewer(hf.module.ModuleBase):
             Object_srm.rmFile("srm_" + fileName_lg, dst_scrDiskPath) 
             Object_srm.rmFile("srm_" + fileName_lg, dst_lgDiskPath)     
             Object_srm.rmFile("srm_" + fileName_lg, dst_prodDiskPath) 
-            Object_srm.rmFile("srm_" + fileName_lg, dst_dataDiskPath)    
+            Object_srm.rmFile("srm_" + fileName_lg, dst_dataDiskPath)   
+            """ 
         
         else:
             detail_uberftp['localgroupdiskToScratchdisk'] = stderr_lg
@@ -162,8 +165,8 @@ class GridTransfersViewer(hf.module.ModuleBase):
             
             print "Error msg: " + str(stderr_lg)
         
-        os.remove(os.path.abspath(fileName_scr))       
-        os.remove(os.path.abspath(fileName_lg)) 
+        #os.remove(os.path.abspath(fileName_scr))       
+        #os.remove(os.path.abspath(fileName_lg)) 
         
         return detail_uberftp, detail_srm
         
@@ -176,9 +179,9 @@ class GridTransfersViewer(hf.module.ModuleBase):
         }        
         
         Object_uberftp = GridFtpCopyHandler()
-        Object_srm = GridSRMCopyHandler()   
-        """
-        #GOEGRID->GOEGRID transfers      
+        Object_srm = GridSRMCopyHandler()  
+       
+        #GOEGRID->GOEGRID transfers   
         srcHostSite1 = self.config['site1_host']
         dstHostSite1 = self.config['site1_host']
         
@@ -187,6 +190,13 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
         Object_uberftp.setHostsAndPorts(srcHostSite1, "", dstHostSite1, "")
         Object_srm.setHostsAndPorts(srcHostSite1, srcPortSite1, dstHostSite1, dstPortSite1, "srm")
+        
+        Object_lcg = GridLCGCopyHandler()
+        Object_lcg.setHostsAndPorts(srcHostSite1, srcPortSite1, dstHostSite1, dstPortSite1, "srm")
+        Object_lcg.showFiles("/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi/")
+        
+        
+        """
         ##Crate a folder with a subfolder in GOEGRID-SCRATCHDISK##
         scrtDiskPathSite1 = self.config['site1_scratchdisk_path']
         stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object_uberftp.mkDir(scrtDiskPathSite1)
@@ -235,7 +245,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
         
         
-        #GOEGRID->BU_ATLAS_Tier2 transfers                       
+        #GOEGRID->Wuppertal transfers                       
         scrtDiskPathSite2 = self.config['site2_scratchdisk_path']
         lGrDiskPathSite2 = self.config['site2_localgroupdisk_path']
         prodDiskPathSite2 = self.config['site2_proddisk_path']
@@ -277,26 +287,101 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[3] = detail2_srm  
         
+        
+        
         """
+        #Wuppertal->GOEGRID transfers
         """
-        #WUPPERTAL->GOEGRID transfers
-        srcHostSite3 = self.config['site3_host']
+        srcHostSite2 = self.config['site2_host']    
+        dstHostSite2 = self.config['site2_host'] 
+        
         dstHostSite1 = self.config['site1_host']     
-        siteName  = self.config['site3_name2']    
-       
-        detail3 = self.spaceTokenStatus(siteName,
-                                        Object,
-                                        srcHostSite3, 
-                                        dstHostSite1, 
-                                        scrtDiskPathSite3, 
-                                        lGrDiskPathSite3,
+        
+        siteName  = self.config['site2_name2'] 
+        
+        srcPortSite2 = self.config['site2_host']
+        dstPortSite1 = self.config['site1_port']  
+        
+        Object_uberftp.setHostsAndPorts(srcHostSite2, "", dstHostSite2, "")
+        Object_srm.setHostsAndPorts(srcHostSite2, srcPortSite2, dstHostSite1, dstPortSite1, "srm") 
+        
+        scrtDiskPathSite1 = self.config['site1_scratchdisk_path']
+        lGrDiskPathSite1 = self.config['site1_localgroupdisk_path']
+        prodDiskPathSite1 = self.config['site1_proddisk_path']
+        dataDiskPathSite1 = self.config['site1_datadisk_path']
+        
+        
+        scrtDiskPathSite2 = self.config['site2_scratchdisk_path']
+        stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object_uberftp.mkDir(scrtDiskPathSite2)
+        if stdout_mkdir_scratchdisk:
+           Object_uberftp.mkDir(scrtDiskPathSite2+ "test/")
+        
+        if stderr_mkdir_scratchdisk:
+           print stderr_mkdir_scratchdisk
+           
+        ##Crate a folder with a subfolder in GOEGRID-LOCALGROUPDISK##
+        lGrDiskPathSite2 = self.config['site2_localgroupdisk_path']
+        stdout_mkdir_localgroupdisk, stderr_mkdir_localgroupdisk = Object_uberftp.mkDir(lGrDiskPathSite2)
+        if stdout_mkdir_localgroupdisk:
+           Object_uberftp.mkDir(lGrDiskPathSite2 + "test/")
+        
+        if stderr_mkdir_localgroupdisk:
+           print stderr_mkdir_localgroupdisk 
+           
+        Object_uberftp.setHostsAndPorts(srcHostSite2, "", dstHostSite1, "")
+        
+        print "\n"
+        print siteName
+        print "\n"
+        print srcHostSite2
+        print "\n" 
+        print dstHostSite1
+        print "\n" 
+        print srcPortSite2
+        print "\n" 
+        print dstPortSite1
+        print "\n" 
+        print scrtDiskPathSite2 
+        print "\n"
+        print lGrDiskPathSite2
+        print "\n" 
+        print scrtDiskPathSite1 + "test/"
+        print "\n"
+        print lGrDiskPathSite1 + "test/"
+        print "\n"
+        print prodDiskPathSite1
+        print "\n"
+        print dataDiskPathSite1
+        print "\n"
+        
+        
+        detail3_uberftp, detail3_srm = self.spaceTokenStatus(siteName,
+                                        Object_uberftp,
+                                        Object_srm,
+                                        srcHostSite2, 
+                                        dstHostSite1,
+                                        srcPortSite2,
+                                        dstPortSite1, 
+                                        scrtDiskPathSite2, 
+                                        lGrDiskPathSite2, 
                                         scrtDiskPathSite1 + "test/", 
                                         lGrDiskPathSite1 + "test/", 
                                         prodDiskPathSite1, 
-                                        dataDiskPathSite1)
+                                        dataDiskPathSite1)  
+        
+        print "\n"             
+        print   detail3_uberftp 
+        print "\n"
+        print "\n"
+        print   detail3_srm   
+        
+              
+        self.details_table_db_value_list.append({})       
+        self.details_table_db_value_list[0] = detail3_uberftp
         
         self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[2] = detail3 
+        self.details_table_db_value_list[1] = detail3_srm 
+        
         
         ##Removes created folders and subfolders##
         Object.rmDir(srcHostSite1, scrtDiskPathSite1 + "test/")
@@ -306,7 +391,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
         Object.rmDir(dstHostSite3, scrtDiskPathSite3)
         Object.rmDir(dstHostSite3, lGrDiskPathSite3)   
-        """                         
+        """                        
         return data
     
     def prepareAcquisition(self):
@@ -316,12 +401,8 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list = []
              
     def fillSubtables(self, parent_id):
-        
-       # self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_uberftp_table_db_value_list])
-       # self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_srm_table_db_value_list])
-       self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
-       
-              
+        self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
+                   
     def getTemplateData(self):
         data = hf.module.ModuleBase.getTemplateData(self)
         
@@ -347,50 +428,35 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
             
         max_id_number1_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site1_name']), self.subtables['site_transfers'].c.transferType == "UberFTP")).execute().scalar()        
-        self.dataset['aaa'] = max_id_number1_uberftp                
         details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_uberftp).execute().fetchall()
         data['site1Tosite1_uberftp'] = map(dict, details1)
         
         max_id_number1_srm = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site1_name']), self.subtables['site_transfers'].c.transferType.like ("%SRM%"))).execute().scalar()        
-        self.dataset['bbb'] = max_id_number1_srm                 
-        details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_srm).execute().fetchall()
-        data['site1Tosite1_srm'] = map(dict, details1)
+        #self.dataset['bbb'] = max_id_number1_srm                 
+        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_srm).execute().fetchall()
+        data['site1Tosite1_srm'] = map(dict, details2)
         
         
         max_id_number2_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType == "UberFTP")).execute().scalar()        
-        self.dataset['ccc'] = max_id_number2_uberftp                
+        #self.dataset['ccc'] = max_id_number2_uberftp                
         details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_uberftp).execute().fetchall()
         data['site1Tosite2_uberftp'] = map(dict, details3)
         
         max_id_number2_srm = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType.like ("%SRM%"))).execute().scalar()        
-        self.dataset['ddd'] = max_id_number2_srm                 
+        #self.dataset['ddd'] = max_id_number2_srm                 
         details4 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_srm).execute().fetchall()
         data['site1Tosite2_srm'] = map(dict, details4)
         
+        
+        
+        max_id_number3_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name2']), self.subtables['site_transfers'].c.transferType == "UberFTP")).execute().scalar()        
+        details5 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3_uberftp).execute().fetchall()
+        data['site2Tosite1_uberftp'] = map(dict, details5)
+        
+        max_id_number3_srm = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name2']), self.subtables['site_transfers'].c.transferType.like ("%SRM%"))).execute().scalar()        
+        details6 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3_srm).execute().fetchall()
+        data['site2Tosite1_srm'] = map(dict, details6)
+        
        
-        """
-        max_id_number2_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType == "UberFTP")).execute().scalar()        
-        self.dataset['ccc'] = max_id_number2_uberftp                
-        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_uberftp).execute().fetchall()
-        data['site1Tosite3_uberftp'] = map(dict, details3)
-        
-        max_id_number3_srm = func.max(self.subtables['site_transfers'].c.id).select().where(and_(self.subtables['site_transfers'].c.siteName == str(self.config['site2_name1']), self.subtables['site_transfers'].c.transferType == "SRM")).execute().scalar()        
-        self.dataset['ddd'] = max_id_number3_srm                
-        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2_srm).execute().fetchall()
-        data['site1Tosite3_srm'] = map(dict, details4)
-        """
-       
-        """
-        max_id_number2 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name1'])).execute().scalar()        
-        #self.dataset['bbb'] = max_id_number2               
-        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2).execute().fetchall()
-        data['site1Tosite2'] = map(dict, details2)
-        
-        max_id_number3 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name2'])).execute().scalar()        
-        #self.dataset['ccc'] = max_id_number3               
-        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3).execute().fetchall()
-        data['site2Tosite1'] = map(dict, details3)
-        """
-        
         return data
     
