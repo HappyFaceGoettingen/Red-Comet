@@ -110,7 +110,7 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler):
         
         return copyStatus, stderr, srcPath, fileName 
 
-    def copyFromLocalToRemote(self, localPath, srcPath):     
+    def copyFormLocalToRemote(self, srcHost, localPath, srcPath):     
         self.commandArgs = 'srmcp file:///' + localPath + '  ' + self.__protocol + "://" + self.__srcHost + ":" + self.__dstPort + srcPath 
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
