@@ -4,64 +4,10 @@
 
 <%def name="content()">
 
-
-<%def name = "drawTable2(list)">
-
-            % for detail in list: 
-			     %if detail['localgroupdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToScratchdisk']:
-				      <td bgcolor = "#4FD516"></td>
-				 %elif 'Failed' or 'Error' in detail['localgroupdiskToScratchdisk']:
-			     <td bgcolor = "#FF6464">
-			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToScratchdisk']}" />				    
-			        </td> 
-			     %else:
-			        <td bgcolor = "#FDFEB0">
-			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToScratchdisk']}" />		    
-			        </td> 
-				 % endif
-				 
-			     %if detail['localgroupdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['localgroupdiskToLocalgroupdisk']:
-				      <td bgcolor = "#4FD516"></td>
-				 %elif 'Failed' or 'Failed' or 'Error' in detail['localgroupdiskToLocalgroupdisk']:
-			        <td bgcolor = "#FF6464">
-			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToLocalgroupdisk']}" />						    
-			        </td> 
-			     %else:
-			        <td bgcolor = "#FDFEB0">
-			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToLocalgroupdisk']}" />				    
-			        </td> 
-				 % endif
-				 
-				 %if detail['localgroupdiskToProddisk'] == 'OK'  or 'Permission denied' or 'Authorization' or 'no permission' in detail['localgroupdiskToProddisk'] or 'SpaceException' in detail['localgroupdiskToProddisk']:
-				      <td bgcolor = "#4FD516"></td>
-				 %elif 'Failed' or 'Error' in detail['localgroupdiskToProddisk']:
-			        <td bgcolor = "#FF6464">
-			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToProddisk']}" />			    
-			        </td> 
-			     %else:
-			        <td bgcolor = "#FDFEB0">
-			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToProddisk']}" />			    
-			        </td> 
-				 % endif
-				 
-				  %if detail['localgroupdiskToDatadisk'] == 'OK' or 'Permission denied' or 'Authorization' or 'no permission' in detail['localgroupdiskToDatadisk'] or 'SpaceException' in detail['localgroupdiskToDatadisk']:
-				      <td bgcolor = "#4FD516"></td>
-				 %elif 'Failed' or 'Error' in detail['localgroupdiskToDatadisk']:
-			        <td bgcolor = "#FF6464">
-			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToDatadisk']}" />			    
-			        </td> 
-			     %else:
-			        <td bgcolor = "#FDFEB0">
-			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToDatadisk']}" />	    
-			        </td> 
-				 % endif
-	   % endfor
-</%def>
-
 <%def name="drawTable(list)">
           
    			% for detail in list: 				
-				 %if detail['scratchdiskToScratchdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToScratchdisk']:
+				 %if 'OK' or 'SpaceException'  or 'FileExists' in detail['scratchdiskToScratchdisk']:
 				    <td bgcolor = "#4FD516"></td>
 				 %elif 'Failed' or 'Error' in detail['scratchdiskToScratchdisk']:
 				    <td bgcolor = "#FF6464">
@@ -74,7 +20,7 @@
 			        </td>
 				 % endif							 
 				 
-			     %if detail['scratchdiskToLocalgroupdisk'] == 'OK' or 'SpaceException' in detail['scratchdiskToLocalgroupdisk']:
+			     %if 'OK' or 'SpaceException'  or 'FileExists'  in detail['scratchdiskToLocalgroupdisk']:
 			        <td bgcolor = "#4FD516"></td>
 			     %elif 'Failed' or 'Error' in detail['scratchdiskToLocalgroupdisk']:
 			        <td bgcolor = "#FF6464">
@@ -86,7 +32,7 @@
 			        </td>
 			     % endif
 			     
-			     %if detail['scratchdiskToProddisk'] == 'OK' or 'Permission denied' or 'Authorization' or 'no permission' in detail['scratchdiskToProddisk'] or 'SpaceException' in detail['scratchdiskToProddisk']:
+			     %if 'OK' or 'SpaceException'  or 'FileExists' or 'Permission denied' or 'Authorization' or 'no permission' in detail['scratchdiskToProddisk']:
 				      <td bgcolor = "#4FD516"></td>
 				 %elif 'Failed' or 'Error' in detail['scratchdiskToProddisk']:
 			        <td bgcolor = "#FF6464">
@@ -98,7 +44,7 @@
 			        </td>
 				 % endif
 				 
-				 %if detail['scratchdiskToDatadisk'] == 'OK' or 'Permission denied' or 'Authorization' or 'no permission' in detail['scratchdiskToDatadisk'] or 'SpaceException' in detail['scratchdiskToDatadisk']:
+				 %if 'OK' or 'SpaceException'  or 'FileExists' or 'Permission denied' or 'Authorization' or 'no permission' in detail['scratchdiskToDatadisk']:
 				      <td bgcolor = "#4FD516"></td>
 				 %elif 'Failed' or 'Error' in detail['scratchdiskToDatadisk']:
 			        <td bgcolor = "#FF6464">
@@ -112,24 +58,81 @@
 				 		
 		   % endfor
 		</%def>
+		
+		
+<%def name = "drawTable2(list)">
 
-<h3>Transfers with UberFTP and SRM </h3>
+            % for detail in list: 
+			     %if 'OK' or 'SpaceException'  or 'FileExists' in detail['localgroupdiskToScratchdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif 'Failed' or 'Error' in detail['localgroupdiskToScratchdisk']:
+			     <td bgcolor = "#FF6464">
+			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToScratchdisk']}" />				    
+			        </td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">
+			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToScratchdisk']}" />		    
+			        </td> 
+				 % endif
+				 
+			     %if 'OK' or 'SpaceException'  or 'FileExists' in detail['localgroupdiskToLocalgroupdisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif 'Failed' or 'Failed' or 'Error' in detail['localgroupdiskToLocalgroupdisk']:
+			        <td bgcolor = "#FF6464">
+			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToLocalgroupdisk']}" />						    
+			        </td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">
+			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToLocalgroupdisk']}" />				    
+			        </td> 
+				 % endif
+				 
+				 %if 'OK' or 'SpaceException'  or 'FileExists' or 'Permission denied' or 'Authorization' or 'no permission' in detail['localgroupdiskToProddisk']:
+				      <td bgcolor = "#4FD516"></td>
+				 %elif 'Failed' or 'Error' in detail['localgroupdiskToProddisk']:
+			        <td bgcolor = "#FF6464">
+			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToProddisk']}" />			    
+			        </td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">
+			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToProddisk']}" />			    
+			        </td> 
+				 % endif
+				 
+				  %if 'OK' or 'SpaceException'  or 'FileExists' or 'Permission denied' or 'Authorization' or 'no permission' in detail['localgroupdiskToDatadisk'] :
+				      <td bgcolor = "#4FD516"></td>
+				 %elif 'Failed' or 'Error' in detail['localgroupdiskToDatadisk']:
+			        <td bgcolor = "#FF6464">
+			         <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToDatadisk']}" />			    
+			        </td> 
+			     %else:
+			        <td bgcolor = "#FDFEB0">
+			        <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToDatadisk']}" />	    
+			        </td> 
+				 % endif
+	   % endfor
+</%def>
+
+
+<h3>Transfers with UberFTP, SRM and LCG commands</h3>
+
+</br>
 </br>
 
-
-</br>
 <div class="scrollable-table">
   <table class="table table-striped table-header-rotated">
 		<thread>
 		<tr>	
 		    <th> &nbsp;</th>
-	    	<th class="rotate-45"><div><span>${dataset['site1_space_token_scratchdisk']} UberFTP</span></div></th>
+	    
+        	<th class="rotate-45"><div><span>${dataset['site1_space_token_scratchdisk']} UberFTP</span></div></th>
 						
 			<th class="rotate-45"><div><span> ${dataset['site1_space_token_localgroupdisk']} UberFTP</span></div></th>
 				
 			<th class="rotate-45"><div><span> ${dataset['site1_space_token_proddisk']} UberFTP</span></div> </th>
 			
 			<th class="rotate-45"><div><span> ${dataset['site1_space_token_datadisk']} UberFTP</span></div> </th>
+			
 			
 			<th class="rotate-45"><div><span>${dataset['site1_space_token_scratchdisk']} SRM</span></div></th>
 						
@@ -139,6 +142,16 @@
 			
 			<th class="rotate-45"><div><span> ${dataset['site1_space_token_datadisk']} SRM</span></div> </th>
 			
+			
+			<th class="rotate-45"><div><span>${dataset['site1_space_token_scratchdisk']} LCG</span></div></th>
+						
+			<th class="rotate-45"><div><span> ${dataset['site1_space_token_localgroupdisk']} LCG</span></div></th>
+				
+			<th class="rotate-45"><div><span> ${dataset['site1_space_token_proddisk']} LCG</span></div> </th>
+			
+			<th class="rotate-45"><div><span> ${dataset['site1_space_token_datadisk']} LCG</span></div> </th>
+     	
+			
 			<th class="rotate-45"><div><span>${dataset['site2_space_token_scratchdisk']} UberFTP</span></div></th>
 						
 			<th class="rotate-45"><div><span> ${dataset['site2_space_token_localgroupdisk']} UberFTP</span></div></th>
@@ -147,6 +160,7 @@
 			
 			<th class="rotate-45"><div><span> ${dataset['site2_space_token_datadisk']} UberFTP</span></div> </th>
 			
+			
 			<th class="rotate-45"><div><span>${dataset['site2_space_token_scratchdisk']} SRM</span></div></th>
 						
 			<th class="rotate-45"><div><span> ${dataset['site2_space_token_localgroupdisk']} SRM</span></div></th>
@@ -154,6 +168,9 @@
 			<th class="rotate-45"><div><span> ${dataset['site2_space_token_proddisk']} SRM</span></div> </th>
 			
 			<th class="rotate-45"><div><span> ${dataset['site2_space_token_datadisk']} SRM</span></div> </th>
+     	
+     	 
+     	
      	</tr>
 				
 		</thread>
@@ -162,16 +179,20 @@
 		<tr>
           <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</th>
 		${drawTable(site1Tosite1_uberftp)}
-		${drawTable2(site1Tosite1_srm)}
+		${drawTable(site1Tosite1_srm)}
+		${drawTable(site1Tosite1_lcg)}
+		
 		${drawTable(site1Tosite2_uberftp)}
-		${drawTable2(site1Tosite2_srm)}
-
+		${drawTable(site1Tosite2_srm)}
+				
 		</tr>
 		<tr>
 	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_localgroupdisk']}</td>
-		${drawTable(site1Tosite1_uberftp)}
+		${drawTable2(site1Tosite1_uberftp)}
 		${drawTable2(site1Tosite1_srm)}
-		${drawTable(site1Tosite2_uberftp)}
+		${drawTable2(site1Tosite1_lcg)}
+				
+		${drawTable2(site1Tosite2_uberftp)}
 		${drawTable2(site1Tosite2_srm)}
 
 		</tr>
@@ -215,13 +236,13 @@
 		<tr>
           <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site2_space_token_scratchdisk']}</th>
 		${drawTable(site2Tosite1_uberftp)}
-		${drawTable2(site2Tosite1_srm)}
+		${drawTable(site2Tosite1_srm)}
 
 
 		</tr>
 		<tr>
 	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site2_space_token_localgroupdisk']}</td>
-		${drawTable(site2Tosite1_uberftp)}
+		${drawTable2(site2Tosite1_uberftp)}
 		${drawTable2(site2Tosite1_srm)}
 
 
