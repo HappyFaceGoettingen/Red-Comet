@@ -247,7 +247,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
                                                         prodDiskPathSite1, 
                                                         dataDiskPathSite1)               
         
-               
+        """       
         self.details_table_db_value_list.append({})        
         self.details_table_db_value_list.append(detail1_uberftp)
         
@@ -256,7 +256,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list.append(detail1_lcg)
-        
+        """
         
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[0] = detail1_uberftp
