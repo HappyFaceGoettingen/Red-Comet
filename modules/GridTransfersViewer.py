@@ -246,48 +246,16 @@ class GridTransfersViewer(hf.module.ModuleBase):
                                                         lGrDiskPathSite1 + "test/", 
                                                         prodDiskPathSite1, 
                                                         dataDiskPathSite1)               
-        
-        """       
-        self.details_table_db_value_list.append({})        
-        self.details_table_db_value_list.append(detail1_uberftp)
-        
-        self.details_table_db_value_list.append({})
-        self.details_table_db_value_list.append(detail1_srm)
-        
-        self.details_table_db_value_list.append({})
-        self.details_table_db_value_list.append(detail1_lcg)
-        """
-        
+
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[0] = detail1_uberftp
         self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[1] = detail1_srm 
+        self.details_table_db_value_list[1] = detail1_srm
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[2] = detail1_lcg
+              
         
-        ##Remove files from source and destination part##
-        Object_uberftp.rmFile2(srcHostSite1 , scrtDiskPathSite1)
-        Object_uberftp.rmFile2(srcHostSite1, scrtDiskPathSite1 + "test/")         
-        Object_uberftp.rmFile2(srcHostSite1, lGrDiskPathSite1)
-        Object_uberftp.rmFile2(srcHostSite1, lGrDiskPathSite1 + "test/")
-               
-        
-        ##Remove directories from source and destination part##
-        Object_uberftp.rmDir(srcHostSite1 , scrtDiskPathSite1 + "test/")
-        Object_uberftp.rmDir(srcHostSite1 , scrtDiskPathSite1)
-        Object_uberftp.rmDir(srcHostSite1 , lGrDiskPathSite1 + "test/")
-        Object_uberftp.rmDir(srcHostSite1 , lGrDiskPathSite1)
-                
-       
-        ##Remove files from local part##              
-        filelist = glob.glob("*.txt")
-        for txt_file in filelist:         
-            os.remove(txt_file)
-            
-        #print (os.path.abspath("d1a37a20169fb0a1dca2e5ca8e38dc03_random.txt")) 
-        
-        
-        """        
+              
         #GOEGRID->Wuppertal transfers                       
         scrtDiskPathSite2 = self.config['site2_scratchdisk_path']
         lGrDiskPathSite2 = self.config['site2_localgroupdisk_path']
@@ -298,8 +266,8 @@ class GridTransfersViewer(hf.module.ModuleBase):
         dstHostSite2 = self.config['site2_host']
         
         srcPortSite1 = self.config['site1_port']
-        dstPortSite2 = self.config['site2_port']
-        
+        dstPortSite2 = self.config['site2_port']  
+                
         
         Object_uberftp.setHostsAndPorts(srcHostSite1, "", dstHostSite2, "")
         Object_srm.setHostsAndPorts(srcHostSite1, srcPortSite1, dstHostSite2, dstPortSite2, "srm")
@@ -310,31 +278,54 @@ class GridTransfersViewer(hf.module.ModuleBase):
         siteName  = self.config['site2_name1']     
            
         
-        detail2_uberftp, detail2_srm = self.spaceTokenStatus(siteName,
-                                        Object_uberftp,
-                                        Object_srm,
-                                        srcHostSite1, 
-                                        dstHostSite2,
-                                        srcPortSite1,
-                                        dstPortSite2, 
-                                        scrtDiskPathSite1, 
-                                        lGrDiskPathSite1, 
-                                        scrtDiskPathSite2, 
-                                        lGrDiskPathSite2, 
-                                        prodDiskPathSite2, 
-                                        dataDiskPathSite2)               
-                
-        self.details_table_db_value_list.append({})        
-        self.details_table_db_value_list[2] = detail2_uberftp
+        detail2_uberftp, detail2_srm, detail2_lcg = self.spaceTokenStatus(siteName,
+                                                    Object_uberftp,
+                                                    Object_srm,
+                                                    Object_lcg,
+                                                    srcHostSite1, 
+                                                    dstHostSite2,
+                                                    srcPortSite1,
+                                                    dstPortSite2, 
+                                                    scrtDiskPathSite1, 
+                                                    lGrDiskPathSite1, 
+                                                    scrtDiskPathSite2, 
+                                                    lGrDiskPathSite2, 
+                                                    prodDiskPathSite2, 
+                                                    dataDiskPathSite2)               
         
         self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[3] = detail2_srm  
+        self.details_table_db_value_list[3] = detail2_uberftp
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[4] = detail2_srm
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[5] = detail2_lcg
         
+        """
+        ##Remove files from source and destination part##
+        Object_uberftp.rmFile(srcHostSite1, scrtDiskPathSite1)
+        Object_uberftp.rmFile(srcHostSite1, scrtDiskPathSite1 + "test/")         
+        Object_uberftp.rmFile(srcHostSite1, lGrDiskPathSite1)
+        Object_uberftp.rmFile(srcHostSite1, lGrDiskPathSite1 + "test/")
+                       
+        ##Remove directories from source and destination part##
+        Object_uberftp.rmDir(srcHostSite1, scrtDiskPathSite1 + "test/")
+        Object_uberftp.rmDir(srcHostSite1, scrtDiskPathSite1)
+        Object_uberftp.rmDir(srcHostSite1, lGrDiskPathSite1 + "test/")
+        Object_uberftp.rmDir(srcHostSite1, lGrDiskPathSite1)
         
+        ##Remove directories from source and destination part##
+        Object_uberftp.rmDir(dstHostSite2, scrtDiskPathSite2)
+        Object_uberftp.rmDir(dstHostSite2, lGrDiskPathSite2)
+                
+        ##Remove files from local part##              
+        filelist = glob.glob("*.txt")
+        for txt_file in filelist:         
+            os.remove(txt_file)
+        """
         
         """
         #Wuppertal->GOEGRID transfers
-        """
+        
         srcHostSite2 = self.config['site2_host']    
         dstHostSite2 = self.config['site2_host'] 
         
@@ -404,8 +395,10 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list = []
              
     def fillSubtables(self, parent_id):
+
         self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
-       
+        
+   
     def getConfigData(self):
         
         self.dataset['site1Name'] = self.config['site1_name']                
@@ -440,20 +433,18 @@ class GridTransfersViewer(hf.module.ModuleBase):
                        
     def getTemplateData(self):
         data = hf.module.ModuleBase.getTemplateData(self)
-        
-        dataset = self.getConfigData()       
-          
+                     
         data['site1Tosite1_uberftp'] = self.SQLQuery(self.config['site1_name'],"UberFTP") 
         data['site1Tosite1_srm'] = self.SQLQuery(self.config['site1_name'],"SRM")   
         data['site1Tosite1_lcg'] = self.SQLQuery(self.config['site1_name'],"LCG")   
 
         data['site1Tosite2_uberftp'] = self.SQLQuery(self.config['site2_name1'],"UberFTP") 
-        data['site1Tosite2_srm'] = self.SQLQuery(self.config['site2_name1'],"SRM")    
+        data['site1Tosite2_srm'] = self.SQLQuery(self.config['site2_name1'],"SRM")  
+        data['site1Tosite2_lcg'] = self.SQLQuery(self.config['site2_name1'],"LCG")  
        
         data['site2Tosite1_uberftp'] = self.SQLQuery(self.config['site2_name2'],"UberFTP") 
         data['site2Tosite1_srm'] = self.SQLQuery(self.config['site2_name2'],"SRM")   
-              
-               
+                      
        
         return data
     
