@@ -200,10 +200,26 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler):
             print e
             
         
-    def rmFile (self, host, fileName, dstPath):
+    def rm(self, host, fileName, dstPath):
         self.__fileName = fileName
         self.__dstPath = dstPath
         self.commandArgs = 'uberftp ' + host + ' "rm  ' +  self.__dstPath + self.__fileName + ' " '
+        self.logger.debug("Executed command = " +  str(self.commandArgs))
+        self.execute()
+        try: 
+            (data,error) = self.gridProcess.communicate()
+            if data:
+                print "Deleted \n"
+            if error:
+                print error
+        except Exception as e: 
+            print "An exception has occurred: "
+            print e
+        
+        
+    def rmFile (self, host, dstPath):
+        self.__dstPath = dstPath
+        self.commandArgs = 'uberftp ' + host + ' "cd ' +  self.__dstPath + ' " ' + ' " rm *.txt " ' 
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
