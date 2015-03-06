@@ -1,7 +1,7 @@
 Summary: HappyFace-Red-Comet
 Name: HappyFace-Red-Comet
 Version: 3.0.0
-Release: 3
+Release: 4
 License: Apache License Version 2.0
 Group: System Environment/Daemons
 URL: https://ekptrac.physik.uni-karlsruhe.de/trac/HappyFace
@@ -87,6 +87,7 @@ cd ..
 
 # copy files
 cp -v red-comet-devel/*.sh $RPM_BUILD_ROOT/%{_devel_dir}
+cp -v red-comet-devel/README.txt $RPM_BUILD_ROOT/%{_devel_dir}
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -111,6 +112,8 @@ service httpd start
 
 
 %changelog
+* Fri Mar 06 2015 Gen Kawamura <Gen.Kawamura@cern.ch> 3.0.0-4
+- Sprint Zgok env
 * Thu Aug 18 2014 Gen Kawamura <Gen.Kawamura@cern.ch> 3.0.0-3
 - Sprint 3 env
 - Code-Name: Black Tri Stars
