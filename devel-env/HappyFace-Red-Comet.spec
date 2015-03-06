@@ -107,9 +107,10 @@ service httpd start
 
 
 %files
-%defattr(1777,happyface3,happyface3)
-%{_devel_dir}/*
-
+%defattr(-,happyface3,happyface3)
+%{_devel_dir}/*.sh
+%defattr(644,happyface3,happyface3)
+%{_devel_dir}/README.txt
 
 %changelog
 * Fri Mar 06 2015 Gen Kawamura <Gen.Kawamura@cern.ch> 3.0.0-4
