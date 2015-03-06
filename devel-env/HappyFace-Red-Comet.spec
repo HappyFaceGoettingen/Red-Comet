@@ -107,7 +107,7 @@ service httpd start
 
 
 %files
-%defattr(-,happyface3,happyface3)
+%defattr(777,happyface3,happyface3)
 %{_devel_dir}/*.sh
 %defattr(644,happyface3,happyface3)
 %{_devel_dir}/README.txt
