@@ -255,7 +255,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list[2] = detail1_lcg
               
         
-              
+        """      
         #GOEGRID->Wuppertal transfers                       
         scrtDiskPathSite2 = self.config['site2_scratchdisk_path']
         lGrDiskPathSite2 = self.config['site2_localgroupdisk_path']
@@ -300,7 +300,7 @@ class GridTransfersViewer(hf.module.ModuleBase):
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[5] = detail2_lcg
         
-        """
+        
         ##Remove files from source and destination part##
         Object_uberftp.rmFile(srcHostSite1, scrtDiskPathSite1)
         Object_uberftp.rmFile(srcHostSite1, scrtDiskPathSite1 + "test/")         
@@ -321,9 +321,9 @@ class GridTransfersViewer(hf.module.ModuleBase):
         filelist = glob.glob("*.txt")
         for txt_file in filelist:         
             os.remove(txt_file)
-        """
+    
         
-        """
+        
         #Wuppertal->GOEGRID transfers
         
         srcHostSite2 = self.config['site2_host']    
