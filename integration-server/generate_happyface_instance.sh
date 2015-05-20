@@ -9,13 +9,10 @@ EMAIL="ph2-admin@gwdg.de"
 check_git(){
     local git_dir=$1
 
-    local_git=$(cd $git_dir; git log -1 HEAD)
-    remote_git=$(cd $git_dir; git log -1 origin/HEAD)
-
-    echo "$local_git" > /tmp/local.git
-    echo "$remote_git" > /tmp/remote.git
-    
-    diff /tmp/local.git /tmp/remote.git && echo "Local Git repo [git_dir] is the latest." && exit 0
+    git_message=$(cd $git_dir; git pull 2>&1)
+    if echo "$git_message" | grep "Already up-to-date"; then
+	exit 0
+    fi
 }
 
 
