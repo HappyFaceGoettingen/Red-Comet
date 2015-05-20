@@ -13,7 +13,7 @@ check_git(){
     remote_git=$(cd $git_dir; git log -1 origin/HEAD)
 
     echo "$local_git" > /tmp/local.git
-    echo "$local_git" > /tmp/remote.git
+    echo "$remote_git" > /tmp/remote.git
     
     diff /tmp/local.git /tmp/remote.git && echo "Local Git repo [git_dir] is the latest." && exit 0
 }
