@@ -28,3 +28,20 @@ As for your initial test, just run the script as follows.
 
    cd /root/happyface
    ./generate_happyface_instance.sh
+
+
+A location of grid user key is "/var/lib/gridkeys". You must prepare a grid user key and cert pair.
+
+  1. generate user certificate
+  openssl pkcs12 -clcerts -nokeys -in usercert.p12 -out usercert.pem
+
+  2. create a private certficate with passphrase
+  openssl pkcs12 -nocerts -in usercert.p12 -out userkey.pem
+
+  3. create a private certificate without passphrase
+  openssl rsa -in userkey.pem -out userkey.nopass.pem
+
+  4. copy grid user cert.
+  cp -v userkey.nopass.pem /var/lib/gridkeys
+  cp -v usercert.pem /var/lib/gridkeys
+
