@@ -58,6 +58,9 @@ check_git(){
 
 
 build_rpm(){
+    ## remove old RPM
+    rm -v $HF_PACKAGE
+
     ## create .rpmmacros
     echo "%_topdir        $PWD" > /root/.rpmmacros
     
