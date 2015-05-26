@@ -3,4 +3,4 @@
 . /etc/profile
 
 cd /root/happyface
-./generate_happyface_instance.sh
+./generate_happyface_instance.sh -r -e

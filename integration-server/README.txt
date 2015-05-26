@@ -27,7 +27,7 @@ removing old env, deplying new HF, and running acquire.py
 As for your initial test, just run the script as follows.
 
    cd /root/happyface
-   ./generate_happyface_instance.sh
+   ./generate_happyface_instance.sh -r
 
 
 A location of grid user key is "/var/lib/gridkeys". You must prepare a grid user key and cert pair.

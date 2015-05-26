@@ -4,10 +4,51 @@ HF_PACKAGE_NAME="HappyFace-Grid-Engine"
 HF_PACKAGE=/root/happyface/RPMS/x86_64/HappyFace-Grid-Engine-3.0.0-3.x86_64.rpm
 LOG_DIR=/root/happyface/log
 EMAIL="ph2-admin@gwdg.de"
+GIT_URL="https://github.com/HappyFaceGoettingen/Red-Comet.git"
+GIT_BRANCH="Zgok"
+
+usage="$0 [option]
+
+ -e:     Send an email notification to [$EMAIL]
+ -i:     Ignore Git update
+
+ -r:     Run
+
+
+"
+
+
+if [ $# -eq 0 ]; then
+    echo "$usage"
+    exit 0
+fi
+
+#--------------------------
+# Getopt
+#--------------------------
+while getopts "erih" op
+  do
+  case $op in
+      e) EMAIL_NOTIFICATION="ON"
+          ;;
+      r) echo "Start"
+	  ;;
+      i) IGNORE_GIT_UPDATE="ON"
+	  ;;
+      h) echo "$usage"
+          exit 0
+          ;;
+      ?) echo "$usage"
+          exit 0
+          ;;
+  esac
+done
+
 
 
 check_git(){
     local git_dir=$1
+    [ "$IGNORE_GIT_UPDATE" == "ON" ] && return 0
 
     git_message=$(cd $git_dir; git pull 2>&1)
     if echo "$git_message" | grep "Already up-to-date"; then
@@ -32,7 +73,7 @@ build_rpm(){
     cd SOURCES/HappyFace-Red-Comet
 
     [ -e Red-Comet ] && rm -rf Red-Comet
-    git clone https://github.com/HappyFaceGoettingen/Red-Comet.git -b Zgok
+    git clone $GIT_URL -b $GIT_BRANCH
     cp -v Red-Comet/defaultconfig/happyface.cfg happyface-red-comet.cfg
     ln -sf $PWD/happyface-red-comet.cfg ..
 
@@ -79,8 +120,8 @@ run_HF(){
 #-------------------------------------------------------
 [ -e SOURCES/HappyFace-Red-Comet/Red-Comet ] && check_git SOURCES/HappyFace-Red-Comet/Red-Comet
 build_rpm 2>&1 | tee $LOG_DIR/build.log
-echo "$(cat $LOG_DIR/build.log)
-" | mail -s "Rebuilding HappyFace [$(hostname -s)]" $EMAIL
+
+[ "$EMAIL_NOTIFICATION" == "ON" ] && echo "$(cat $LOG_DIR/build.log)" | mail -s "Rebuilding HappyFace [$(hostname -s)]" $EMAIL
 
 
 
@@ -104,18 +145,18 @@ yum -y --nogpgcheck install $HF_PACKAGE 2>&1 | tee $LOG_DIR/deploy.log
 #--------------------------------------------------------
 # Set up env
 #--------------------------------------------------------
-setup_HF_env
+setup_HF_env 2>&1 | tee $LOG_DIR/deploy_env.log
 
 
 #--------------------------------------------------------
 # Run
 #--------------------------------------------------------
-run_HF
+run_HF 2>&1 | tee $LOG_DIR/run.log
 
 
 
 
-echo "
+EMAIL_MESSAGE="
 =================================================================
  Removal
 =================================================================
@@ -133,12 +174,15 @@ $(cat $LOG_DIR/deploy.log)
 =================================================================
  Environment
 =================================================================
-
+$(cat $LOG_DIR/deploy_env.log)
 
 =================================================================
  Run
 =================================================================
+$(cat $LOG_DIR/run.log)
 
 
-" | mail -s "HappyFace Deployment Report [$(hostname -s)]" $EMAIL
+" 
+
+[ "$EMAIL_NOTIFICATION" == "ON" ] && mail -s "HappyFace Deployment Report [$(hostname -s)]" $EMAIL
 
