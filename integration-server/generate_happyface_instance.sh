@@ -1,9 +1,15 @@
 #!/bin/bash
 
+
+
 HF_PACKAGE_NAME="HappyFace-Grid-Engine"
 HF_PACKAGE=/root/happyface/RPMS/x86_64/HappyFace-Grid-Engine-3.0.0-3.x86_64.rpm
+KEY_HOME=/var/lib/gridkeys
+
 LOG_DIR=/root/happyface/log
 EMAIL="ph2-admin@gwdg.de"
+
+
 GIT_URL="https://github.com/HappyFaceGoettingen/Red-Comet.git"
 GIT_BRANCH="Zgok"
 
@@ -105,7 +111,6 @@ build_rpm(){
 
 
 setup_HF_env(){
-    KEY_HOME=/var/lib/gridkeys
     [ ! -e /var/lib/gridkeys ] && mkdir -v $KEY_HOME && chmod 1777 $KEY_HOME
 
     cp -v $KEY_HOME/userkey.nopass.pem /var/lib/HappyFace3/cert/userkey.pem
