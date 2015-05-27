@@ -97,11 +97,8 @@ build_rpm(){
     cp -rv Red-Comet/defaultconfig red-comet/
 
 
-    tar czvf red-comet.tar.gz red-comet
-
-    cd ..
-    mv -v HappyFace-Red-Comet/red-comet.tar.gz .
-    cd ..
+    tar czvf ../red-comet.tar.gz red-comet
+    cd ../..
 
     echo "-------------------- RPM packaging -------------------------"
     rpmbuild --define 'dist .${dist}' --clean -ba SPECS/HappyFace-Grid-Engine.spec
@@ -153,13 +150,13 @@ yum -y --nogpgcheck install $HF_PACKAGE 2>&1 | tee $LOG_DIR/deploy.log
 #--------------------------------------------------------
 # Set up env
 #--------------------------------------------------------
-setup_HF_env 2>&1 | tee $LOG_DIR/deploy_env.log
+time setup_HF_env 2>&1 | tee $LOG_DIR/deploy_env.log
 
 
 #--------------------------------------------------------
 # Run
 #--------------------------------------------------------
-run_HF 2>&1 | tee $LOG_DIR/run.log
+time run_HF 2>&1 | tee $LOG_DIR/run.log
 
 
 
