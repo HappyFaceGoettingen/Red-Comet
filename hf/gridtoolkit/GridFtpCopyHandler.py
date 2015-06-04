@@ -253,7 +253,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     logging.root.setLevel(logging.DEBUG)
    
-    Object = GridcopyFileHandler()
+    Object = GridFtpCopyHandler()
     Object.setHostsAndPorts("se-goegrid.gwdg.de", "", "se-goegrid.gwdg.de", "")
  
  #   Object.connect()
