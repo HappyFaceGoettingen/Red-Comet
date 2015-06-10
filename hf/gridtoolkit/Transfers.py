@@ -42,18 +42,13 @@ class Transfers(GridSubprocessBaseHandler):
     logger = logging.getLogger(__name__)
     
     __srcHost = None
-    __srcPort = None
-        
+    __srcPort = None        
     __dstHost = None
-    __dstPort = None
-    
-    __fileName = None
-       
-    __transferType = None
-    __spaceToken = None
-    
-    __commandArgs=None
-  
+    __dstPort = None    
+    __srcPath = None
+    __dstPath = None    
+    __siteName  = None
+    __transferType = None    
    
     def __init__(self):        
         self.cvmfsEnv.setEnabled("emi")
@@ -82,62 +77,26 @@ class Transfers(GridSubprocessBaseHandler):
         self.__dstHost = dstHost
     
     def getDstHost(self):
-        return self.__dstHost
-    
+        return self.__dstHost    
     
     def setTransferType (self, type):
         self.__transferType = type
     
     def getTransferType(self):
         return self.__transferType    
+     
+    def setSiteName (self, siteName):
+        self.__siteName = siteName
     
-    def setSpaceToken (self, token):
-        self.__spaceToken = type
+    def getSiteName(self):
+        return self.__siteName
     
-    def getSpaceToken(self):
-        return self.__spaceToken
+    def setSrcPath (self, srcPath):
+        self.__srcPath = srcPath
     
-    
-    def copyFileAndCheckExistance(self, srcPath, fileName, dstPath):
-        data, error = self.copyFile(srcPath+fileName, dstPath, "gsiftp" )
-        if not error:
-           check_if_file_exists = self.checkFile(fileName, dstPath)
-           if check_if_file_exists == 0:
-               return "OK"                    
-           else:
-               return "Failed"                      
-        else:
-           return error
+    def getSrcPath (self):
+        return self.__srcPath  
        
-       
-    def checkFile (self, host, fileName, dstPath):
-        stdout, stderr = self.showFiles(host, dstPath)
-        print stdout, stderr
-        if stdout:
-            for item in stdout:
-                if str(item).find(fileName): 
-                   return 0 # if file exists
-                else:
-                   return 1 # file doesnt exists              
-        else:
-            return 1   
-        
-        
-    def showFiles (self, host, dstPath):               
-        self.commandArgs = "uberftp -ls  gsiftp://" + host + dstPath
-        self.logger.debug("Show files in destination path = " +  str(dstPath))
-        self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-            (data,error) = self.gridProcess.communicate()
-            return data, error
-        except Exception as e: 
-            print "An exception has occurred: "
-            print e   
-       
-    
-        
-    
         
 def main():
     print "Transfers"
@@ -145,8 +104,7 @@ def main():
     logging.root.setLevel(logging.DEBUG)
    
     Object = Transfers()
-    Object.setTransferType("Local")
-   
+    Object.setTransferType("Local")   
    
  
 if __name__ == '__main__':
