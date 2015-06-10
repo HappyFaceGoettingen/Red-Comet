@@ -129,7 +129,7 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
     
     #Remove files from local part
     def rmLocal(self):       
-       filelist = glob.glob("tmp/*.txt")
+       filelist = glob.glob("/var/tmp/*_random.txt")
        for txt_file in filelist: 
            os.remove(txt_file)
             
