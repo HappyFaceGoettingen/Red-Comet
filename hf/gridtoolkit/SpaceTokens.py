@@ -39,75 +39,45 @@ import re
 from hf.gridtoolkit.Transfers import Transfers
 
 class SpaceTokens(object):
+    
    
     logger = logging.getLogger(__name__)
-    __spaceToken = None
-    __spaceTokenPath = None    
+    __src_disk = None
+    __lg_disk = None
+    __prod_disk = None
+    __data_disk = None
     
-    def setSpaceTokenPath (self, path):
-        self.__spaceTokenPath = path
+    def setScratchDiskPath (self, path):
+        self.__src_disk = path
     
-    def getSpaceTokenPath(self):
-        return self.__spaceTokenPath
+    def getScratchDiskPath(self):
+        return self.__src_disk
     
-    def useSpaceToken(self, token):
-        self.__spaceToken = token
-        return  self.__spaceToken 
-
-
-class ScratchDisk(SpaceTokens):
-    __scratchDisk = None    
-  
-    def setScratchDisk (self, name):
-        self.__scratchDisk = name
+    def setLocalGroupDiskPath (self, path):
+        self.__lg_disk = path
     
-    def getScratchDisk(self):
-        return self.__scratchDisk
+    def getLocalGroupDiskPath(self):
+        return self.__lg_disk
     
+    def setProdDiskPath (self, path):
+        self.__prod_disk = path
     
-
-class LocalGroupDisk(SpaceTokens):
-    __localgroupDisk = None
-       
-    def setLocalGroupDisk (self, name):
-        self.__localgroupDisk = name
+    def getProdDiskPath(self):
+        return self.__prod_disk
     
-    def getLocalGroupDisk(self):
-        return self.__localgroupDisk
-
-
-
-class ProdDisk(SpaceTokens):  
-    __prodDisk = None
-        
-    def setProdDisk (self, name):
-        self.__prodDisk = name
+    def setDataDiskPath (self, path):
+        self.__data_disk = path
     
-    def getProdDisk(self):
-        return self.__prodDisk
-    
-class DataDisk(SpaceTokens):
-    
-    __dataDisk = None
-            
-    def setDataDisk (self, name):
-        self.__dataDisk = name
-    
-    def getDataDisk(self):
-        return self.__dataDisk
-     
-        
-    
+    def getDataDiskPath(self):
+        return self.__data_disk
+          
         
 def main():
     print "SpaceTokens"
     logging.basicConfig(level=logging.DEBUG)
     logging.root.setLevel(logging.DEBUG)
    
-    Object = SpaceTokens()
-    
-   
-   
- 
+    Object = SpaceTokens()    
+      
 if __name__ == '__main__':
     main()
