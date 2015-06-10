@@ -43,7 +43,7 @@ from hf.gridtoolkit.GridFtpCopyHandler import GridFtpCopyHandler
 class GenerateFile(object):
     
     __fileName = None 
-    dir = "tmp/" 
+    dir = "/var/tmp/" 
     
     logger = logging.getLogger(__name__)
     
@@ -74,13 +74,12 @@ class GenerateFile(object):
        file = open(fileDir, 'w+')
        file.write(str(localtime()))   
        return os.path.basename(fileDir), os.path.abspath(fileDir)   
-   
+    
       
 def main():
     print "GenerateFile"    
     obj = GenerateFile()
     obj.randomFileGenerator("random.txt") 
-
     
 if __name__ == '__main__':
     main()
