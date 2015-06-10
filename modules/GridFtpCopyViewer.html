@@ -4,6 +4,10 @@
 
 <%def name="content()">
 
+<head>
+<link type="text/css" rel="stylesheet" href="/modules/templates/hf.css">
+</head>
+
 <%def name="drawTable(list)">
           
    			% for detail in list: 				
@@ -231,43 +235,6 @@
 		</tbody>
 </table>
 
-</br>
-</br>
-<h3>${dataset['site3Name1']} transfers with UberFTP</h3>
-</br>
-</br>
-
-<div class="scrollable-table">
-  <table class="table table-striped table-header-rotated">
-		<thread>
-		<tr>	
-		    <th> &nbsp;</th>
-	    
-        	<th class="rotate-45" style="font-weight:bold"><div><span>${dataset['site3_space_token_scratchdisk']}</span></div></th>
-						
-			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site3_space_token_localgroupdisk']}</span></div></th>
-				
-			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site3_space_token_proddisk']}</span></div> </th>
-			
-			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site3_space_token_datadisk']}</span></div> </th>				     	
-     	</tr>
-				
-		</thread>
-		
-		<tbody>
-		<tr>
-          <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</th>
-		${drawTable(site1_site3_transfers)}
-				
-		</tr>
-		<tr>
-	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site1_space_token_localgroupdisk']}</td>
-		${drawTable2(site1_site3_transfers)}
-		
-		</tr>
-						
-		</tbody>
-</table>
 </div>
 
 </%def>
