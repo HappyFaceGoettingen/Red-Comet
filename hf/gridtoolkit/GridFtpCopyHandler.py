@@ -38,6 +38,8 @@ from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler, GridPopen
 import re
 from hf.gridtoolkit.Transfers import Transfers
 
+
+
 class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
    
     logger = logging.getLogger(__name__)
@@ -47,13 +49,15 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
     commandOptions = None
     protocol = "gsiftp"
     commandArgs = None
-   
+    timeout  = None
+    
+    
     def __init__(self):
         self.cvmfsEnv.setEnabled("emi")
-        self.gridEnv.set('x509.user.key', None)
-         
+        self.gridEnv.set('x509.user.key', None)                 
     
-    def copying(self, srcHost, srcPath, dstHost, dstPath):
+   
+    def copying(self, srcHost, srcPort, srcPath, dstHost, dstPath):                 
         self.commandArgs = self.command + self.options + self.protocol + "://" + srcHost + srcPath + "  " +  self.protocol + "://" + dstHost + dstPath
         self.logger.debug("File to copy from source path = " + str(srcPath))
         self.logger.debug("Destination path = " +  str(dstPath))
@@ -66,11 +70,14 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
            print "An exception has occurred: "
            print e    
           
-    def showFiles (self, host, dstPath):  
+    def showFiles (self, dstHost, dstPort, dstPath):  
         self.commandOptions = " -ls "             
-        self.commandArgs = self.command + self.options + self.commandOptions +  self.protocol + "://" + host + dstPath
+        self.commandArgs = self.command + self.options + self.commandOptions +  self.protocol + "://" + dstHost + dstPath
         self.logger.debug("Show files in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
+        self.logger.debug("Timeout = " +  str(self.getTimeout()))
+        
+        print self.getTimeout()   
         self.execute()
         try: 
             (data,error) = self.gridProcess.communicate()
@@ -79,9 +86,9 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
             print "An exception has occurred: "
             print e 
             
-    def mkDir (self, host, dstPath):
+    def mkDir (self, dstHost, dstPort, dstPath):
         self.commandOptions = "mkdir "
-        self.commandArgs = self.command + self.options + host + ' "' + self.commandOptions + dstPath + ' " '         
+        self.commandArgs = self.command + self.options + dstHost + ' "' + self.commandOptions + dstPath + ' " '         
         self.logger.debug("Create file in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
@@ -93,10 +100,10 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
             print e
     
     #Remove files from destination path  
-    def rmFile (self, host, dstPath):
+    def rmFile (self, dstHost, dstPort, dstPath):
         self.commandOptions = "cd "
         self.__dstPath = dstPath
-        self.commandArgs = self.command + self.options + host + ' " ' + self.commandOptions + self.__dstPath + ' " ' + ' " rm *.txt " ' 
+        self.commandArgs = self.command + self.options + dstHost + ' " ' + self.commandOptions + self.__dstPath + ' " ' + ' " rm *.txt " ' 
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
@@ -110,10 +117,10 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
             print e
     
     #Remove directory from destination path
-    def rmDir (self, host, dstPath):
+    def rmDir (self, dstHost, dstPort, dstPath):
         self.commandOptions = "rmdir "       
         self.__dstPath = dstPath
-        self.commandArgs = self.command + self.options + host + ' " ' + self.commandOptions + self.__dstPath + ' " '
+        self.commandArgs = self.command + self.options + dstHost + ' " ' + self.commandOptions + self.__dstPath + ' " '
         self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
@@ -134,9 +141,9 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
            os.remove(txt_file)
             
             
-    def copyFromLocalToRemote(self, srcHost, localPath, srcPath):
+    def copyFromLocalToRemote(self, dstHost, dstPort, localPath, dstPath, fileName):
         self.commandOptions = "put " 
-        self.commandArgs = self.command + self.options + srcHost + '  " ' + self.commandOptions + localPath + "  " + srcPath + ' "'
+        self.commandArgs = self.command + self.options + dstHost + '  " ' + self.commandOptions + localPath + "  " + dstPath + ' "'
         self.logger.debug("Executed command = " +  str(self.commandArgs))
         self.execute()
         try: 
@@ -146,8 +153,8 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
            print "An exception has occurred: "
            print e
            
-    def checkFile (self, host, fileName, dstPath):
-        stdout, stderr = self.showFiles(host, dstPath)
+    def checkFile (self, dstHost, dstPort, fileName, dstPath):
+        stdout, stderr = self.showFiles(dstHost, dstPort, dstPath)
         print stdout, stderr
         if stdout:
             for item in stdout:
@@ -157,6 +164,12 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
                    return 1 # file doesnt exists              
         else:
             return 1   
+    
+    def setTimeout (self, _timeout):
+        self.timeout = _timeout
+    
+    def getTimeout(self):
+        return self.timeout
     
            
 def main():
