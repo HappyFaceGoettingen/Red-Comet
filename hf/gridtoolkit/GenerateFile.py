@@ -53,15 +53,14 @@ class GenerateFile(object):
     def getGenaratedFileName(self):
         return self.__fileName    
     
-    def copying(self, host, path):
-        copyStatus, stdout, stderr, fileName = self.createFileInSrcPath(host, path)
+    def copying(self, dstHost, dstPort, dstPath, _obj):
+        copyStatus, stdout, stderr, fileName = self.createFileInSrcPath(dstHost, dstPort, dstPath, _obj)
         self.setGenaratedFileName(fileName)        
-        return copyStatus, stderr, path, fileName 
+        return copyStatus, stderr, dstPath, fileName 
     
-    def createFileInSrcPath (self, host , path):
+    def createFileInSrcPath (self, dstHost, dstPort, dstPath, _obj):
         fileName, localPath = self.randomFileGenerator("random.txt")
-        __grid_ftp = GridFtpCopyHandler()
-        stdout, stderr = __grid_ftp.copyFromLocalToRemote(host, localPath, path)
+        stdout, stderr = _obj.copyFromLocalToRemote(dstHost, dstPort, localPath, dstPath, fileName)
         copyStatus = 0               
         if stderr:
            copyStatus = 1
