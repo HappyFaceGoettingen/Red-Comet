@@ -64,15 +64,15 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
     __spacetoken_obj_2_1 = None
     __third_party_obj_2_1 = None
     __genFile_2_1 = None
+   
      
-     
-    def performTransfers(self, __grid_ftp_handler, __transfer_obj, __genFile, diskOneFilePath, diskTwo):        
+    def performTransfers(self, __grid_ftp_handler, __transfer_obj, __genFile, diskOneFilePath, diskTwo):         
         ## Transfer from  one disk to another   
-        data, error = __grid_ftp_handler.copying(__transfer_obj.getSrcHost(), diskOneFilePath, __transfer_obj.getDstHost(), diskTwo)
+        data, error = __grid_ftp_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(), diskTwo)
         ## Check the status of copy
         status = ""
         if not error:
-           check_if_file_exists = __grid_ftp_handler.checkFile(__transfer_obj.getDstHost(), __genFile.getGenaratedFileName(), diskTwo)
+           check_if_file_exists = __grid_ftp_handler.checkFile(__transfer_obj.getDstHost(), __transfer_obj.getDstPort(),__genFile.getGenaratedFileName(), diskTwo)
            if check_if_file_exists == 0:
                status = "OK"                    
            else:
@@ -96,7 +96,9 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
        
         
     def siteTransfers(self, __transfer_obj, __spacetoken_obj, __grid_ftp_handler, __genFile):               
-        __genFile.copying(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPath())        
+        
+        __genFile.copying(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(), __transfer_obj.getSrcPath(), __grid_ftp_handler)        
+        
         diskOneFilePath = __transfer_obj.getSrcPath() +__genFile.getGenaratedFileName()        
         src_src_status = self.performTransfers(__grid_ftp_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getScratchDiskPath()+ "test/")
         src_local_status = self.performTransfers(__grid_ftp_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getLocalGroupDiskPath()+ "test/")
@@ -112,13 +114,13 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         
         logging.basicConfig(level=logging.INFO)
         logging.root.setLevel(logging.INFO) 
-        
-       # Site 1 to Site 1 transfers
+          
+        # Site 1 to Site 1 transfers
         __transfer_obj = Transfers()
         __spacetoken_obj = SpaceTokens()               
         __grid_ftp_handler = GridFtpCopyHandler()      
         __genFile = GenerateFile()     
-         
+     
         # Set Sites name 
         __transfer_obj.setSiteName(self.config['site1_name'])
         # Set source and destination hosts and ports
@@ -134,11 +136,12 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj.setDataDiskPath(self.config['site1_datadisk_path'])
         
         # Copy a file from local to remote
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__spacetoken_obj.getScratchDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
+        __grid_ftp_handler.setTimeout(int(self.config['timeout']))
+        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
+        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
        
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__spacetoken_obj.getLocalGroupDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
+        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
+        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
        
         # Result of the transfers from Site1 to Site1      
         __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
@@ -175,11 +178,12 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj_1_2.setDataDiskPath(self.config['site2_datadisk_path'])
         
         # Copy a file from local to remote
-        __grid_ftp_handler.mkDir(__transfer_obj_1_2.getDstHost(),__spacetoken_obj_1_2.getScratchDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj_1_2.getDstHost(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
+        __grid_ftp_handler_1_2.setTimeout(int(self.config['timeout']))
+        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath())
+        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
        
-        __grid_ftp_handler.mkDir(__transfer_obj_1_2.getDstHost(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj_1_2.getDstHost(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
+        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
+        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
        
         # Result of the transfers from Site1 to Site1      
         __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
@@ -215,6 +219,8 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj_2_1.setProdDiskPath(self.config['site1_proddisk_path']) 
         __spacetoken_obj_2_1.setDataDiskPath(self.config['site1_datadisk_path'])
         
+        __grid_ftp_handler_2_1.setTimeout(int(self.config['timeout']))
+        
         # Result of the transfers from Site1 to Site1      
         __transfer_obj_2_1.setSrcPath(self.config['site2_scratchdisk_path'])  
         src_src_status_2_1,  src_lg_status_2_1, src_prod_status_2_1, src_data_status_2_1 = self.siteTransfers( __transfer_obj_2_1, __spacetoken_obj_2_1, __grid_ftp_handler_2_1, __genFile_2_1)
@@ -234,27 +240,27 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         #Remove files from local path
         obj.rmLocal()  
         #Remove files from Site1 space tokens
-        self.removeTmpFiles(obj, __transfer_obj.getDstHost(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath())
+        self.removeTmpFiles(obj, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath())
         #Remove files from Site2 space tokens
-        self.removeTmpFiles(obj, __transfer_obj_1_2.getDstHost(), __spacetoken_obj_1_2.getScratchDiskPath(),__spacetoken_obj_1_2.getLocalGroupDiskPath(), __spacetoken_obj_1_2.getProdDiskPath(), __spacetoken_obj_1_2.getDataDiskPath())
-                                   
+        self.removeTmpFiles(obj, __transfer_obj_1_2.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj_1_2.getScratchDiskPath(),__spacetoken_obj_1_2.getLocalGroupDiskPath(), __spacetoken_obj_1_2.getProdDiskPath(), __spacetoken_obj_1_2.getDataDiskPath())
+                                 
         return data
     
      
-    def removeTmpFiles(self, obj, host, dst_scr_path, dst_lg_path, dst_prod_path, dst_data_path):
+    def removeTmpFiles(self, obj, host, port,  dst_scr_path, dst_lg_path, dst_prod_path, dst_data_path):
         #Remove files from space tokens
-        obj.rmFile(host, dst_scr_path)
-        obj.rmFile(host, dst_scr_path + "test/")
-        obj.rmFile(host, dst_lg_path)
-        obj.rmFile(host, dst_lg_path + "test/")        
-        obj.rmFile(host, dst_prod_path)
-        obj.rmFile(host, dst_data_path)        
+        obj.rmFile(host, port, dst_scr_path)
+        obj.rmFile(host, port, dst_scr_path + "test/")
+        obj.rmFile(host, port, dst_lg_path)
+        obj.rmFile(host, port, dst_lg_path + "test/")        
+        obj.rmFile(host, port, dst_prod_path)
+        obj.rmFile(host, port, dst_data_path)        
         #Remove folders from scratchdisk
-        obj.rmDir(host, dst_scr_path + "test/")
-        obj.rmDir(host, dst_scr_path)        
+        obj.rmDir(host, port, dst_scr_path + "test/")
+        obj.rmDir(host,port,  dst_scr_path)        
         #Remove folders from localgroupdisk
-        obj.rmDir(host, dst_lg_path + "test/")
-        obj.rmDir(host, dst_lg_path)    
+        obj.rmDir(host, port, dst_lg_path + "test/")
+        obj.rmDir(host, port, dst_lg_path)    
         
 
     def prepareAcquisition(self):        
@@ -266,8 +272,8 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
     def SQLQuery(self, siteName):
         max_id_number1_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == str(siteName)).execute().scalar()        
         details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_uberftp).execute().fetchall()
-        return map(dict, details1)
-           
+        return map(dict, details1)        
+    
                        
     def getTemplateData(self):        
         data = hf.module.ModuleBase.getTemplateData(self)        
@@ -283,8 +289,15 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         self.dataset['site2_space_token_localgroupdisk'] = self.config['site2_space_token_localgroupdisk']
         self.dataset['site2_space_token_proddisk'] = self.config['site2_space_token_proddisk']
         self.dataset['site2_space_token_datadisk'] = self.config['site2_space_token_datadisk']
-                         
+        
+        self.dataset['ok_status'] = ['OK', 'SpaceException', 'FileExists']
+        self.dataset['ok_status_prod_data'] = ['Permission denied', 'Authorization', 'No permission']
+        self.dataset['error_status'] = ['Failed', 'Error', 'No match']
+        self.dataset['error_status_prod_data'] = ['OK', 'SpaceException', 'FileExists']
+        
         data['site1_site1_transfers'] = self.SQLQuery(self.config['site1_name'])  
         data['site1_site2_transfers'] = self.SQLQuery(self.config['site2_name1'])     
-        data['site2_site1_transfers'] = self.SQLQuery(self.config['site2_name2'])        
+        data['site2_site1_transfers'] = self.SQLQuery(self.config['site2_name2'])
+                
+        
         return data
