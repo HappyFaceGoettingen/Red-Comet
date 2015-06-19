@@ -158,13 +158,14 @@ class GridSubprocessBaseHandler:
 
                 """ wait until timeout expires """                    
                 
+                 """ wait until timeout expires """                    
                 try:
-                    if self.timeout is not None: 
-                        self.gridProcess.communicate(timeout=self.timeout)
+                    if self.timeout is not None: self.gridProcess.wait(timeout=self.timeout)
                 except GridTimeoutExpired:
-                        self.gridProcess.terminate()
-                        self.gridProcess.wait()
-                        raise
+                    self.gridProcess.kill()
+                    self.gridProcess.wait()
+                    raise
+
 
 
     """ Show GridPopen Process """    
