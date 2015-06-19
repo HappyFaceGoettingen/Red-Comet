@@ -294,7 +294,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         self.dataset['ok_status_prod_data'] = ['Permission denied', 'Authorization', 'No permission']
         self.dataset['error_status'] = ['Failed', 'Error', 'No match']
         self.dataset['error_status_prod_data'] = ['OK', 'SpaceException', 'FileExists']
-        
+                        
         data['site1_site1_transfers'] = self.SQLQuery(self.config['site1_name'])  
         data['site1_site2_transfers'] = self.SQLQuery(self.config['site2_name1'])     
         data['site2_site1_transfers'] = self.SQLQuery(self.config['site2_name2'])
