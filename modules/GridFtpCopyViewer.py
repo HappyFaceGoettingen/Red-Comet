@@ -118,7 +118,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         # Site 1 to Site 1 transfers
         __transfer_obj = Transfers()
         __spacetoken_obj = SpaceTokens()               
-        __grid_ftp_handler = GridFtpCopyHandler()      
+        __grid_ftp_handler = GridFtpCopyHandler(self.config['timeout'])      
         __genFile = GenerateFile()     
      
         # Set Sites name 
@@ -127,7 +127,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __transfer_obj.setSrcHost(self.config['site1_host'])
         __transfer_obj.setSrcPort(self.config['site1_port'])
         __transfer_obj.setDstHost(self.config['site1_host'])
-        __transfer_obj.setDstPort(self.config['site1_port'])            
+        __transfer_obj.setDstPort(self.config['site1_port'])    
         
         # Set all space tokens 
         __spacetoken_obj.setScratchDiskPath(self.config['site1_scratchdisk_path'])        
@@ -135,8 +135,8 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj.setProdDiskPath(self.config['site1_proddisk_path']) 
         __spacetoken_obj.setDataDiskPath(self.config['site1_datadisk_path'])
         
-        # Copy a file from local to remote
-        __grid_ftp_handler.setTimeout(int(self.config['timeout']))
+                
+        # Copy a file from local to remote        
         __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
         __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
        
@@ -161,7 +161,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         # Site 1 to Site 2 transfers
         __transfer_obj_1_2 = Transfers()
         __spacetoken_obj_1_2 = SpaceTokens()               
-        __grid_ftp_handler_1_2 = GridFtpCopyHandler()
+        __grid_ftp_handler_1_2 = GridFtpCopyHandler(self.config['timeout'])
         __genFile_1_2 = GenerateFile() 
         
         __transfer_obj_1_2.setSiteName(self.config['site2_name1'])
@@ -178,7 +178,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj_1_2.setDataDiskPath(self.config['site2_datadisk_path'])
         
         # Copy a file from local to remote
-        __grid_ftp_handler_1_2.setTimeout(int(self.config['timeout']))
+        
         __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath())
         __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
        
@@ -203,7 +203,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         # Site 2 to Site 1 transfers
         __transfer_obj_2_1 = Transfers()
         __spacetoken_obj_2_1 = SpaceTokens()               
-        __grid_ftp_handler_2_1 = GridFtpCopyHandler()      
+        __grid_ftp_handler_2_1 = GridFtpCopyHandler(self.config['timeout'])      
         __genFile_2_1 = GenerateFile()     
         
         __transfer_obj_2_1.setSiteName(self.config['site2_name2'])
@@ -217,10 +217,8 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj_2_1.setScratchDiskPath(self.config['site1_scratchdisk_path'])        
         __spacetoken_obj_2_1.setLocalGroupDiskPath(self.config['site1_localgroupdisk_path'])
         __spacetoken_obj_2_1.setProdDiskPath(self.config['site1_proddisk_path']) 
-        __spacetoken_obj_2_1.setDataDiskPath(self.config['site1_datadisk_path'])
-        
-        __grid_ftp_handler_2_1.setTimeout(int(self.config['timeout']))
-        
+        __spacetoken_obj_2_1.setDataDiskPath(self.config['site1_datadisk_path'])        
+    
         # Result of the transfers from Site1 to Site1      
         __transfer_obj_2_1.setSrcPath(self.config['site2_scratchdisk_path'])  
         src_src_status_2_1,  src_lg_status_2_1, src_prod_status_2_1, src_data_status_2_1 = self.siteTransfers( __transfer_obj_2_1, __spacetoken_obj_2_1, __grid_ftp_handler_2_1, __genFile_2_1)
