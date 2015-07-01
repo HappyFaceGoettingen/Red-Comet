@@ -1,75 +1,255 @@
 ## -*- coding: utf-8 -*-
+
 <%inherit file="/module_base.html" />
 
 <%def name="content()">
 
-<h3>GoeGrid->GoeGrid transfers</h3>
-<table id="dataTable" class="TableData">
-		<thread>
-		<tr class="TableHeader">	
-		    <th> &nbsp;</th>		
-			<th>GOEGRID_SCRATCHDISK </th>
-			<th>GOEGRID_LOCALGROUPDISK</th> 
-			<th>GOEGRID_PRODDISK</th> 
-			<th>GOEGRID_DATADISK</th> 
+<%def name="drawTableRow(list)">
+                    
+         	% for detail in list: 	
+   			     %for item in dataset['ok_status']:    
+    				%if item in detail['scratchdiskToScratchdisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif  					  
+				  % endfor				
+				 
+				 %for item in dataset['error_status']:    
+    				%if item in detail['scratchdiskToScratchdisk']:			
+					   <td bgcolor = "#FF6464"> 
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor	
 					
-		</tr>
+				%for item in dataset['ok_status']:    
+    				%if item in detail['scratchdiskToLocalgroupdisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status']:    
+    				%if item in detail['scratchdiskToLocalgroupdisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor		 
+				 
+				 %for item in dataset['ok_status_prod_data']:    
+    				%if item in detail['scratchdiskToProddisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif 					 
+				  % endfor				
+				 
+				 %for item in dataset['error_status_prod_data']:    
+    				%if item in detail['scratchdiskToProddisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				 	
+				  % endfor	
+			    
+			     %for item in dataset['ok_status_prod_data']: 
+    				%if item in detail['scratchdiskToDatadisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status_prod_data']:  
+    				%if item in detail['scratchdiskToDatadisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor				     
+			    						 		
+		   % endfor
+		</%def>
+		
+		
+<%def name = "drawTableRow2(list)">
+
+            % for detail in list: 
+           		 %for item in dataset['ok_status']:    
+    				%if item in detail['localgroupdiskToScratchdisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status']:    
+    				%if item in detail['localgroupdiskToScratchdisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor	
+			 
+				  %for item in dataset['ok_status']:    
+    				%if item in detail['localgroupdiskToLocalgroupdisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status']:    
+    				%if item in detail['localgroupdiskToLocalgroupdisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor	
+
+
+ 				 %for item in dataset['ok_status_prod_data']:    
+    				%if item in detail['localgroupdiskToProddisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status_prod_data']:    
+    				%if item in detail['localgroupdiskToProddisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor
+				  
+				  
+				   %for item in dataset['ok_status_prod_data']:    
+    				%if item in detail['localgroupdiskToDatadisk']:			
+					    <td bgcolor = "#4FD516"></td>
+					 % endif   
+				  % endfor				
+				 
+				 %for item in dataset['error_status_prod_data']:    
+    				%if item in detail['localgroupdiskToDatadisk']:			
+					   <td bgcolor = "#FF6464">
+				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				    	</td>
+				 	% endif
+				  % endfor
+
+		% endfor
+</%def>
+
+
+<h3>${dataset['site1Name']} transfers with SRM </h3>
+
+</br>
+</br>
+
+<div class="scrollable-table">
+  <table class="table table-striped table-header-rotated">
+		<thread>
+		<tr>	
+		    <th> &nbsp;</th>
+	    
+        	<th class="rotate-45" style="font-weight:bold"><div><span>${dataset['site1_space_token_scratchdisk']}</span></div></th>
 						
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_localgroupdisk']}</span></div></th>
+				
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_proddisk']}</span></div> </th>
+			
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_datadisk']}</span></div> </th>				     	
+     	</tr>
+				
 		</thread>
 		
 		<tbody>
-		 	<tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
-				<td bgcolor = "#4FD516"></td>
-				<td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>	
-			    <td bgcolor = "#4FD516"></td>				 
-			</tr>
-			
-			<tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
-				<td bgcolor = "#4FD516"></td>
-				<td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>					 
-			</tr>
-			
-		</tbody>
-</table>
-
-<h3>GoeGrid->DESY-HH transfers</h3>
-<table id="dataTable" class="TableData">
-		<thread>
-		<tr class="TableHeader">	
-		    <th> &nbsp;</th>		
-			<th>DESY-HH_SCRATCHDISK </th>
-			<th>DESY-HH_LOCALGROUPDISK</th> 
-			<th>DESY-HH_PRODDISK</th> 
-			<th>DESY-HH_DATADISK</th> 
-					
+		<tr>
+          <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</th>
+		${drawTableRow(site1_site1_transfers)}
+				
+		</tr>
+		<tr>
+	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site1_space_token_localgroupdisk']}</td>
+		${drawTableRow2(site1_site1_transfers)}
+		
 		</tr>
 						
+		</tbody>
+</table>
+</br>
+</br>
+<h3>${dataset['site2Name1']} transfers with SRM</h3>
+</br>
+</br>
+
+
+<div class="scrollable-table">
+  <table class="table table-striped table-header-rotated">
+		<thread>
+		<tr>	
+		    <th> &nbsp;</th>
+	    
+        	<th class="rotate-45" style="font-weight:bold"><div><span>${dataset['site2_space_token_scratchdisk']}</span></div></th>
+						
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site2_space_token_localgroupdisk']}</span></div></th>
+				
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site2_space_token_proddisk']}</span></div> </th>
+			
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site2_space_token_datadisk']}</span></div> </th>				     	
+     	</tr>
+				
 		</thread>
 		
 		<tbody>
-		 	<tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_SCRATCHDISK</td>
-				<td bgcolor = "#4FD516"></td>
-				<td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>				 
-			</tr>
-			
-			<tr>
-				<td bgcolor="#D1D0D0" style="font-weight:bold">GOEGRID_LOCALGROUPDISK</td>
-				<td bgcolor = "#4FD516"></td>
-				<td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>
-			    <td bgcolor = "#4FD516"></td>				 
-			</tr>
-			
+		<tr>
+          <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site1_space_token_scratchdisk']}</th>
+		${drawTableRow(site1_site2_transfers)}
+				
+		</tr>
+		<tr>
+	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site1_space_token_localgroupdisk']}</td>
+		${drawTableRow2(site1_site2_transfers)}
+		
+		</tr>
+						
 		</tbody>
 </table>
 
-	
+</br>
+</br>
+<h3>${dataset['site2Name2']} transfers with SRM</h3>
+</br>
+</br>
+
+<div class="scrollable-table">
+  <table class="table table-striped table-header-rotated">
+		<thread>
+		<tr>	
+		    <th> &nbsp;</th>
+	    
+        	<th class="rotate-45" style="font-weight:bold"><div><span>${dataset['site1_space_token_scratchdisk']}</span></div></th>
+						
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_localgroupdisk']}</span></div></th>
+				
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_proddisk']}</span></div> </th>
+			
+			<th class="rotate-45" style="font-weight:bold"><div><span> ${dataset['site1_space_token_datadisk']}</span></div> </th>				     	
+     	</tr>
+				
+		</thread>
+		
+		<tbody>
+		<tr>
+          <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold">${dataset['site2_space_token_scratchdisk']}</th>
+		${drawTableRow(site2_site1_transfers)}
+				
+		</tr>
+		<tr>
+	    <th class="row-header" bgcolor="#D1D0D0" style="font-weight:bold"> ${dataset['site2_space_token_localgroupdisk']}</td>
+		${drawTableRow2(site2_site1_transfers)}
+		
+		</tr>
+						
+		</tbody>
+</table>
+
+</div>
+
+</div>
+
+
+
 </%def>
