@@ -16,8 +16,12 @@
 #   limitations under the License.
 #
 
-import sys, os, subprocess,logging, time
+import sys, os, subprocess,logging, time, threading, signal
 from hf.gridengine.envreader import GridEnv, GridEnvReader, CvmfsEnv, CvmfsEnvReader
+from ipalib.errors import SubprocessError
+import datetime, time
+from subprocess import TimeoutExpired
+from time import sleep
 
 
 # Exception classes used by this module.
@@ -32,10 +36,31 @@ class GridCalledProcessError(Exception):
         return "Grid Command '%s' returned non-zero exit status %d" % (self.cmd, self.returncode)
 
 
-class GridTimeoutExpired(Exception):
+class GridTimeoutExpired(SubprocessError):
     """This exception is raised when the timeout expires while waiting for a
     child process.
     """
+    def __init__(self, cmd, timeout, output=None, stderr=None):
+        self.cmd = cmd
+        self.timeout = timeout
+        self.output = output
+        self.stderr = stderr
+
+    def __str__(self):
+        return ("Command '%s' timed out after %s seconds" %
+                (self.cmd, self.timeout))
+
+    @property
+    def stdout(self):
+        return self.output
+
+    @stdout.setter
+    def stdout(self, value):
+        # There's no obvious reason to set this, but allow it anyway so
+        # .stdout is a transparent alias for .output
+        self.output = value
+
+
 
 
 def grid_call(*popenargs, **kwargs):
@@ -153,17 +178,29 @@ class GridSubprocessBaseHandler:
                 if stdin is not None and self.standardInput is not None:
                     self.logger.debug("stdin = ["+self.standardInput + "]")
                     time.sleep(self.waitBeforeStdInput)
-                    self.gridProcess.stdin.write(self.standardInput)
+                    self.gridProcess.stdin.write(self.standardInput)                   
                     #self.gridProcess.stdin.close()
-
-                """ wait until timeout expires """                    
-                try:
-                        if self.timeout is not None: 
-                            self.gridProcess.communicate(timeout=self.timeout)
-                except GridTimeoutExpired:
-                        self.gridProcess.terminate()
-                        self.gridProcess.wait()
-                        raise
+                    
+                """ wait until timeout expires """ 
+                
+                try:  
+                    if self.timeout is not None: 
+                        exitcode = self.gridProcess.wait(int(self.timeout))
+                        print exitcode
+                                        
+                except GridTimeoutExpired as e:                        
+                        self.gridProcess.kill()                        
+                        return 1, "Command execution time is expired. Raised timeout problem. Transfer failed."  #Failed                                        
+                                                
+                except TimeoutExpired:
+                    print "Command execution time is expired. Raised timeout problem. Transfer failed."                        
+                    os.waitpid(-1, os.WNOHANG) 
+                    time.sleep(5)
+                    os.kill(self.gridProcess.pid, signal.SIGKILL)
+                    print 'The process killed'  
+                    return 1, "Command execution time is expired. Raised timeout problem. Transfer failed." #Failed   
+                
+                return self.gridProcess.returncode,  self.gridProcess.stderr.read()                                                
 
 
     """ Show GridPopen Process """    
@@ -188,12 +225,15 @@ def main():
     p2 = GridPopen("echo -n X509_USER_CERT = $X509_USER_CERT", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os.environ)
     p3 = GridPopen("echo -n X509_USER_PROXY = $X509_USER_PROXY", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None)
     p4 = GridPopen("echo -n X509_CERT_DIR = $X509_CERT_DIR", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None)
-
+    
     cvmfsEnv = CvmfsEnv()
     cvmfsEnv.setEnabled('dq2.client')
+    cvmfsEnv.setEnabled('emi')
     
     p5 = GridPopen("dq2-ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None, cvmfs_env=cvmfsEnv)
-
+    
+    string = "uberftp -retry 2 -keepalive 10 gsiftp://grid-se.physik.uni-wuppertal.de/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/100_7573.MOV  gsiftp://se-goegrid.gwdg.de/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi"
+    
     p1.wait()
     p2.wait()
     p3.wait()
@@ -204,9 +244,14 @@ def main():
     print p3.stdout.read()
     print p4.stdout.read()
     p5.wait()
+    
+    gridSubprocess = GridSubprocessBaseHandler()
+    gridSubprocess.timeout = 60
+    gridSubprocess.execute(string)
+    
+    
     print p5.stdout.read()
     print p5.stderr.read()
-
-
+    
 if __name__ == '__main__':
     main()
