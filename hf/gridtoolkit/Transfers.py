@@ -49,7 +49,7 @@ class Transfers(GridSubprocessBaseHandler):
     __dstPath = None    
     __siteName  = None
     __transferType = None  
-  
+
     def __init__(self):        
         self.cvmfsEnv.setEnabled("emi")
         self.gridEnv.set('x509.user.key', None)
@@ -95,6 +95,7 @@ class Transfers(GridSubprocessBaseHandler):
     
     def getSrcPath (self):
         return self.__srcPath  
+
        
         
 def main():
