@@ -49,14 +49,16 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
     commandOptions = None
     protocol = "gsiftp"
     commandArgs = None
-    timeout  = None
-    
-    
-    def __init__(self):
-        self.cvmfsEnv.setEnabled("emi")
-        self.gridEnv.set('x509.user.key', None)                 
-    
+    timeout =  None
    
+    
+    def __init__(self, _timeout=None):
+        self.cvmfsEnv.setEnabled("emi")
+        self.gridEnv.set('x509.user.key', None) 
+        if _timeout is not None: 
+            self.timeout = _timeout                         
+    
+          
     def copying(self, srcHost, srcPort, srcPath, dstHost, dstPath):                 
         self.commandArgs = self.command + self.options + self.protocol + "://" + srcHost + srcPath + "  " +  self.protocol + "://" + dstHost + dstPath
         self.logger.debug("File to copy from source path = " + str(srcPath))
@@ -75,9 +77,6 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.commandArgs = self.command + self.options + self.commandOptions +  self.protocol + "://" + dstHost + dstPath
         self.logger.debug("Show files in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.logger.debug("Timeout = " +  str(self.getTimeout()))
-        
-        print self.getTimeout()   
         self.execute()
         try: 
             (data,error) = self.gridProcess.communicate()
@@ -140,7 +139,7 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
        for txt_file in filelist: 
            os.remove(txt_file)
             
-            
+    
     def copyFromLocalToRemote(self, dstHost, dstPort, localPath, dstPath, fileName):
         self.commandOptions = "put " 
         self.commandArgs = self.command + self.options + dstHost + '  " ' + self.commandOptions + localPath + "  " + dstPath + ' "'
@@ -163,13 +162,8 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
                 else:
                    return 1 # file doesnt exists              
         else:
-            return 1   
-    
-    def setTimeout (self, _timeout):
-        self.timeout = _timeout
-    
-    def getTimeout(self):
-        return self.timeout
+            return 1       
+
     
            
 def main():
