@@ -46,6 +46,7 @@ class SpaceTokens(object):
     __lg_disk = None
     __prod_disk = None
     __data_disk = None
+
     
     def setScratchDiskPath (self, path):
         self.__src_disk = path
@@ -70,7 +71,8 @@ class SpaceTokens(object):
     
     def getDataDiskPath(self):
         return self.__data_disk
-          
+    
+  
         
 def main():
     print "SpaceTokens"
