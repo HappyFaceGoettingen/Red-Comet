@@ -15,12 +15,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-
 import os, hf
 import logging, subprocess
 from hf.gridengine.gridsubprocess import GridSubprocessBaseHandler, GridPopen
 from sqlalchemy import *
 from hf.gridtoolkit.GridSRMCopyHandler import GridSRMCopyHandler
+from hf.gridtoolkit.Transfers import Transfers
+from hf.gridtoolkit.SpaceTokens import SpaceTokens
+from hf.gridtoolkit.GenerateFile import *
 
 class GridSRMCopyViewer(hf.module.ModuleBase):
     
@@ -36,7 +38,7 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
 
     subtable_columns = {
         'site_transfers': ([
-        Column('siteName', TEXT),                    
+        Column('siteName', TEXT),                   
         Column('scratchdiskToScratchdisk', TEXT),
         Column('scratchdiskToLocalgroupdisk', TEXT),
         Column('scratchdiskToProddisk', TEXT),
@@ -47,231 +49,260 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         Column('localgroupdiskToDatadisk', TEXT),
     ], [])                
     }
-
-  
-    def transfers(self, Obj, srcPath, fileToCopy, dstPath):        
-        transfer_status = Obj.copyFileAndCheckExistance(srcPath, fileToCopy, dstPath)              
-        return transfer_status                
-                                                
+         
+    __transfer_obj = None
+    __spacetoken_obj = None
+    __third_party_obj = None
+    __genFile = None
     
-    def spaceTokenStatus(self, siteName, Object, srcHost, dstHost, scr_scrDiskPath, src_lgDiskPath, dst_scrDiskPath, dst_lgDiskPath, dst_prodDiskPath, dst_dataDiskPath):
+    __transfer_obj_1_2 = None
+    __spacetoken_obj_1_2 = None
+    __third_party_obj_1_2 = None
+    __genFile_1_2 = None
+    
+    __transfer_obj_2_1 = None
+    __spacetoken_obj_2_1 = None
+    __third_party_obj_2_1 = None
+    __genFile_2_1 = None
+     
+     
+    def performTransfers(self, _grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, diskTwo):        
+        ## Transfer from  one disk to another
+        fileName = __genFile.getGenaratedFileName()
+        retCode, error = _grid_srm_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(),__transfer_obj.getDstPort(),diskTwo, fileName)
+        ## show files in destination part       
+        status = ""        
+        if retCode == 0:
+            status = "OK"
+            _grid_srm_handler.showFiles(__transfer_obj.getDstHost(),__transfer_obj.getDstPort(), diskTwo)    
+                 
+        else: 
+            status = error
         
-        copyStatus_scr, stderr_scr, srcPath_scr, fileName_scr = Object.createFileInSrcPath (srcHost, scr_scrDiskPath)
-        copyStatus_lg, stderr_lg, srcPath_lg, fileName_lg = Object.createFileInSrcPath (srcHost, src_lgDiskPath) 
-               
-        detail = {}
+        return status    
         
-        detail['siteName'] = siteName 
-         
-        if copyStatus_scr == 0:               
-            detail['scratchdiskToScratchdisk'] = self.transfers(Object, srcPath_scr, fileName_scr, dst_scrDiskPath )
-            detail['scratchdiskToLocalgroupdisk'] = self.transfers(Object, srcPath_scr, fileName_scr, dst_lgDiskPath) 
-            detail['scratchdiskToProddisk'] = self.transfers(Object, srcPath_scr, fileName_scr, dst_prodDiskPath )
-            detail['scratchdiskToDatadisk'] = self.transfers(Object, srcPath_scr, fileName_scr, dst_dataDiskPath )            
-                        
-            print "MSG: " + str(copyStatus_scr)
-            
-            ##Removes files from source and destination part##
-            Object.rmFile(srcHost , fileName_scr, srcPath_scr)
-            Object.rmFile(dstHost, fileName_scr, dst_scrDiskPath) 
-            Object.rmFile(dstHost, fileName_scr, dst_lgDiskPath)     
-            Object.rmFile(dstHost, fileName_scr, dst_prodDiskPath) 
-            Object.rmFile(dstHost, fileName_scr, dst_dataDiskPath)     
-            
-        else:
-            detail['scratchdiskToScratchdisk'] = stderr_scr
-            detail['scratchdiskToLocalgroupdisk'] = stderr_scr
-            detail['scratchdiskToProddisk'] = stderr_scr
-            detail['scratchdiskToDatadisk'] = stderr_scr       
         
-            print "Error msg: " + str(stderr_scr)
+    def fillTable(self, site_name, src_src_status, src_lg_status, src_prod_status, src_data_status, lg_src_status,lg_lg_status, lg_prod_status, lg_data_status):
+        details = {}        
+        details['siteName'] = site_name                
+        details['scratchdiskToScratchdisk'] = src_src_status        
+        details['scratchdiskToLocalgroupdisk'] = src_lg_status
+        details['scratchdiskToProddisk'] = src_prod_status   
+        details['scratchdiskToDatadisk'] = src_data_status                       
+        details['localgroupdiskToScratchdisk'] = lg_src_status        
+        details['localgroupdiskToLocalgroupdisk'] = lg_lg_status            
+        details['localgroupdiskToProddisk'] = lg_prod_status            
+        details['localgroupdiskToDatadisk'] = lg_data_status                 
+        return details
+       
         
-        if copyStatus_lg == 0:        
-            detail['localgroupdiskToScratchdisk'] = self.transfers(Object, srcPath_lg, fileName_lg, dst_scrDiskPath ) 
-            detail['localgroupdiskToLocalgroupdisk'] = self.transfers(Object, srcPath_lg, fileName_lg, dst_lgDiskPath )
-            detail['localgroupdiskToProddisk'] = self.transfers(Object, srcPath_lg, fileName_lg, dst_prodDiskPath)
-            detail['localgroupdiskToDatadisk'] = self.transfers(Object, srcPath_lg, fileName_lg, dst_dataDiskPath)
-            
-            print "MSG: " + str(copyStatus_lg)
-            
-            ##Removes files from source and destination part##
-            Object.rmFile(srcHost , fileName_lg, srcPath_lg)
-            Object.rmFile(dstHost, fileName_lg, dst_scrDiskPath) 
-            Object.rmFile(dstHost, fileName_lg, dst_lgDiskPath)
-            Object.rmFile(dstHost, fileName_lg, dst_prodDiskPath) 
-            Object.rmFile(dstHost, fileName_lg, dst_dataDiskPath)    
+    def siteTransfers(self, __transfer_obj, __spacetoken_obj, _grid_srm_handler, __genFile):
+                       
+        __genFile.copying(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(), __transfer_obj.getSrcPath(), _grid_srm_handler)        
         
-        else:
-            detail['localgroupdiskToScratchdisk'] = stderr_lg
-            detail['localgroupdiskToLocalgroupdisk'] = stderr_lg
-            detail['localgroupdiskToProddisk'] = stderr_lg
-            detail['localgroupdiskToDatadisk'] = stderr_lg
-            print "Error msg: " + str(stderr_lg)
+        diskOneFilePath = __transfer_obj.getSrcPath() +__genFile.getGenaratedFileName()        
         
-        os.remove(os.path.abspath(fileName_scr))       
-        os.remove(os.path.abspath(fileName_lg)) 
+        src_src_status = self.performTransfers(_grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getScratchDiskPath()+ "test/")
+        src_local_status = self.performTransfers(_grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getLocalGroupDiskPath()+ "test/")
+        src_prod_status = self.performTransfers(_grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getProdDiskPath())
+        src_data_status = self.performTransfers(_grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, __spacetoken_obj.getDataDiskPath())
         
-        return detail
+        return  src_src_status,  src_local_status, src_prod_status, src_data_status
         
-         
-    def extractData(self):
-        
+    def extractData(self):        
         data = {
             'dataset': "Hi",
             'status': 1
-        }        
+        }   
         
-        Object = GridSRMCopyHandler()  
-                
-        #GOEGRID->GOEGRID transfers      
-        srcHostSite1 = self.config['site1_host']
-        dstHostSite1 = self.config['site1_host']
+        logging.basicConfig(level=logging.INFO)
+        logging.root.setLevel(logging.INFO) 
+    
+       # Site 1 to Site 1 transfers
+        __transfer_obj = Transfers()
+        __spacetoken_obj = SpaceTokens()               
+        __grid_srm_handler = GridSRMCopyHandler(self.config['timeout'])      
+        __genFile = GenerateFile()     
+         
+        # Set Sites name 
+        __transfer_obj.setSiteName(self.config['site1_name'])
+        # Set source and destination hosts and ports
+        __transfer_obj.setSrcHost(self.config['site1_host'])
+        __transfer_obj.setSrcPort(self.config['site1_port'])
+        __transfer_obj.setDstHost(self.config['site1_host'])
+        __transfer_obj.setDstPort(self.config['site1_port'])            
         
-        Object.setHostsAndPorts(srcHostSite1, "8443", dstHostSite1, "8443", "srm")
-        Object.ping()
-       # Object.showFiles("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/")
-       # Object.mkDir("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/aaaaaa")
-       # Object.rmDir("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/aaaaaa")
-       # Object.copyFromLocalToRemote("/home/haykuhi/Desktop/a.txt", "/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/dd.txt")
-       # Object.copyFile("/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/dd.txt", "/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlaslocalgroupdisk/aaa/kkk.txt")
-       # Object.rmFile("dd.txt","/srm/managerv2?SFN=/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_srm_haykuhi/" )
+        # Set all space tokens 
+        __spacetoken_obj.setScratchDiskPath(self.config['site1_scratchdisk_path'])        
+        __spacetoken_obj.setLocalGroupDiskPath(self.config['site1_localgroupdisk_path'])
+        __spacetoken_obj.setProdDiskPath(self.config['site1_proddisk_path']) 
+        __spacetoken_obj.setDataDiskPath(self.config['site1_datadisk_path'])
         
-        """
-        ##Crate a folder with a subfolder in GOEGRID-SCRATCHDISK##
-        scrtDiskPathSite1 = self.config['site1_scratchdisk_path']
-        stdout_mkdir_scratchdisk, stderr_mkdir_scratchdisk = Object.mkDir(scrtDiskPathSite1)
-        if stdout_mkdir_scratchdisk:
-           Object.mkDir(scrtDiskPathSite1+ "test/")
+        # Copy a file from local to remote
+        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
         
-        if stderr_mkdir_scratchdisk:
-           print stderr_mkdir_scratchdisk
-           
-        ##Crate a folder with a subfolder in GOEGRID-LOCALGROUPDISK##
-        lGrDiskPathSite1 = self.config['site1_localgroupdisk_path']
-        stdout_mkdir_localgroupdisk, stderr_mkdir_localgroupdisk = Object.mkDir(lGrDiskPathSite1)
-        if stdout_mkdir_localgroupdisk:
-           Object.mkDir(lGrDiskPathSite1 + "test/")
-        
-        if stderr_mkdir_localgroupdisk:
-           print stderr_mkdir_localgroupdisk 
-           
-        prodDiskPathSite1 = self.config['site1_proddisk_path'] 
-        dataDiskPathSite1 = self.config['site1_datadisk_path'] 
-        
-        siteName  = self.config['site1_name']
-        
-        detail1 = self.spaceTokenStatus(siteName,
-                                        Object,
-                                        srcHostSite1, 
-                                        dstHostSite1, 
-                                        scrtDiskPathSite1, 
-                                        lGrDiskPathSite1, 
-                                        scrtDiskPathSite1 + "test/", 
-                                        lGrDiskPathSite1 + "test/", 
-                                        prodDiskPathSite1, 
-                                        dataDiskPathSite1)               
-                
-        self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[0] = detail1
-        
-        #GOEGRID->WUPPERTAL transfers                       
-        scrtDiskPathSite3 = self.config['site3_scratchdisk_path']
-        lGrDiskPathSite3 = self.config['site3_localgroupdisk_path']
-        prodDiskPathSite3 = self.config['site3_proddisk_path']
-        dataDiskPathSite3 = self.config['site3_datadisk_path']
-        
-        srcHostSite1 = self.config['site1_host']
-        dstHostSite3 = self.config['site3_host']
-        
-        Object.setHostsAndPorts(srcHostSite1, "", dstHostSite3, "")               
-        Object.mkDir(scrtDiskPathSite3)
-        Object.mkDir(lGrDiskPathSite3)  
-        
-        siteName  = self.config['site3_name1']
-        detail3 = self.spaceTokenStatus(siteName,
-                                        Object,
-                                        srcHostSite1, 
-                                        dstHostSite3, 
-                                        scrtDiskPathSite1, 
-                                        lGrDiskPathSite1, 
-                                        scrtDiskPathSite3, 
-                                        lGrDiskPathSite3, 
-                                        prodDiskPathSite3, 
-                                        dataDiskPathSite3)               
-                
-        self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[1] = detail3  
-        
-        
-        #WUPPERTAL->GOEGRID transfers
-        srcHostSite3 = self.config['site3_host']
-        dstHostSite1 = self.config['site1_host']     
-        siteName  = self.config['site3_name2']    
+        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
+              
+        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
+                     
+        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
        
-        detail3 = self.spaceTokenStatus(siteName,
-                                        Object,
-                                        srcHostSite3, 
-                                        dstHostSite1, 
-                                        scrtDiskPathSite3, 
-                                        lGrDiskPathSite3,
-                                        scrtDiskPathSite1 + "test/", 
-                                        lGrDiskPathSite1 + "test/", 
-                                        prodDiskPathSite1, 
-                                        dataDiskPathSite1)
+        # Result of the transfers from Site1 to Site1                 
+        __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
+        src_src_status,  src_lg_status, src_prod_status, src_data_status = self.siteTransfers( __transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
+          
+       # self.removeTmpFiles(__grid_srm_handler, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath(), __genFile.getGenaratedFileName() )
+       
+               
+        __transfer_obj.setSrcPath(self.config['site1_localgroupdisk_path']) 
+        lg_src_status,   lg_lg_status,  lg_prod_status, lg_data_status = self.siteTransfers(__transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
+       
+       # self.removeTmpFiles(__grid_srm_handler, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath(), __genFile.getGenaratedFileName() )
+       
+      
+        details = self.fillTable(__transfer_obj.getSiteName(), src_src_status, src_lg_status, src_prod_status, src_data_status, 
+                                       lg_src_status,lg_lg_status, lg_prod_status, lg_data_status)
         
         self.details_table_db_value_list.append({})
-        self.details_table_db_value_list[2] = detail3 
+        self.details_table_db_value_list[0] = details
         
-        ##Removes created folders and subfolders##
-        Object.rmDir(srcHostSite1, scrtDiskPathSite1 + "test/")
-        Object.rmDir(srcHostSite1, lGrDiskPathSite1 + "test/")
-        Object.rmDir(srcHostSite1, scrtDiskPathSite1)
-        Object.rmDir(srcHostSite1, lGrDiskPathSite1)
+        # Site 1 to Site 2 transfers
+        __transfer_obj_1_2 = Transfers()
+        __spacetoken_obj_1_2 = SpaceTokens()               
+        __grid_srm_handler_1_2 = GridSRMCopyHandler(self.config['timeout'])
+        __genFile_1_2 = GenerateFile() 
         
-        Object.rmDir(dstHostSite3, scrtDiskPathSite3)
-        Object.rmDir(dstHostSite3, lGrDiskPathSite3)   
-        """                         
+        __transfer_obj_1_2.setSiteName(self.config['site2_name1'])
+        # Set source and destination hosts and ports
+        __transfer_obj_1_2.setSrcHost(self.config['site1_host'])
+        __transfer_obj_1_2.setSrcPort(self.config['site1_port'])
+        __transfer_obj_1_2.setDstHost(self.config['site2_host'])
+        __transfer_obj_1_2.setDstPort(self.config['site2_port'])            
+        
+        # Set all space tokens 
+        __spacetoken_obj_1_2.setScratchDiskPath(self.config['site2_scratchdisk_path'])        
+        __spacetoken_obj_1_2.setLocalGroupDiskPath(self.config['site2_localgroupdisk_path'])
+        __spacetoken_obj_1_2.setProdDiskPath(self.config['site2_proddisk_path']) 
+        __spacetoken_obj_1_2.setDataDiskPath(self.config['site2_datadisk_path'])
+        
+        # Copy a file from local to remote
+        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath())
+        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
+       
+        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
+        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
+       
+        # Result of the transfers from Site1 to Site1      
+        __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
+        src_src_status_1_2,  src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2 = self.siteTransfers( __transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
+               
+        __transfer_obj_1_2.setSrcPath(self.config['site1_localgroupdisk_path']) 
+        lg_src_status_1_2,   lg_lg_status_1_2,  lg_prod_status_1_2, lg_data_status_1_2 = self.siteTransfers(__transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
+       
+      
+        details_1_2 = self.fillTable(__transfer_obj_1_2.getSiteName(), src_src_status_1_2, src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2, 
+                                       lg_src_status_1_2,lg_lg_status_1_2, lg_prod_status_1_2, lg_data_status_1_2)
+        
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[1] = details_1_2          
+       
+    
+        # Site 2 to Site 1 transfers
+        __transfer_obj_2_1 = Transfers()
+        __spacetoken_obj_2_1 = SpaceTokens()               
+        __grid_srm_handler_2_1 = GridSRMCopyHandler(self.config['timeout'])      
+        __genFile_2_1 = GenerateFile()     
+        
+        __transfer_obj_2_1.setSiteName(self.config['site2_name2'])
+        # Set source and destination hosts and ports
+        __transfer_obj_2_1.setSrcHost(self.config['site2_host'])
+        __transfer_obj_2_1.setSrcPort(self.config['site2_port'])
+        __transfer_obj_2_1.setDstHost(self.config['site1_host'])
+        __transfer_obj_2_1.setDstPort(self.config['site1_port'])            
+        
+        # Set all space tokens 
+        __spacetoken_obj_2_1.setScratchDiskPath(self.config['site1_scratchdisk_path'])        
+        __spacetoken_obj_2_1.setLocalGroupDiskPath(self.config['site1_localgroupdisk_path'])
+        __spacetoken_obj_2_1.setProdDiskPath(self.config['site1_proddisk_path']) 
+        __spacetoken_obj_2_1.setDataDiskPath(self.config['site1_datadisk_path'])
+        
+        # Result of the transfers from Site1 to Site1      
+        __transfer_obj_2_1.setSrcPath(self.config['site2_scratchdisk_path'])  
+        src_src_status_2_1,  src_lg_status_2_1, src_prod_status_2_1, src_data_status_2_1 = self.siteTransfers( __transfer_obj_2_1, __spacetoken_obj_2_1, __grid_srm_handler_2_1, __genFile_2_1)
+               
+        __transfer_obj_2_1.setSrcPath(self.config['site2_localgroupdisk_path']) 
+        lg_src_status_2_1, lg_lg_status_2_1, lg_prod_status_2_1, lg_data_status_2_1 = self.siteTransfers(__transfer_obj_2_1, __spacetoken_obj_2_1, __grid_srm_handler_2_1, __genFile_2_1)
+       
+      
+        details_2_1 = self.fillTable(__transfer_obj_2_1.getSiteName(), src_src_status_2_1, src_lg_status_2_1, src_prod_status_2_1, src_data_status_2_1, 
+                                       lg_src_status_2_1, lg_lg_status_2_1, lg_prod_status_2_1, lg_data_status_2_1)
+        
+        self.details_table_db_value_list.append({})
+        self.details_table_db_value_list[2] = details_2_1    
+       
+        
+        obj = GridSRMCopyHandler()
+        #Remove files from local path
+        obj.rmLocal() 
+
+        #self.removeTmpDir(obj, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath())
+                            
         return data
     
-    def prepareAcquisition(self):
+    def removeTmpDir(self, obj, host, port, dst_scr_path, dst_lg_path):
+        #Remove folders from scratchdisk
+        obj.rmDir(host, port, dst_scr_path + "test/")
+        obj.rmDir(host, port, dst_scr_path)        
+        #Remove folders from localgroupdisk
+        obj.rmDir(host, port, dst_lg_path + "test/")
+        obj.rmDir(host, port, dst_lg_path)    
+     
+    def removeTmpFiles(self, obj, host, port, dst_scr_path, dst_lg_path, dst_prod_path, dst_data_path, fileName):
+        #Remove files from space tokens
+        obj.rmFile(host, port, dst_scr_path + fileName)
+        obj.rmFile(host, port, dst_scr_path + "test/srm_" + fileName)
+        obj.rmFile(host, port, dst_lg_path + fileName)
+        obj.rmFile(host, port, dst_lg_path + "test/srm_" + fileName)        
+        obj.rmFile(host, port, dst_prod_path + fileName)
+        obj.rmFile(host, port, dst_data_path + fileName)   
+       
         
+
+    def prepareAcquisition(self):        
         self.details_table_db_value_list = []
              
     def fillSubtables(self, parent_id):
-        
         self.subtables['site_transfers'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
-              
-    def getTemplateData(self):
-        data = hf.module.ModuleBase.getTemplateData(self)
-        """
+           
+    def SQLQuery(self, siteName):
+        max_id_number1_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == str(siteName)).execute().scalar()        
+        details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_uberftp).execute().fetchall()
+        return map(dict, details1)        
+    
+                       
+    def getTemplateData(self):        
+        data = hf.module.ModuleBase.getTemplateData(self)        
         self.dataset['site1Name'] = self.config['site1_name']                
         self.dataset['site1_space_token_scratchdisk'] = self.config['site1_space_token_scratchdisk']
         self.dataset['site1_space_token_localgroupdisk'] = self.config['site1_space_token_localgroupdisk']
         self.dataset['site1_space_token_proddisk'] = self.config['site1_space_token_proddisk']
         self.dataset['site1_space_token_datadisk'] = self.config['site1_space_token_datadisk']
+                      
+        self.dataset['site2Name1'] = self.config['site2_name1']   
+        self.dataset['site2Name2'] = self.config['site2_name2']            
+        self.dataset['site2_space_token_scratchdisk'] = self.config['site2_space_token_scratchdisk']
+        self.dataset['site2_space_token_localgroupdisk'] = self.config['site2_space_token_localgroupdisk']
+        self.dataset['site2_space_token_proddisk'] = self.config['site2_space_token_proddisk']
+        self.dataset['site2_space_token_datadisk'] = self.config['site2_space_token_datadisk']
         
-        self.dataset['site3Name1'] = self.config['site3_name1']   
-        self.dataset['site3Name2'] = self.config['site3_name2']            
-        self.dataset['site3_space_token_scratchdisk'] = self.config['site3_space_token_scratchdisk']
-        self.dataset['site3_space_token_localgroupdisk'] = self.config['site3_space_token_localgroupdisk']
-        self.dataset['site3_space_token_proddisk'] = self.config['site3_space_token_proddisk']
-        self.dataset['site3_space_token_datadisk'] = self.config['site3_space_token_datadisk']
-            
-        max_id_number1 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == str(self.config['site1_name'])).execute().scalar()        
-        #self.dataset['aaa'] = max_id_number1                
-        details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1).execute().fetchall()
-        data['site1Tosite1'] = map(dict, details1)
-      
-        max_id_number2 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name1'])).execute().scalar()        
-        #self.dataset['bbb'] = max_id_number2               
-        details2 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number2).execute().fetchall()
-        data['site1Tosite2'] = map(dict, details2)
+        self.dataset['ok_status'] = ['OK', 'SpaceException', 'FileExists', 'copy', 'completed', 'SUCCESS' ]
+        self.dataset['ok_status_prod_data'] = ['Permission denied', 'SRM_AUTHORIZATION_FAILURE', 'No permission', 'failed']
+        self.dataset['error_status'] = ['Failed', 'Error', 'No match', 'timeout']
+        self.dataset['error_status_prod_data'] = ['OK', 'SpaceException', 'FileExists', 'SUCCESS']         
+                               
+        data['site1_site1_transfers'] = self.SQLQuery(self.config['site1_name'])  
+        data['site1_site2_transfers'] = self.SQLQuery(self.config['site2_name1'])     
+        data['site2_site1_transfers'] = self.SQLQuery(self.config['site2_name2'])
+                
         
-        max_id_number3 = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName ==str(self.config['site2_name2'])).execute().scalar()        
-        #self.dataset['ccc'] = max_id_number3               
-        details3 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number3).execute().fetchall()
-        data['site2Tosite1'] = map(dict, details3)
-        """ 
         return data
-    
-
