@@ -179,8 +179,9 @@ class GridSubprocessBaseHandler:
                     self.logger.debug("stdin = ["+self.standardInput + "]")
                     time.sleep(self.waitBeforeStdInput)
                     self.gridProcess.stdin.write(self.standardInput)                   
-                    #self.gridProcess.stdin.close()
-                    
+                    #self.gridProcess.stdin.close()                   
+                
+                                 
                 """ wait until timeout expires """ 
                 
                 try:  
@@ -190,7 +191,7 @@ class GridSubprocessBaseHandler:
                                         
                 except GridTimeoutExpired as e:                        
                         self.gridProcess.kill()                        
-                        return 1, "Command execution time is expired. Raised timeout problem. Transfer failed."  #Failed                                        
+                        return 1, "Command execution time is expired. Raised timeout problem. Transfer failed.", self.gridProcess.stdout.read()  #Failed                                        
                                                 
                 except TimeoutExpired:
                     print "Command execution time is expired. Raised timeout problem. Transfer failed."                        
@@ -198,9 +199,10 @@ class GridSubprocessBaseHandler:
                     time.sleep(5)
                     os.kill(self.gridProcess.pid, signal.SIGKILL)
                     print 'The process killed'  
-                    return 1, "Command execution time is expired. Raised timeout problem. Transfer failed." #Failed   
+                    return 1, "Command execution time is expired. Raised timeout problem. Transfer failed.", self.gridProcess.stdout.read() #Failed   
+                           
                 
-                return self.gridProcess.returncode,  self.gridProcess.stderr.read()                                                
+                return self.gridProcess.returncode,  self.gridProcess.stderr.read(), self.gridProcess.stdout.read()                                               
 
 
     """ Show GridPopen Process """    
