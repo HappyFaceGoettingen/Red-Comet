@@ -6,63 +6,113 @@
 
 <%def name="drawTableRow(list)">
                     
-         	% for detail in list: 	
+         	% for detail in list: 
+         	     <% isItem = False %>	
    			     %for item in dataset['ok_status']:    
-    				%if item in detail['scratchdiskToScratchdisk']:			
-					    <td bgcolor = "#4FD516"></td>
+   			        %if item in detail['scratchdiskToScratchdisk']:		
+    				 	<% isItem = True %>					   
 					 % endif  					  
-				  % endfor				
-				 
-				 %for item in dataset['error_status']:    
-    				%if item in detail['scratchdiskToScratchdisk']:			
-					   <td bgcolor = "#FF6464"> 
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
 				  % endfor	
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['scratchdiskToScratchdisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
+				    		
+				
+				<% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['scratchdiskToLocalgroupdisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
+				  % endfor	
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['scratchdiskToLocalgroupdisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToLocalgroupdisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
+				  
 					
-				%for item in dataset['ok_status']:    
-    				%if item in detail['scratchdiskToLocalgroupdisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status']:    
-    				%if item in detail['scratchdiskToLocalgroupdisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
-				  % endfor		 
-				 
-				 %for item in dataset['ok_status_prod_data']:    
-    				%if item in detail['scratchdiskToProddisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif 					 
-				  % endfor				
-				 
-				 %for item in dataset['error_status_prod_data']:    
-    				%if item in detail['scratchdiskToProddisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
-				 	
+				 <% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['scratchdiskToProddisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
 				  % endfor	
-			    
-			     %for item in dataset['ok_status_prod_data']: 
-    				%if item in detail['scratchdiskToDatadisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status_prod_data']:  
-    				%if item in detail['scratchdiskToDatadisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
-				  % endfor				     
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['scratchdiskToProddisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToProddisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
+				  
+				  
+				 <% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['scratchdiskToDatadisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
+				  % endfor	
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['scratchdiskToDatadisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToDatadisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif			 	     
 			    						 		
 		   % endfor
 		</%def>
@@ -70,66 +120,115 @@
 		
 <%def name = "drawTableRow2(list)">
 
-            % for detail in list: 
-           		 %for item in dataset['ok_status']:    
-    				%if item in detail['localgroupdiskToScratchdisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status']:    
-    				%if item in detail['localgroupdiskToScratchdisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
+           % for detail in list: 
+         	     <% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['localgroupdiskToScratchdisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
 				  % endfor	
-			 
-				  %for item in dataset['ok_status']:    
-    				%if item in detail['localgroupdiskToLocalgroupdisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status']:    
-    				%if item in detail['localgroupdiskToLocalgroupdisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['localgroupdiskToScratchdisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToScratchdisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
+				    		
+				
+				<% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['localgroupdiskToLocalgroupdisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
 				  % endfor	
-
-
- 				 %for item in dataset['ok_status_prod_data']:    
-    				%if item in detail['localgroupdiskToProddisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status_prod_data']:    
-    				%if item in detail['localgroupdiskToProddisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
-				  % endfor
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['localgroupdiskToLocalgroupdisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToLocalgroupdisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
+				  
+					
+				 <% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['localgroupdiskToProddisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
+				  % endfor	
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['localgroupdiskToProddisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToProddisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif
 				  
 				  
-				   %for item in dataset['ok_status_prod_data']:    
-    				%if item in detail['localgroupdiskToDatadisk']:			
-					    <td bgcolor = "#4FD516"></td>
-					 % endif   
-				  % endfor				
-				 
-				 %for item in dataset['error_status_prod_data']:    
-    				%if item in detail['localgroupdiskToDatadisk']:			
-					   <td bgcolor = "#FF6464">
-				    	<input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['scratchdiskToScratchdisk']}" />
-				    	</td>
-				 	% endif
-				  % endfor
-
-		% endfor
+				 <% isItem = False %>	
+   			     %for item in dataset['ok_status']:    
+   			        %if item in detail['localgroupdiskToDatadisk']:		
+    				 	<% isItem = True %>					   
+					 % endif  					  
+				  % endfor	
+				  			 
+				  % if isItem:
+				     <td bgcolor = "#4FD516"></td>
+				  
+				  % else:
+				      <% isItem_err = False %>
+				      %for item in dataset['error_status']:			    
+    					%if item in detail['localgroupdiskToDatadisk']:	
+    				   	<% isItem_err = True %>					  
+				 		% endif
+				 		 % endfor				  
+				 		 % if isItem_err:
+				            <td bgcolor = "#FF6464">
+				    	      <input type = "image" style="background-color: transparent; border: none !important;" src = "/static/images/tooltip.png" title = "${detail['localgroupdiskToDatadisk']}" />
+				            </td>
+				 		 % else: 
+				             <td bgcolor = "#F7D358">CHKA 2 texum el</td>
+				 		 % endif  				  			  			  
+				  % endif			 	     
+			    						 		
+		   % endfor
 </%def>
 
 
