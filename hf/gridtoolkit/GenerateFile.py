@@ -60,11 +60,11 @@ class GenerateFile(object):
     
     def createFileInSrcPath (self, dstHost, dstPort, dstPath, _obj):
         fileName, localPath = self.randomFileGenerator("random.txt")
-        stdout, stderr = _obj.copyFromLocalToRemote(dstHost, dstPort, localPath, dstPath, fileName)
+        retCode, error, output_msg = _obj.copyFromLocalToRemote(dstHost, dstPort, localPath, dstPath, fileName)
         copyStatus = 0               
-        if stderr:
+        if error:
            copyStatus = 1
-        return copyStatus, stdout, stderr, fileName
+        return copyStatus, output_msg, error, fileName
     
     def randomFileGenerator(self, filename):
        from hashlib import md5
