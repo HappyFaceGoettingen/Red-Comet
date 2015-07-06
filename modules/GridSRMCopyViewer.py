@@ -69,7 +69,7 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
     def performTransfers(self, _grid_srm_handler, __transfer_obj, __genFile, diskOneFilePath, diskTwo):        
         ## Transfer from  one disk to another
         fileName = __genFile.getGenaratedFileName()
-        retCode, error = _grid_srm_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(),__transfer_obj.getDstPort(),diskTwo, fileName)
+        retCode, error, data = _grid_srm_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(),__transfer_obj.getDstPort(),diskTwo, fileName)
         ## show files in destination part       
         status = ""        
         if retCode == 0:
@@ -117,7 +117,7 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         
         logging.basicConfig(level=logging.INFO)
         logging.root.setLevel(logging.INFO) 
-    
+        
        # Site 1 to Site 1 transfers
         __transfer_obj = Transfers()
         __spacetoken_obj = SpaceTokens()               
@@ -139,32 +139,47 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj.setDataDiskPath(self.config['site1_datadisk_path'])
         
         # Copy a file from local to remote
-        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
+        retCode_token1, error_token1, output_msg1 = __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
+        retCode_token2, error_token2, output_msg2 = __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
+                      
+        src_src_status, src_lg_status, src_prod_status, src_data_status  = ("",)*4
+        lg_src_status, lg_lg_status, lg_prod_status, lg_data_status = ("",)*4
         
-        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
-              
-        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
-                     
-        __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
-       
-        # Result of the transfers from Site1 to Site1                 
-        __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
-        src_src_status,  src_lg_status, src_prod_status, src_data_status = self.siteTransfers( __transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
-          
-       # self.removeTmpFiles(__grid_srm_handler, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath(), __genFile.getGenaratedFileName() )
-       
+        print error_token1
+        
+        if retCode_token1 == 0 or "exists" in output_msg1 or  "exists" in error_token1:
+            __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
+            
+            __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
+            src_src_status,  src_lg_status, src_prod_status, src_data_status = self.siteTransfers( __transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
                
-        __transfer_obj.setSrcPath(self.config['site1_localgroupdisk_path']) 
-        lg_src_status,   lg_lg_status,  lg_prod_status, lg_data_status = self.siteTransfers(__transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
+        else: 
+            print "Failed to create a directory"
+            src_src_status = "Cannot create a directory" 
+            src_lg_status = "Cannot create a directory"
+            src_prod_status = "Cannot create a directory"
+            src_data_status = "Cannot create a directory"
+        
+        if retCode_token2 == 0 or "exists" in output_msg2 or  "exists" in error_token2: 
+            __grid_srm_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
+            
+            __transfer_obj.setSrcPath(self.config['site1_localgroupdisk_path']) 
+            lg_src_status,   lg_lg_status,  lg_prod_status, lg_data_status = self.siteTransfers(__transfer_obj, __spacetoken_obj, __grid_srm_handler, __genFile)
        
-       # self.removeTmpFiles(__grid_srm_handler, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath(), __genFile.getGenaratedFileName() )
-       
-      
+        else: 
+            print "Failed to create a directory"
+            lg_src_status = "Cannot create a directory" 
+            lg_lg_status = "Cannot create a directory"
+            lg_prod_status = "Cannot create a directory"
+            lg_data_status = "Cannot create a directory"
+          
+        
         details = self.fillTable(__transfer_obj.getSiteName(), src_src_status, src_lg_status, src_prod_status, src_data_status, 
                                        lg_src_status,lg_lg_status, lg_prod_status, lg_data_status)
-        
+                
         self.details_table_db_value_list.append({})
         self.details_table_db_value_list[0] = details
+        
         
         # Site 1 to Site 2 transfers
         __transfer_obj_1_2 = Transfers()
@@ -184,22 +199,42 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         __spacetoken_obj_1_2.setLocalGroupDiskPath(self.config['site2_localgroupdisk_path'])
         __spacetoken_obj_1_2.setProdDiskPath(self.config['site2_proddisk_path']) 
         __spacetoken_obj_1_2.setDataDiskPath(self.config['site2_datadisk_path'])
-        
-        # Copy a file from local to remote
-        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath())
-        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
-       
-        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
-        __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
-       
-        # Result of the transfers from Site1 to Site1      
-        __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
-        src_src_status_1_2,  src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2 = self.siteTransfers( __transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
                
-        __transfer_obj_1_2.setSrcPath(self.config['site1_localgroupdisk_path']) 
-        lg_src_status_1_2,   lg_lg_status_1_2,  lg_prod_status_1_2, lg_data_status_1_2 = self.siteTransfers(__transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
+        # Copy a file from local to remote
+        retCode_token3, error_token3, output_msg3 = __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath())
+        retCode_token4, error_token4, output_msg4 = __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
+        
+        src_src_status_1_2, src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2  = ("",)*4
+        lg_src_status_1_2, lg_lg_status_1_2, lg_prod_status_1_2, lg_data_status_1_2 = ("",)*4
+
+        
+        if retCode_token3 == 0 or "exists" in output_msg3 or "exists" in error_token3:
+            __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
        
-      
+            __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
+            src_src_status_1_2,  src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2 = self.siteTransfers( __transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
+          
+        else: 
+            print "Failed to create a directory"
+            src_src_status_1_2 = "Cannot create a directory" 
+            src_lg_status_1_2 = "Cannot create a directory"
+            src_prod_status_1_2 = "Cannot create a directory"
+            src_data_status_1_2 = "Cannot create a directory"
+        
+        if retCode_token4 == 0 or "exists" in output_msg4 or "exists" in error_token4: 
+            __grid_srm_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
+        
+            __transfer_obj_1_2.setSrcPath(self.config['site1_localgroupdisk_path']) 
+            lg_src_status_1_2,   lg_lg_status_1_2,  lg_prod_status_1_2, lg_data_status_1_2 = self.siteTransfers(__transfer_obj_1_2, __spacetoken_obj_1_2, __grid_srm_handler_1_2, __genFile_1_2)
+       
+        else: 
+            print "Failed to create a directory"
+            lg_src_status_1_2 = "Cannot create a directory" 
+            lg_lg_status_1_2 = "Cannot create a directory"
+            lg_prod_status_1_2 = "Cannot create a directory"
+            lg_data_status_1_2 = "Cannot create a directory"
+          
+        
         details_1_2 = self.fillTable(__transfer_obj_1_2.getSiteName(), src_src_status_1_2, src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2, 
                                        lg_src_status_1_2,lg_lg_status_1_2, lg_prod_status_1_2, lg_data_status_1_2)
         
@@ -246,7 +281,7 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         obj.rmLocal() 
 
         #self.removeTmpDir(obj, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath())
-                            
+                           
         return data
     
     def removeTmpDir(self, obj, host, port, dst_scr_path, dst_lg_path):
@@ -264,10 +299,8 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         obj.rmFile(host, port, dst_lg_path + fileName)
         obj.rmFile(host, port, dst_lg_path + "test/srm_" + fileName)        
         obj.rmFile(host, port, dst_prod_path + fileName)
-        obj.rmFile(host, port, dst_data_path + fileName)   
-       
+        obj.rmFile(host, port, dst_data_path + fileName)       
         
-
     def prepareAcquisition(self):        
         self.details_table_db_value_list = []
              
@@ -297,8 +330,8 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         
         self.dataset['ok_status'] = ['OK', 'SpaceException', 'FileExists', 'copy', 'completed', 'SUCCESS' ]
         self.dataset['ok_status_prod_data'] = ['Permission denied', 'SRM_AUTHORIZATION_FAILURE', 'No permission', 'failed']
-        self.dataset['error_status'] = ['Failed', 'Error', 'No match', 'timeout']
-        self.dataset['error_status_prod_data'] = ['OK', 'SpaceException', 'FileExists', 'SUCCESS']         
+        self.dataset['error_status'] = ['Failed', 'Error', 'No match', 'timeout', 'Cannot create a directory']
+        self.dataset['error_status_prod_data'] = ['OK', 'SpaceException', 'FileExists', 'SUCCESS', 'Cannot create a directory']         
                                
         data['site1_site1_transfers'] = self.SQLQuery(self.config['site1_name'])  
         data['site1_site2_transfers'] = self.SQLQuery(self.config['site2_name1'])     
