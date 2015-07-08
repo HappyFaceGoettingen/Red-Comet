@@ -49,6 +49,7 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler, Transfers):
     protocol = "srm"
     commandArgs = None
     timeout =  None
+    error_msg = None
            
  
     def __init__(self, _timeout=None):
@@ -64,67 +65,58 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.logger.debug("File to copy from source path = " + str(srcPath))
         self.logger.debug("Destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))         
-        retCode, error_msg  = self.execute()         
+        retCode, error_msg, output_msg = self.execute()         
         print "Command executed return code: "
         print retCode
         if retCode == 0:  
             try: 
                 (data,error) = self.gridProcess.communicate()
-                return retCode, error
+                return retCode, error, data
             except Exception as e: 
                 self.logger.debug("An exception has occurred:")
                 print e
         else:
-            return retCode, error_msg
-                       
+            
+            return retCode, error_msg, output_msg                     
         
-        """
-        error = ""
-        if retCode == 0:
-            try: 
-                (data,error) = self.gridProcess.communicate()    
-            except Exception as e: 
-                self.logger.debug("An exception has occurred:")
-                print e
-                            
-        elif retCode >= 1:
-            self.logger.debug("Failed to copy")
-        
-        return retCode, error
-        """
+       
           
     def showFiles (self, dstHost, dstPort, dstPath):
         self.commandOptions = "ls "             
         self.commandArgs = self.command + self.commandOptions  + self.options +  self.protocol + "://" + dstHost + ":" + dstPort + dstPath
         self.logger.debug("Show files in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))        
-        retCode = self.execute()         
-        print "Command executed return code : "
-        print retCode        
-        try: 
-            (data,error) = self.gridProcess.communicate()  
-            return retCode, error  
-        except Exception as e: 
-            self.logger.debug("An exception has occurred:")
-            print e      
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            return retCode, error_msg, output_msg
         
             
     def mkDir (self, dstHost, dstPort, dstPath):
         self.commandOptions = "mkdir "
         self.commandArgs = self.command + self.commandOptions + self.options + self.protocol + "://" + dstHost + ":" + dstPort + dstPath      
         self.logger.debug("Create file in destination path = " +  str(dstPath))
-        self.logger.debug("Executed command = " +  str(self.commandArgs))        
+        self.logger.debug("Executed command = " +  str(self.commandArgs))     
+        retCode, error_msg, output_msg  = self.execute() 
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            return retCode, error_msg, output_msg  
         
-        retCode = self.execute()         
-        print "Command executed return code : "
-        print retCode
-        
-        try: 
-            (data,error) = self.gridProcess.communicate()  
-            return retCode, error  
-        except Exception as e: 
-            self.logger.debug("An exception has occurred:")
-            print e             
+              
 
     #Remove files from local part
     def rmLocal(self):       
@@ -137,16 +129,18 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.commandOptions = "cp file:///" 
         self.commandArgs = self.command + self.commandOptions + localPath + '  ' + self.protocol + "://" + dstHost + ":" + dstPort + dstPath + fileName+ self.options
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        
-        retCode = self.execute()         
-        print "Command executed return code : "
-        print retCode  
-        try: 
-            (data,error) = self.gridProcess.communicate()  
-            return retCode, error  
-        except Exception as e: 
-            self.logger.debug("An exception has occurred:")
-            print e      
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            return retCode, error_msg, output_msg     
            
     def checkFile (self, dstHost, dstPort, fileName, dstPath):
         stdout, stderr = self.showFiles(dstHost, dstPort, dstPath)
@@ -171,32 +165,36 @@ class GridSRMCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.commandArgs = 'srmrm ' + self.protocol + "://" + dstHost + ":" + dstPort + dstPath
         #self.commandArgs = 'srmrm ' + self.protocol + "://" + dstHost + ":" + dstPort + dstPath + "*"
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-       
-        retCode = self.execute()         
-        print "Command executed return code : "
-        print retCode       
-        try: 
-            (data,error) = self.gridProcess.communicate()  
-            return retCode, error  
-        except Exception as e: 
-            self.logger.debug("An exception has occurred:")
-            print e      
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            return retCode, error_msg, output_msg      
         
     
     def rmDir (self, dstHost, dstPort, dstPath):
         self.commandArgs = 'srmrmdir ' + self.protocol + "://" + dstHost + ":" + dstPort + dstPath
         self.logger.debug("Remove directory from destination path = " +  str(dstPath))
-        self.logger.debug("Executed command = " +  str(self.commandArgs))
-        
-        retCode = self.execute()         
-        print "Command executed return code : "
+        self.logger.debug("Executed command = " +  str(self.commandArgs))        
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
         print retCode
-        try: 
-            (data,error) = self.gridProcess.communicate()  
-            return retCode, error  
-        except Exception as e: 
-            self.logger.debug("An exception has occurred:")
-            print e      
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            return retCode, error_msg, output_msg
         
 def main():
     print "GridSRMCopyHandler"
