@@ -189,17 +189,23 @@ class GridSubprocessBaseHandler:
                         exitcode = self.gridProcess.wait(int(self.timeout))
                         print exitcode
                                         
-                except GridTimeoutExpired as e:                        
-                        self.gridProcess.kill()                        
-                        return 1, "Command execution time is expired. Raised timeout problem. Transfer failed.", self.gridProcess.stdout.read()  #Failed                                        
+                except GridTimeoutExpired as e:
+                        print "Command execution time is expired. Raised timeout problem. Transfer failed. GridTimeoutExpired exception."                        
+                        self.gridProcess.kill()  
+                        os.waitpid(-1, os.WNOHANG) 
+                        time.sleep(5)
+                        os.kill(self.gridProcess.pid, signal.SIGKILL)  
+                        strMsg = "Command execution time is expired. Raised timeout problem. Transfer failed. GridTimeoutExpired exception."                    
+                        return 1, strMsg, "chka"                                        
                                                 
                 except TimeoutExpired:
-                    print "Command execution time is expired. Raised timeout problem. Transfer failed."                        
+                    print "Command execution time is expired. Raised timeout problem. Transfer failed. TimeoutExpired exception."                        
                     os.waitpid(-1, os.WNOHANG) 
                     time.sleep(5)
                     os.kill(self.gridProcess.pid, signal.SIGKILL)
                     print 'The process killed'  
-                    return 1, "Command execution time is expired. Raised timeout problem. Transfer failed.", self.gridProcess.stdout.read() #Failed   
+                    strMsg = "Command execution time is expired. Raised timeout problem. Transfer failed. TimeoutExpired exception"
+                    return 1, strMsg, "chka" #Failed   
                            
                 
                 return self.gridProcess.returncode,  self.gridProcess.stderr.read(), self.gridProcess.stdout.read()                                               
