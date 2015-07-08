@@ -68,18 +68,17 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
      
     def performTransfers(self, __grid_ftp_handler, __transfer_obj, __genFile, diskOneFilePath, diskTwo):         
         ## Transfer from  one disk to another   
-        data, error = __grid_ftp_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(), diskTwo)
+        retCode, error, data = __grid_ftp_handler.copying(__transfer_obj.getSrcHost(), __transfer_obj.getSrcPort(), diskOneFilePath, __transfer_obj.getDstHost(), diskTwo)
         ## Check the status of copy
-        status = ""
-        if not error:
-           check_if_file_exists = __grid_ftp_handler.checkFile(__transfer_obj.getDstHost(), __transfer_obj.getDstPort(),__genFile.getGenaratedFileName(), diskTwo)
-           if check_if_file_exists == 0:
-               status = "OK"                    
-           else:
-               status = "Failed"                      
-        else:
-           status = error        
-        return status
+        status = ""        
+        if retCode == 0:
+            status = "OK"
+            __grid_ftp_handler.showFiles(__transfer_obj.getDstHost(),__transfer_obj.getDstPort(), diskTwo)    
+                 
+        else: 
+            status = error
+        
+        return status 
     
     def fillTable(self, site_name, src_src_status, src_lg_status, src_prod_status, src_data_status, lg_src_status,lg_lg_status, lg_prod_status, lg_data_status):
         details = {}        
@@ -137,19 +136,41 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         
                 
         # Copy a file from local to remote        
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
-       
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
-        __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
-       
-        # Result of the transfers from Site1 to Site1      
-        __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
-        src_src_status,  src_lg_status, src_prod_status, src_data_status = self.siteTransfers( __transfer_obj, __spacetoken_obj, __grid_ftp_handler, __genFile)
+          # Copy a file from local to remote
+        retCode_token1, error_token1, output_msg1 = __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath())
+        retCode_token2, error_token2, output_msg2 = __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath())
+                      
+        src_src_status, src_lg_status, src_prod_status, src_data_status  = ("",)*4
+        lg_src_status, lg_lg_status, lg_prod_status, lg_data_status = ("",)*4
+        
+        print error_token1
+        
+        if retCode_token1 == 0 or "exists" in output_msg1 or  "exists" in error_token1:
+            __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getScratchDiskPath()+ "test/")         
+            
+            __transfer_obj.setSrcPath(self.config['site1_scratchdisk_path'])  
+            src_src_status,  src_lg_status, src_prod_status, src_data_status = self.siteTransfers( __transfer_obj, __spacetoken_obj, __grid_ftp_handler, __genFile)
                
-        __transfer_obj.setSrcPath(self.config['site1_localgroupdisk_path']) 
-        lg_src_status,   lg_lg_status,  lg_prod_status, lg_data_status = self.siteTransfers(__transfer_obj, __spacetoken_obj, __grid_ftp_handler, __genFile)
+        else: 
+            print "Failed to create a directory"
+            src_src_status = "Cannot create a directory" 
+            src_lg_status = "Cannot create a directory"
+            src_prod_status = "Cannot create a directory"
+            src_data_status = "Cannot create a directory"
+        
+        if retCode_token2 == 0 or "exists" in output_msg2 or  "exists" in error_token2: 
+            __grid_ftp_handler.mkDir(__transfer_obj.getSrcHost(),__transfer_obj.getSrcPort(),__spacetoken_obj.getLocalGroupDiskPath()+ "test/")         
+            
+            __transfer_obj.setSrcPath(self.config['site1_localgroupdisk_path']) 
+            lg_src_status,   lg_lg_status,  lg_prod_status, lg_data_status = self.siteTransfers(__transfer_obj, __spacetoken_obj, __grid_ftp_handler, __genFile)
        
+        else: 
+            print "Failed to create a directory"
+            lg_src_status = "Cannot create a directory" 
+            lg_lg_status = "Cannot create a directory"
+            lg_prod_status = "Cannot create a directory"
+            lg_data_status = "Cannot create a directory"
+          
       
         details = self.fillTable(__transfer_obj.getSiteName(), src_src_status, src_lg_status, src_prod_status, src_data_status, 
                                        lg_src_status,lg_lg_status, lg_prod_status, lg_data_status)
@@ -179,19 +200,39 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         
         # Copy a file from local to remote
         
-        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath())
-        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
+        retCode_token3, error_token3, output_msg3 = __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath())
+        retCode_token4, error_token4, output_msg4 = __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
+        
+        src_src_status_1_2, src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2  = ("",)*4
+        lg_src_status_1_2, lg_lg_status_1_2, lg_prod_status_1_2, lg_data_status_1_2 = ("",)*4
+
+        
+        if retCode_token3 == 0 or "exists" in output_msg3 or "exists" in error_token3:
+            __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getScratchDiskPath()+ "test/")         
        
-        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath())
-        __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj.getSrcPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
+            __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
+            src_src_status_1_2,  src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2 = self.siteTransfers( __transfer_obj_1_2, __spacetoken_obj_1_2, __grid_ftp_handler_1_2, __genFile_1_2)
+          
+        else: 
+            print "Failed to create a directory"
+            src_src_status_1_2 = "Cannot create a directory" 
+            src_lg_status_1_2 = "Cannot create a directory"
+            src_prod_status_1_2 = "Cannot create a directory"
+            src_data_status_1_2 = "Cannot create a directory"
+        
+        if retCode_token4 == 0 or "exists" in output_msg4 or "exists" in error_token4: 
+            __grid_ftp_handler_1_2.mkDir(__transfer_obj_1_2.getDstHost(),__transfer_obj_1_2.getDstPort(),__spacetoken_obj_1_2.getLocalGroupDiskPath()+ "test/")         
+        
+            __transfer_obj_1_2.setSrcPath(self.config['site1_localgroupdisk_path']) 
+            lg_src_status_1_2,   lg_lg_status_1_2,  lg_prod_status_1_2, lg_data_status_1_2 = self.siteTransfers(__transfer_obj_1_2, __spacetoken_obj_1_2, __grid_ftp_handler_1_2, __genFile_1_2)
        
-        # Result of the transfers from Site1 to Site1      
-        __transfer_obj_1_2.setSrcPath(self.config['site1_scratchdisk_path'])  
-        src_src_status_1_2,  src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2 = self.siteTransfers( __transfer_obj_1_2, __spacetoken_obj_1_2, __grid_ftp_handler_1_2, __genFile_1_2)
-               
-        __transfer_obj_1_2.setSrcPath(self.config['site1_localgroupdisk_path']) 
-        lg_src_status_1_2,   lg_lg_status_1_2,  lg_prod_status_1_2, lg_data_status_1_2 = self.siteTransfers(__transfer_obj_1_2, __spacetoken_obj_1_2, __grid_ftp_handler_1_2, __genFile_1_2)
-       
+        else: 
+            print "Failed to create a directory"
+            lg_src_status_1_2 = "Cannot create a directory" 
+            lg_lg_status_1_2 = "Cannot create a directory"
+            lg_prod_status_1_2 = "Cannot create a directory"
+            lg_data_status_1_2 = "Cannot create a directory"
+          
       
         details_1_2 = self.fillTable(__transfer_obj_1_2.getSiteName(), src_src_status_1_2, src_lg_status_1_2, src_prod_status_1_2, src_data_status_1_2, 
                                        lg_src_status_1_2,lg_lg_status_1_2, lg_prod_status_1_2, lg_data_status_1_2)
