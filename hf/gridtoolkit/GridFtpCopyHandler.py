@@ -64,56 +64,84 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.logger.debug("File to copy from source path = " + str(srcPath))
         self.logger.debug("Destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-           (data,error) = self.gridProcess.communicate()
-           return data, error
-        except Exception as e: 
-           print "An exception has occurred: "
-           print e    
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+          
           
     def showFiles (self, dstHost, dstPort, dstPath):  
         self.commandOptions = " -ls "             
         self.commandArgs = self.command + self.options + self.commandOptions +  self.protocol + "://" + dstHost + dstPath
         self.logger.debug("Show files in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-            (data,error) = self.gridProcess.communicate()
-            return data, error
-        except Exception as e: 
-            print "An exception has occurred: "
-            print e 
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+        
             
     def mkDir (self, dstHost, dstPort, dstPath):
         self.commandOptions = "mkdir "
         self.commandArgs = self.command + self.options + dstHost + ' "' + self.commandOptions + dstPath + ' " '         
         self.logger.debug("Create file in destination path = " +  str(dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-            (stdout,stderr) = self.gridProcess.communicate()
-            return stdout, stderr 
-        except Exception as e: 
-            print "An exception has occurred: "
-            print e
-    
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+       
     #Remove files from destination path  
     def rmFile (self, dstHost, dstPort, dstPath):
         self.commandOptions = "cd "
         self.__dstPath = dstPath
         self.commandArgs = self.command + self.options + dstHost + ' " ' + self.commandOptions + self.__dstPath + ' " ' + ' " rm *.txt " ' 
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-            (data,error) = self.gridProcess.communicate()
-            if data:
-                print "Deleted \n"
-            if error:
-                print error
-        except Exception as e: 
-            print "An exception has occurred: "
-            print e
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+       
     
     #Remove directory from destination path
     def rmDir (self, dstHost, dstPort, dstPath):
@@ -122,17 +150,21 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.commandArgs = self.command + self.options + dstHost + ' " ' + self.commandOptions + self.__dstPath + ' " '
         self.logger.debug("Remove directory from destination path = " +  str(self.__dstPath))
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-            (data,error) = self.gridProcess.communicate()
-            if data:
-                print "Deleted \n"
-            if error:
-                print error 
-        except Exception as e: 
-            print "An exception has occurred: "
-            print e
-    
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+       
     #Remove files from local part
     def rmLocal(self):       
        filelist = glob.glob("/var/tmp/*_random.txt")
@@ -144,13 +176,21 @@ class GridFtpCopyHandler(GridSubprocessBaseHandler, Transfers):
         self.commandOptions = "put " 
         self.commandArgs = self.command + self.options + dstHost + '  " ' + self.commandOptions + localPath + "  " + dstPath + ' "'
         self.logger.debug("Executed command = " +  str(self.commandArgs))
-        self.execute()
-        try: 
-           (data,error) = self.gridProcess.communicate()
-           return data, error
-        except Exception as e: 
-           print "An exception has occurred: "
-           print e
+        retCode, error_msg, output_msg = self.execute()         
+        print "Command executed return code: "
+        print retCode
+        if retCode == 0:  
+            try: 
+                (data,error) = self.gridProcess.communicate()
+                return retCode, error, data
+            except Exception as e: 
+                self.logger.debug("An exception has occurred:")
+                print e
+        else:
+            
+            return retCode, error_msg, output_msg                     
+        
+       
            
     def checkFile (self, dstHost, dstPort, fileName, dstPath):
         stdout, stderr = self.showFiles(dstHost, dstPort, dstPath)
