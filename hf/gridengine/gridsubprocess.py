@@ -196,7 +196,7 @@ class GridSubprocessBaseHandler:
                         time.sleep(5)
                         os.kill(self.gridProcess.pid, signal.SIGKILL)  
                         strMsg = "Command execution time is expired. Raised timeout problem. Transfer failed. GridTimeoutExpired exception."                    
-                        return 1, strMsg, "chka"                                        
+                        return 1, strMsg, " "                                        
                                                 
                 except TimeoutExpired:
                     print "Command execution time is expired. Raised timeout problem. Transfer failed. TimeoutExpired exception."                        
@@ -205,7 +205,7 @@ class GridSubprocessBaseHandler:
                     os.kill(self.gridProcess.pid, signal.SIGKILL)
                     print 'The process killed'  
                     strMsg = "Command execution time is expired. Raised timeout problem. Transfer failed. TimeoutExpired exception"
-                    return 1, strMsg, "chka" #Failed   
+                    return 1, strMsg, " " 
                            
                 
                 return self.gridProcess.returncode,  self.gridProcess.stderr.read(), self.gridProcess.stdout.read()                                               
