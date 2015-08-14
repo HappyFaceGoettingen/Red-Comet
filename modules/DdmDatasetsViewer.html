@@ -34,17 +34,19 @@
 			<th> Dataset Name </th> 
 			<th> Dataset Size </th>
 			<th> Dataset Owner </th> 
-			<th> Datset Date </th>
+			<th> Datset Created Date </th>
+			<th> Datset Updated Date </th>
 		</tr>
 		</thread>
 		
 		<tbody>
 		% for detail in details_ddm:
 			<tr>
-				<td> ${detail['datasetname']}</td>
-				<td> ${detail['datasetsize']}</td>
-				<td> ${detail['datasetowner']}</td> 
-				<td> ${detail['datasetdate']}</td>
+				<td> ${detail['datasetName']}</td>
+				<td> ${detail['datasetSize']}</td>
+				<td> ${detail['datasetOwner']}</td> 
+				<td> ${detail['datasetCreatedDate']}</td>
+				<td> ${detail['datasetUpdatedDate']}</td>
 			</tr>
 		% endfor
 		</tbody>
@@ -67,8 +69,8 @@
 		
 		var tempList = [];
 		% for detail in details_ddm:
-			var owner = "${detail['datasetowner']}";
-			var size = "${detail['datasetsize']}";
+			var owner = "${detail['datasetOwner']}";
+			var size = "${detail['datasetSize']}";
 			size = parseInt(size);
 			tempList.push([owner, size]);
 		% endfor
