@@ -1,5 +1,6 @@
-# Copyright 2014 II. Physikalisches Institut - Georg-August-Universitaet Goettingen
-# Author: Max Robinson (mrobinson31415@gmail.com)
+# -*- coding: utf-8 -*-
+# Copyright 2014 II. Physikalisches Institut - Georg-August-Universität Göttingen
+# Author: Haykuhi Musheghyan <haykuhi.musheghyan@cern.ch>, Date: 13/August/2015
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,8 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#
-#    Last edited: July 17th, 2014 by Max Robinson
 
 import hf
 from hf.gridtoolkit.DdmDatasetsController import DdmDatasetsController
@@ -24,28 +23,29 @@ from datetime import datetime
 from datetime import timedelta
 import random 
 
+
 class DdmDatasetsViewer(hf.module.ModuleBase):
     config_keys = {
         'dataset': ('Dataset names', ''),
     }
-
-    #config_hint = ''
 
     table_columns = [
         Column('dataset', TEXT),
     ], []
 
     subtable_columns = {
-        'details_table': ([
-        Column('datasetname', TEXT),
-        Column('datasetsize', INT),
-        Column('datasetowner', TEXT),
-        Column('datasetdate', TEXT),
+        'details': ([
+        Column('datasetName', TEXT),
+        Column('datasetSize', INT),
+        Column('datasetOwner', TEXT),
+        Column('datasetCreatedDate', TEXT),
+        Column('datasetUpdatedDate', TEXT),
     ], [])}
-
+    
+    
     def prepareAcquisition(self):
                 
-        self.details_table_db_value_list = []
+        self.details_table_db_value_list = []    
 
     def extractData(self):
         data = {
@@ -53,46 +53,62 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
             'status': 1
             }
         
-        DataObject = DdmDatasetsController(logFilePath=self.config['log_file_path'],timeDelta=self.config['time_delta'],
-                                           testNumberOfDatasets=self.config['test_number_of_datasets'],runMode=self.config['run_mode'])
-        DataObject.run('GOEGRID_LOCALGROUPDISK')
-        ## 
-        print "Extracting Data..........."
+        DataObject = DdmDatasetsController()
+       
+        DataObject.whoami()
         
-        datasetname = DataObject.getFromDatabase("datasetname")
-        datasetsize = DataObject.getFromDatabase("datasetsize")
-        datasetowner = DataObject.getFromDatabase("datasetowner")
-        datasetdate = DataObject.getFromDatabase("datasetdate")
+        datasets_start = self.config['datasets_start'] 
+        datasets_end = self.config['datasets_end'] 
+        space_token = self.config['space_token'] 
+       
+        retCode, error_msg, datasetName = DataObject.listDatasets(space_token, datasets_start, datasets_end)
+         
+        print "Error msg::: "
+        print error_msg         
         
-        ## Get Dataset info and what not. 
-        for x in range(len(datasetname)):
-            detail = {}
-            detail['datasetname'] = datasetname[x]
-            detail['datasetsize'] = datasetsize[x]
-            detail['datasetowner'] = datasetowner[x]
-            detail['datasetdate'] = datasetdate[x]
-            
-            #detail['datasetname'] = "hiworld"
-            #detail['datasetsize'] = 1
-            #detail['datasetowner'] = "Max Robinson"
-            #detail['datasetdate'] = "7/7/2014"
-            
-            ## set database data
-            self.details_table_db_value_list.append({})
-            self.details_table_db_value_list[x] = detail
+        if not error_msg:
+            filtered_datasetName = str.replace(datasetName, 'SCOPE:NAME', '')
+            filtered_datasetName = str.replace(filtered_datasetName, '-', '')
+               
+            datasetName_list = filtered_datasetName.split( )
         
-        #for x in self.details_table_db_value_list:
-        #    print x
-
+            k = -1
+            for dataset in datasetName_list:            
+                print "List element:::::  "  + dataset
+                info = DataObject.getMetaData(dataset)
+                if info:
+                    k = k + 1
+                    print info.get('name')
+                    print info.get('length')
+                    print info.get('scope')      
+                    print info.get('created_at')
+                    print info.get('updated_at')
+                    details = {}
+                    details['datasetName'] = info.get('name')
+                    details['datasetSize'] = info.get('length')
+                    details['datasetOwner'] = info.get('scope')
+                    details['datasetCreatedDate'] = info.get('created_at')
+                    details['datasetUpdatedDate'] = info.get('updated_at')
+                     
+                    self.details_table_db_value_list.append({})
+                    self.details_table_db_value_list[k] = details              
+        
+        self.removeDuplicatedRowsFromDB()
+       
         return data
 
 
     def fillSubtables(self, parent_id):
-        self.subtables['details_table'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
+        self.subtables['details'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list])
    
+    def removeDuplicatedRowsFromDB(self):        
+        #DELETE FROM sub_ddm_datasets_viewer_details WHERE id NOT IN (SELECT MAX(id) FROM sub_ddm_datasets_viewer_details GROUP BY datasetName);
+        self.subtables['details'].delete().where(~self.subtables['details'].c.id.in_(func.max(self.subtables['details'].c.id).select().group_by(self.subtables['details'].c.datasetName))).execute()
+                
     def getTemplateData(self):
-        data = hf.module.ModuleBase.getTemplateData(self)
-        details = self.subtables['details_table'].select().where(self.subtables['details_table'].c.parent_id==self.dataset['id']).execute().fetchall()
+        data = hf.module.ModuleBase.getTemplateData(self)              
+        table_size = self.config['limit_table_size']
+        details = self.subtables['details'].select().where(self.subtables['details'].c.parent_id==self.dataset['id']).order_by(desc(self.subtables['details'].c.datasetSize)).limit(table_size).execute().fetchall()
         data['details_ddm'] = map(dict, details)
 
         return data
