@@ -61,6 +61,7 @@ class BaseEnvReader(object):
     logger = logging.getLogger(__name__)
 
     __envObj = None
+    __timeout = None
 
     def enableEnv(self):
         self.__envObj.enabled = True
@@ -79,6 +80,7 @@ class BaseEnvReader(object):
 
     def get(self, key):
         return self.__envObj.get(key)
+           
         
     def _readHappyFaceConf(self):
 
@@ -238,7 +240,7 @@ class GridEnv(BaseEnv):
                 'x509.user.cert':None,
                 'x509.user.key':None,
                 'x509.user.proxy':None,
-                    }
+                }
     
     def generateLoader(self):
         if not self.enabled: return ""
@@ -269,7 +271,7 @@ class CvmfsEnv(BaseEnv):
     conf = {'rucio.account':None,
             'agis':False, 
             'atlantis':False, 
-            'dq2.client':False,
+            'rucio.client':False,
             'emi':True, 
             'fax':False,
             'ganga':False,
@@ -287,7 +289,7 @@ class CvmfsEnv(BaseEnv):
     confDatatype = {'rucio.account':'string',
             'agis':'boolean', 
             'atlantis':'boolean', 
-            'dq2.client':'boolean',
+            'rucio.client':'boolean',
             'emi':'boolean', 
             'fax':'boolean',
             'ganga':'boolean',
@@ -304,13 +306,12 @@ class CvmfsEnv(BaseEnv):
 
 
     """ Loader Commands """
-    __cvmfsPackageOrder = ['emi', 'dq2.client', 'ganga', 'agis', 'panda.client', 'gcc']
-
-    
+    __cvmfsPackageOrder = ['emi', 'rucio.client', 'ganga', 'agis', 'panda.client', 'gcc']
+                 
     __cvmfsEnvPackageLoaderCommon = 'export LCG_LOCATION=;export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase;source $ATLAS_LOCAL_ROOT_BASE/user/atlasLocalSetup.sh ""'
     __cvmfsEnvPackageLoaders = {'agis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAGISSetup.sh --agisVersion ${agisVersionVal}', 
                     'atlantis':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalAtlantisSetup.sh --atlantisVersion ${atlantisVersionVal}', 
-                    'dq2.client':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalDQ2ClientSetup.sh --skipConfirm --dq2ClientVersion ${dq2ClientVersionVal}', 
+                    'rucio.client':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalDQ2ClientSetup.sh --skipConfirm',
                     'emi':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalEmiSetup.sh --emiVersion ${emiVersionVal}', 
                     'fax':'',
                     'ganga':'source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalGangaSetup.sh --gangaVersion ${gangaVersionVal}',
@@ -327,7 +328,7 @@ class CvmfsEnv(BaseEnv):
 
     def __generateRucioAccountEnv(self):
         if self.conf['rucio.account'] is None: return ""
-        if not self.conf['dq2.client']: return ""
+        if not self.conf['rucio.client']: return ""
         return "export RUCIO_ACCOUNT=" + self.conf['rucio.account']+";"
         
     def localSetup(self, package):
@@ -342,8 +343,9 @@ class CvmfsEnv(BaseEnv):
         
         for package in self.__cvmfsPackageOrder:
             if self.conf[package]:
-                self.logger.debug("CVMFS package = " + package)
+                self.logger.debug("CVMFS package = " + package)                
                 setuploader += self.__cvmfsEnvPackageLoaders[package]
+                self.logger.debug("Loader = " + setuploader)
                 if not self.verbose: setuploader += " &> /dev/null"
                 setuploader += ";" 
         return setuploader
@@ -385,10 +387,12 @@ def main():
     cvmfsEnv = CvmfsEnvReader().getEnv()
     cvmfsEnv.enabled = True
     cvmfsEnv.showConf()
-    print cvmfsEnv.generateLoader()
+    
+    cvmfsEnv.generateLoader()
+
     if not cvmfsEnv.get('dq2wrappers'): print "dq2wrappers = " + str(cvmfsEnv.get('dq2wrappers'))
-
-
+    
+   
 
 if __name__ == '__main__':
     main()
