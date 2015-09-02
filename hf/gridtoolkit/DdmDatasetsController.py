@@ -44,7 +44,7 @@ class DdmDatasetsController(GridSubprocessBaseHandler):
     
     def listDatasets(self, token, start, end):            
         command = "rucio list-datasets-rse "        
-        self.commandArgs = command + token + " | sed -n " + start + "," + end + "p" 
+        self.commandArgs = command + token + " | sed -n " + str(start) + "," + str(end) + "p" 
         retCode, error_msg, output_msg = self.execute()         
         print "Command executed return code: "
         print retCode          
