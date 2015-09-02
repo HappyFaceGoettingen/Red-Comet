@@ -235,12 +235,12 @@ def main():
     p4 = GridPopen("echo -n X509_CERT_DIR = $X509_CERT_DIR", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None)
     
     cvmfsEnv = CvmfsEnv()
-    cvmfsEnv.setEnabled('dq2.client')
+    cvmfsEnv.setEnabled('rucio.client')
     cvmfsEnv.setEnabled('emi')
     
-    p5 = GridPopen("dq2-ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None, cvmfs_env=cvmfsEnv)
+    p5 = GridPopen("uberftp grid-se.physik.uni-wuppertal.de", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None, cvmfs_env=cvmfsEnv)
     
-    string = "uberftp -retry 2 -keepalive 10 gsiftp://grid-se.physik.uni-wuppertal.de/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/100_7573.MOV  gsiftp://se-goegrid.gwdg.de/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi"
+   # string = "uberftp -retry 2 -keepalive 10 gsiftp://grid-se.physik.uni-wuppertal.de/pnfs/physik.uni-wuppertal.de/data/atlas/atlaslocalgroupdisk/test_haykuhi/100_7573.MOV  gsiftp://se-goegrid.gwdg.de/pnfs/gwdg.de/data/atlas/atlasscratchdisk/test_haykuhi"
     
     p1.wait()
     p2.wait()
@@ -253,11 +253,7 @@ def main():
     print p4.stdout.read()
     p5.wait()
     
-    gridSubprocess = GridSubprocessBaseHandler()
-    gridSubprocess.timeout = 60
-    gridSubprocess.execute(string)
-    
-    
+       
     print p5.stdout.read()
     print p5.stderr.read()
     
