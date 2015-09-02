@@ -57,15 +57,20 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
        
         DataObject.whoami()
         
-        datasets_start = self.config['datasets_start'] 
-        datasets_end = self.config['datasets_end'] 
-        space_token = self.config['space_token'] 
-       
-        retCode, error_msg, datasetName = DataObject.listDatasets(space_token, datasets_start, datasets_end)
+        dataset_start = int(self.config['datasets_range_start'])
+        dataset_end = int(self.config['datasets_range_end'])
          
-        print "Error msg::: "
-        print error_msg         
-        
+        start = random.randrange(dataset_start, dataset_end)
+        end = int(start) + int(self.config['dataset_size'])         
+                       
+        #print "Start:::" 
+        #print randStart
+        #print "End:::"
+        #print randEnd
+                      
+        space_token = self.config['space_token']         
+        retCode, error_msg, datasetName = DataObject.listDatasets(space_token, start, end)
+       
         if not error_msg:
             filtered_datasetName = str.replace(datasetName, 'SCOPE:NAME', '')
             filtered_datasetName = str.replace(filtered_datasetName, '-', '')
@@ -79,14 +84,16 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
                 if info:
                     k = k + 1
                     print info.get('name')
-                    print info.get('length')
-                    print info.get('scope')      
+                    #print info.get('length')
+                    print int(info.get('bytes'))/1048576 #convert to MB
+                    #print info.get('scope')  
+                    print info.get('account')      
                     print info.get('created_at')
                     print info.get('updated_at')
                     details = {}
                     details['datasetName'] = info.get('name')
-                    details['datasetSize'] = info.get('length')
-                    details['datasetOwner'] = info.get('scope')
+                    details['datasetSize'] = int(info.get('bytes'))/1048576  #convert to MB length
+                    details['datasetOwner'] = info.get('account') #scope
                     details['datasetCreatedDate'] = info.get('created_at')
                     details['datasetUpdatedDate'] = info.get('updated_at')
                      
@@ -94,7 +101,7 @@ class DdmDatasetsViewer(hf.module.ModuleBase):
                     self.details_table_db_value_list[k] = details              
         
         self.removeDuplicatedRowsFromDB()
-       
+        
         return data
 
 
