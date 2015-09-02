@@ -17,22 +17,20 @@
 		else 
 			element.style.display = 'none';
 	}
+			
 </script>
 
-<div id="piechart" style="width: 900px; height: 500px;"></div>
+<div id="piechart" style="width: 500px; height: 300px;"></div>
 
 % if not details_ddm:
-	<p>List Empty!</p>
-% else:
-	% if module.dataset['status'] == 1:
-		<p> All is good </p>
-	% endif
+	<p>List is empty!</p>
+% else:	
 	
 	<table id="dataTable" class="TableData">
 		<thread>
 		<tr class="TableHeader">
 			<th> Dataset Name </th> 
-			<th> Dataset Size </th>
+			<th> Dataset Size (MB) </th>
 			<th> Dataset Owner </th> 
 			<th> Datset Created Date </th>
 			<th> Datset Updated Date </th>
