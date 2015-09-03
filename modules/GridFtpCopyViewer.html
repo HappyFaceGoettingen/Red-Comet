@@ -238,35 +238,96 @@ String.prototype.replaceAll = function(target, replacement) {
 	};
 
 function showErrorList() {	
-	
-	var table = document.getElementById("SpaceToken");
-	while(table.hasChildNodes())
-    {
-       table.removeChild(table.firstChild);
-    }
-	
-	var errorMsg = document.getElementById("error_space_token").options[document.getElementById("error_space_token").selectedIndex].value
-	if (errorMsg !== "--Select--"){
 		
-		errorMsg = errorMsg.replace(/[^A-Za-z\d_()-]+/g, ' ');
-		errorMsg_ = errorMsg.replaceAll('(u', ' ');
-		errorMsg_final = errorMsg_.replaceAll(')', '</br>');
-	
-		var temp = new Array();
-		temp = errorMsg_final.split('</br>');
+		var table = document.getElementById("SpaceToken");
+		while(table.hasChildNodes())
+	    {
+	       table.removeChild(table.firstChild);
+	    }
 		
-		for (var a  in temp){
-    		if (temp[a].trim()) { 
-    			var newTR = document.createElement("tr");
-    			var newTD = document.createElement("td");
-    			var newText = document.createTextNode(temp[a]);
-    			newTD.appendChild(newText);
-    			newTR.appendChild(newTD);
-    			table.appendChild(newTR);
-    		}
-    	}
- 	}
-}
+		var errorMsg = document.getElementById("error_space_token").options[document.getElementById("error_space_token").selectedIndex].value
+
+		if (errorMsg !== "--Select--" ){
+			if (errorMsg === "${dataset['site1_space_token_scratchdisk']}" ){				
+				% for detail in show_err1:
+					var msg = "${detail}".replaceAll("(u'", '');
+					msg_fn = msg.replaceAll("',)", '');
+					if (msg_fn) {
+						var newTR = document.createElement("tr");
+						var newTD = document.createElement("td");
+						var newText = document.createTextNode(msg_fn);				
+						newTD.appendChild(newText);
+						newTR.appendChild(newTD);
+						table.appendChild(newTR);
+					}
+				% endfor
+			}
+			else if (errorMsg === "${dataset['site1_space_token_localgroupdisk']}" ){				
+				% for detail in show_err2:
+					var msg = "${detail}".replaceAll("(u'", '');
+					msg_fn = msg.replaceAll("',)", '');
+					if (msg_fn) {
+						var newTR = document.createElement("tr");
+						var newTD = document.createElement("td");
+						var newText = document.createTextNode(msg_fn);				
+						newTD.appendChild(newText);
+						newTR.appendChild(newTD);
+						table.appendChild(newTR);
+					}
+				% endfor
+			}		
+			else if (errorMsg === "${dataset['site1_space_token_proddisk']}" ){				
+				% for detail in show_err3:
+					var msg = "${detail}".replaceAll("(u'", '');
+					msg_fn = msg.replaceAll("',)", '');
+					if (msg_fn) {
+						var newTR = document.createElement("tr");
+						var newTD = document.createElement("td");
+						var newText = document.createTextNode(msg_fn);				
+						newTD.appendChild(newText);
+						newTR.appendChild(newTD);
+						table.appendChild(newTR);
+					}
+				% endfor
+			}	
+			else if (errorMsg === "${dataset['site1_space_token_datadisk']}" ){				
+				% for detail in show_err4:
+					var msg = "${detail}".replaceAll("(u'", '');
+					msg_fn = msg.replaceAll("',)", '');
+					if (msg_fn) {
+						var newTR = document.createElement("tr");
+						var newTD = document.createElement("td");
+						var newText = document.createTextNode(msg_fn);				
+						newTD.appendChild(newText);
+						newTR.appendChild(newTD);
+						table.appendChild(newTR);
+					}
+				% endfor
+			}		
+		}
+		/*
+		if (errorMsg !== "--Select--"){
+			
+			errorMsg = errorMsg.replace(/[^A-Za-z\d_()-]+/g, ' ');
+			errorMsg_ = errorMsg.replaceAll('(u', ' ');
+			errorMsg_final = errorMsg_.replaceAll(')', '</br>');
+		
+			var temp = new Array();
+			temp = errorMsg_final.split('</br>');
+			
+			for (var a  in temp){
+	    		if (temp[a].trim()) { 
+	    			var newTR = document.createElement("tr");
+	    			var newTD = document.createElement("td");
+	    			var newText = document.createTextNode(temp[a]);
+	    			newTD.appendChild(newText);
+	    			newTR.appendChild(newTD);
+	    			table.appendChild(newTR);
+	    		}
+	    	}
+	 	}
+		*/
+	}
 
 </script>
 
@@ -280,21 +341,19 @@ function showErrorList() {
 <p> Show errors in GoeGrid space token staring from ${dataset['plot_start_date']}</p>
 <select id ="error_space_token" onchange="showErrorList()">
   <option value="--Select--">--Select--</option>
-  <option value="${show_err1}" > ${dataset['site1_space_token_scratchdisk']} </option>
-  <option value="${show_err2}" > ${dataset['site1_space_token_localgroupdisk']} </option>
-  <option value="${show_err3}" >${dataset['site1_space_token_proddisk']}</option>
-  <option value="${show_err4}" >${dataset['site1_space_token_datadisk']}</option>
+  <option value="${dataset['site1_space_token_scratchdisk']}" > ${dataset['site1_space_token_scratchdisk']} </option>
+  <option value="${dataset['site1_space_token_localgroupdisk']}" > ${dataset['site1_space_token_localgroupdisk']} </option>
+  <option value="${dataset['site1_space_token_proddisk']}" >${dataset['site1_space_token_proddisk']}</option>
+  <option value="${dataset['site1_space_token_datadisk']}" >${dataset['site1_space_token_datadisk']}</option>
 </select>
-
+</br></br>
   <table class="TableData"  style="width: 120%;" id="SpaceToken">
   </table>
 
 </div>
 
 
-</br>
-</br>
-</br>
+</br></br></br>
 
 <h3 style="width: 100%; float:left;" >${dataset['site1Name']} transfers with UberFTP </h3>
 
