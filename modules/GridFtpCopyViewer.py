@@ -27,7 +27,6 @@ from hf.module.database import hf_runs
 import time
 import datetime
 
-import cgi, cgitb 
 
 class GridFtpCopyViewer(hf.module.ModuleBase):
     
@@ -120,7 +119,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
             'dataset': "Hi",
             'status': 1
         }   
-        """
+        
         logging.basicConfig(level=logging.INFO)
         logging.root.setLevel(logging.INFO) 
         
@@ -313,7 +312,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         self.removeTmpFiles(obj, __transfer_obj.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj.getScratchDiskPath(),__spacetoken_obj.getLocalGroupDiskPath(), __spacetoken_obj.getProdDiskPath(), __spacetoken_obj.getDataDiskPath())
         #Remove files from Site2 space tokens
         self.removeTmpFiles(obj, __transfer_obj_1_2.getDstHost(), __transfer_obj.getDstPort(), __spacetoken_obj_1_2.getScratchDiskPath(),__spacetoken_obj_1_2.getLocalGroupDiskPath(), __spacetoken_obj_1_2.getProdDiskPath(), __spacetoken_obj_1_2.getDataDiskPath())
-        """
+        
         #Ploting
         
         ok_sp_token_eff1, failed_sp_token_eff1 = self.sqlEfficiency('scratchdiskToScratchdisk', 'OK', self.config['plot_start_date'])
