@@ -62,7 +62,7 @@
 				  
 					
 				 <% isItem = False %>	
-   			     %for item in dataset['ok_status']:    
+   			     %for item in dataset['ok_status_prod_data']:    
    			        %if item in detail['scratchdiskToProddisk']:		
     				 	<% isItem = True %>					   
 					 % endif  					  
@@ -73,7 +73,7 @@
 				  
 				  % else:
 				      <% isItem_err = False %>
-				      %for item in dataset['error_status']:			    
+				      %for item in dataset['error_status_prod_data']:			    
     					%if item in detail['scratchdiskToProddisk']:	
     				   	<% isItem_err = True %>					  
 				 		% endif
@@ -89,7 +89,7 @@
 				  
 				  
 				 <% isItem = False %>	
-   			     %for item in dataset['ok_status']:    
+   			     %for item in dataset['ok_status_prod_data']:    
    			        %if item in detail['scratchdiskToDatadisk']:		
     				 	<% isItem = True %>					   
 					 % endif  					  
@@ -100,7 +100,7 @@
 				  
 				  % else:
 				      <% isItem_err = False %>
-				      %for item in dataset['error_status']:			    
+				      %for item in dataset['error_status_prod_data']:			    
     					%if item in detail['scratchdiskToDatadisk']:	
     				   	<% isItem_err = True %>					  
 				 		% endif
@@ -176,7 +176,7 @@
 				  
 					
 				 <% isItem = False %>	
-   			     %for item in dataset['ok_status']:    
+   			     %for item in dataset['ok_status_prod_data']:    
    			        %if item in detail['localgroupdiskToProddisk']:		
     				 	<% isItem = True %>					   
 					 % endif  					  
@@ -187,7 +187,7 @@
 				  
 				  % else:
 				      <% isItem_err = False %>
-				      %for item in dataset['error_status']:			    
+				      %for item in dataset['error_status_prod_data']:			    
     					%if item in detail['localgroupdiskToProddisk']:	
     				   	<% isItem_err = True %>					  
 				 		% endif
@@ -203,7 +203,7 @@
 				  
 				  
 				 <% isItem = False %>	
-   			     %for item in dataset['ok_status']:    
+   			     %for item in dataset['ok_status_prod_data']:    
    			        %if item in detail['localgroupdiskToDatadisk']:		
     				 	<% isItem = True %>					   
 					 % endif  					  
@@ -214,7 +214,7 @@
 				  
 				  % else:
 				      <% isItem_err = False %>
-				      %for item in dataset['error_status']:			    
+				      %for item in dataset['error_status_prod_data']:			    
     					%if item in detail['localgroupdiskToDatadisk']:	
     				   	<% isItem_err = True %>					  
 				 		% endif
@@ -232,12 +232,130 @@
 </%def>
 
 
-<h3>${dataset['site1Name']} transfers with SRM </h3>
+<script type="text/javascript">
+
+String.prototype.replaceAll = function(target, replacement) {
+	  return this.split(target).join(replacement);
+	};
+	
+function showErrorList() {	
+	
+	var table = document.getElementById("SpaceToken");
+	while(table.hasChildNodes())
+    {
+       table.removeChild(table.firstChild);
+    }
+	
+	var errorMsg = document.getElementById("error_space_token").options[document.getElementById("error_space_token").selectedIndex].value
+
+	if (errorMsg !== "--Select--" ){
+		if (errorMsg === "${dataset['site1_space_token_scratchdisk']}" ){				
+			% for detail in show_err1:
+				var newTR = document.createElement("tr");
+				var newTD = document.createElement("td");
+				var msg = "${detail}".replaceAll("(u'", '');
+				msg_fn = msg.replaceAll("',)", '');
+				var newText = document.createTextNode(msg_fn);				
+				newTD.appendChild(newText);
+				newTR.appendChild(newTD);
+				table.appendChild(newTR);
+			% endfor
+		}
+		else if (errorMsg === "${dataset['site1_space_token_localgroupdisk']}" ){				
+			% for detail in show_err2:
+				var newTR = document.createElement("tr");
+				var newTD = document.createElement("td");
+				var msg = "${detail}".replaceAll("(u'", '');
+				msg_fn = msg.replaceAll("',)", '');
+				var newText = document.createTextNode(msg_fn);				
+				newTD.appendChild(newText);
+				newTR.appendChild(newTD);
+				table.appendChild(newTR);
+			% endfor
+		}		
+		else if (errorMsg === "${dataset['site1_space_token_proddisk']}" ){				
+			% for detail in show_err3:
+				var newTR = document.createElement("tr");
+				var newTD = document.createElement("td");
+				var msg = "${detail}".replaceAll("(u'", '');
+				msg_fn = msg.replaceAll("',)", '');
+				var newText = document.createTextNode(msg_fn);				
+				newTD.appendChild(newText);
+				newTR.appendChild(newTD);
+				table.appendChild(newTR);
+			% endfor
+		}	
+		else if (errorMsg === "${dataset['site1_space_token_datadisk']}" ){				
+			% for detail in show_err4:
+				var newTR = document.createElement("tr");
+				var newTD = document.createElement("td");
+				var msg = "${detail}".replaceAll("(u'", '');
+				msg_fn = msg.replaceAll("',)", '');
+				var newText = document.createTextNode(msg_fn);				
+				newTD.appendChild(newText);
+				newTR.appendChild(newTD);
+				table.appendChild(newTR);
+			% endfor
+		}		
+	}
+	/*
+	if (errorMsg !== "--Select--"){
+		
+		errorMsg = errorMsg.replace(/[^A-Za-z\d_()-]+/g, ' ');
+		errorMsg_ = errorMsg.replaceAll('(u', ' ');
+		errorMsg_final = errorMsg_.replaceAll(')', '</br>');
+	
+		var temp = new Array();
+		temp = errorMsg_final.split('</br>');
+		
+		for (var a  in temp){
+    		if (temp[a].trim()) { 
+    			var newTR = document.createElement("tr");
+    			var newTD = document.createElement("td");
+    			var newText = document.createTextNode(temp[a]);
+    			newTD.appendChild(newText);
+    			newTR.appendChild(newTD);
+    			table.appendChild(newTR);
+    		}
+    	}
+ 	}
+	*/
+}
+
+</script>
+
+<div style="width: 50%; float:left;">
+	% for detail in site_transfers_plot: 	
+	<img src="${detail['efficiency_plot']}" alt="" />
+	% endfor
+</div>
+
+<div style="width: 50%; float:right;">
+<p> Show errors in GoeGrid space token staring from ${dataset['plot_start_date']}</p>
+<select id ="error_space_token" onchange="showErrorList()">
+  <option value="--Select--">--Select--</option>
+  <option value="${dataset['site1_space_token_scratchdisk']}" > ${dataset['site1_space_token_scratchdisk']} </option>
+  <option value="${dataset['site1_space_token_localgroupdisk']}" > ${dataset['site1_space_token_localgroupdisk']} </option>
+  <option value="${dataset['site1_space_token_proddisk']}" >${dataset['site1_space_token_proddisk']}</option>
+  <option value="${dataset['site1_space_token_datadisk']}" >${dataset['site1_space_token_datadisk']}</option>
+</select>
+</br></br>
+  <table class="TableData"  style="width: 120%;" id="SpaceToken">
+  </table>
+
+</div>
+
+
+</br>
+</br>
+</br>
+
+<h3 style="width: 100%; float:left;" >${dataset['site1Name']} transfers with SRM </h3>
 
 </br>
 </br>
 
-<div class="scrollable-table">
+<div class="scrollable-table" style="width: 100%; float:left;">
   <table class="table table-striped table-header-rotated">
 		<thread>
 		<tr>	
