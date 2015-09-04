@@ -447,7 +447,7 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
        
         ax.set_xlabel('Space tokens')
         ax.set_ylabel('DB records count')
-        ax.set_title('GoeGrid space tokens efficiency \n starting from '  + self.config['plot_start_date'])
+        ax.set_title('GoeGrid space tokens efficiency by UberFTP \n starting from '  + self.config['plot_start_date'])
         ax.set_xticks(ind + width)        
         ax.set_xticklabels(('SrcDisk', 'LgDisk', 'ProdDisk', 'DataDisk'))
         
