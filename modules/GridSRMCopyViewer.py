@@ -443,14 +443,14 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
        
         ax.set_xlabel('Space tokens')
         ax.set_ylabel('DB records count')
-        ax.set_title('GoeGrid space tokens efficiency \n starting from '  + self.config['plot_start_date'])
+        ax.set_title('GoeGrid space tokens efficiency by SRM \n starting from '  + self.config['plot_start_date'])
         ax.set_xticks(ind + width)        
         ax.set_xticklabels(('SrcDisk', 'LgDisk', 'ProdDisk', 'DataDisk'))
         
         if max(arry1) >= max(arry2):            
             plt.yticks(np.arange(0,max(arry1)*2, max(arry1)//3))
         else:
-            plt.yticks(np.arange(0,max(arry2)*2, max(arry1)//3 ))
+            plt.yticks(np.arange(0,max(arry2)*2, max(arry2)//3))
         
         ax.legend((bar1[0], bar2[0]), ('Succeed', 'Failed'))
         
