@@ -447,10 +447,13 @@ class GridSRMCopyViewer(hf.module.ModuleBase):
         ax.set_xticks(ind + width)        
         ax.set_xticklabels(('SrcDisk', 'LgDisk', 'ProdDisk', 'DataDisk'))
         
-        if max(arry1) >= max(arry2):            
-            plt.yticks(np.arange(0,max(arry1)*2, max(arry1)//3))
+        if max(arry1) == 0 or max(arry2) == 0:
+            plt.yticks(np.arange(0,1,1))
         else:
-            plt.yticks(np.arange(0,max(arry2)*2, max(arry2)//3))
+            if max(arry1) >= max(arry2):            
+                plt.yticks(np.arange(0,max(arry1)*2, max(arry1)//3))
+            else:
+                plt.yticks(np.arange(0,max(arry2)*2,max(arry2)//3))
         
         ax.legend((bar1[0], bar2[0]), ('Succeed', 'Failed'))
         
