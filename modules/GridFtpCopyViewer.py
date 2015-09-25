@@ -359,9 +359,11 @@ class GridFtpCopyViewer(hf.module.ModuleBase):
         self.subtables['site_transfers_plot'].insert().execute([dict(parent_id=parent_id, **row) for row in self.details_table_db_value_list_plot])
           
     def sqlQuery(self, siteName):
-        max_id_number1_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == str(siteName)).execute().scalar()        
-        details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_uberftp).execute().fetchall()
-        return map(dict, details1)  
+        #max_id_number1_uberftp = func.max(self.subtables['site_transfers'].c.id).select().where(self.subtables['site_transfers'].c.siteName == str(siteName)).execute().scalar()        
+        #details1 = self.subtables['site_transfers'].select().where(self.subtables['site_transfers'].c.id == max_id_number1_uberftp).execute().fetchall()
+        #return map(dict, details1)
+        details = self.subtables['site_transfers'].select().where(and_(self.subtables['site_transfers'].c.siteName == str(siteName), self.subtables['site_transfers'].c.parent_id==self.dataset['id'])).execute().fetchall()
+        return map(dict, details)
     
     def sqlQuery_plot(self):        
         plot = self.subtables['site_transfers_plot'].select().where(self.subtables['site_transfers_plot'].c.parent_id==self.dataset['id']).execute().fetchall()
